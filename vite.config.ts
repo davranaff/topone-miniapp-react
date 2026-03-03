@@ -9,6 +9,38 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes("node_modules/react") || id.includes("node_modules/react-dom")) {
+            return "vendor-react";
+          }
+          if (id.includes("node_modules/@radix-ui")) {
+            return "vendor-radix";
+          }
+          if (id.includes("node_modules/@tanstack")) {
+            return "vendor-tanstack";
+          }
+          if (id.includes("node_modules/react-router") || id.includes("node_modules/react-router-dom")) {
+            return "vendor-router";
+          }
+          if (id.includes("node_modules/i18next") || id.includes("node_modules/react-i18next")) {
+            return "vendor-i18n";
+          }
+          if (id.includes("node_modules/lucide-react")) {
+            return "vendor-icons";
+          }
+          if (id.includes("node_modules/zod") || id.includes("node_modules/@hookform") || id.includes("node_modules/react-hook-form")) {
+            return "vendor-forms";
+          }
+          if (id.includes("node_modules/zustand") || id.includes("node_modules/axios")) {
+            return "vendor-state";
+          }
+        },
+      },
+    },
+  },
   test: {
     environment: "jsdom",
     setupFiles: "./src/tests/setup.ts",

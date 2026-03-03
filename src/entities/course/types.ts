@@ -13,4 +13,7 @@ export type Course = {
   isLocked: boolean;
   releaseDate?: string;
   skills: CourseSkill[];
+  progress?: number;
+  lessonsCount?: number;
+  coverUrl?: string;
 };

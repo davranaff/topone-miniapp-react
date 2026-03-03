@@ -1,24 +1,46 @@
+import { Link } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
 import type { UserProfile } from "@/entities/user/types";
-import { Badge } from "@/shared/ui/badge";
+import { Avatar } from "@/shared/ui/avatar";
+import { StatusChip } from "@/shared/ui/status-chip";
+import { cn } from "@/shared/lib/cn";
 
 export const ProfileSummaryCard = ({ profile }: { profile: UserProfile }) => {
+  const isPremium = profile.hasActiveSubscription;
+  const fullName = [profile.firstName, profile.lastName].filter(Boolean).join(" ") || profile.username;
+
   return (
-    <section className="rounded-[1.5rem] border border-border bg-slate-950 p-6 text-white shadow-card">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div>
-          <p className="text-sm uppercase tracking-[0.16em] text-primary">Session</p>
-          <h2 className="mt-2 text-3xl font-semibold">
-            {profile.firstName} {profile.lastName}
-          </h2>
-          <p className="mt-2 text-sm text-slate-300">@{profile.username}</p>
+    <Link to="/profile">
+      <div
+        className={cn(
+          "flex items-center gap-3 rounded-2xl border p-4 transition-all duration-200",
+          "hover:border-gold/40 active:scale-[0.98]",
+          isPremium
+            ? "border-gold/25 bg-gradient-to-r from-[#1a1200] to-[#0d0d0d]"
+            : "border-border/50 bg-elevated",
+        )}
+      >
+        <Avatar
+          src={profile.avatarUrl}
+          fallback={fullName}
+          size="md"
+          gold={isPremium}
+        />
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <p className="truncate text-sm font-semibold text-t-primary">{fullName}</p>
+            {isPremium && (
+              <StatusChip status="premium" size="sm" showDot={false}>
+                Premium
+              </StatusChip>
+            )}
+          </div>
+          <p className="truncate text-xs text-t-muted">@{profile.username}</p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {profile.roles.map((role) => (
-            <Badge key={role}>{role}</Badge>
-          ))}
-          {profile.subscriptionType ? <Badge>{profile.subscriptionType}</Badge> : null}
-        </div>
+
+        <ChevronRight className="h-4 w-4 shrink-0 text-t-muted" />
       </div>
-    </section>
+    </Link>
   );
 };

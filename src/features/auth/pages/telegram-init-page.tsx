@@ -37,21 +37,37 @@ export const TelegramInitPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-white">
-      <div className="w-full max-w-lg rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center">
-        <div className="mb-6 flex justify-center">{mutation.isPending ? <Spinner /> : null}</div>
-        <h1 className="text-2xl font-semibold">Telegram Mini App Init</h1>
-        <p className="mt-2 text-sm text-slate-300">
-          Получаем `initData`, обмениваем его на `access/refresh token` и поднимаем session store.
-        </p>
-        {mutation.error ? (
-          <div className="mt-6 space-y-3">
-            <p className="text-sm text-red-300">{getErrorMessage(mutation.error)}</p>
-            <Button type="button" variant="secondary" onClick={() => navigate("/login")}>
-              Вернуться к логину
+    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-base px-4">
+      <div
+        data-glow
+        className="pointer-events-none absolute left-1/2 top-1/3 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/12 blur-3xl"
+      />
+
+      <div className="relative flex w-full max-w-sm flex-col items-center gap-6 text-center animate-fade-in-up">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold/30 bg-gold/10">
+          <span className="text-2xl font-black text-gold">T1</span>
+        </div>
+
+        {mutation.isPending && (
+          <>
+            <Spinner size="lg" />
+            <div className="space-y-1">
+              <p className="font-semibold text-t-primary">Входим через Telegram</p>
+              <p className="text-sm text-t-muted">Пожалуйста, подождите...</p>
+            </div>
+          </>
+        )}
+
+        {mutation.error && (
+          <div className="w-full space-y-4">
+            <div className="rounded-xl border border-danger/20 bg-danger/8 p-4">
+              <p className="text-sm text-danger">{getErrorMessage(mutation.error)}</p>
+            </div>
+            <Button fullWidth variant="outline" onClick={() => navigate("/login")}>
+              Вернуться во вход
             </Button>
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );

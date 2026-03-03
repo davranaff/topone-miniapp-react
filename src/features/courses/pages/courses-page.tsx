@@ -1,33 +1,52 @@
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useCoursesList } from "@/features/courses/hooks/use-courses-list";
+import { MobileScreen, MobileScreenSection } from "@/shared/ui/mobile-screen";
 import { PageHeader } from "@/shared/ui/page-header";
-import { Skeleton } from "@/shared/ui/skeleton";
+import { SkeletonCard } from "@/shared/ui/skeleton";
+import { EmptyState } from "@/shared/ui/empty-state";
+import { ErrorState } from "@/shared/ui/error-state";
 import { CourseCard } from "@/widgets/course/course-card";
-import { CoursesEmptyState } from "@/features/courses/components/courses-empty-state";
+import { BookOpen } from "lucide-react";
 
 export const CoursesPage = () => {
   const { t } = useTranslation("courses");
-  const courses = useCoursesList({ page: 1, size: 12 });
+  const courses = useCoursesList({ page: 1, size: 20 });
 
   return (
-    <div className="space-y-6">
+    <MobileScreen>
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
-      {courses.isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <Skeleton key={index} className="h-64" />
+
+      {courses.isLoading && (
+        <MobileScreenSection className="mt-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <SkeletonCard key={i} />
           ))}
+        </MobileScreenSection>
+      )}
+
+      {courses.isError && (
+        <div className="mt-6">
+          <ErrorState variant="network" onRetry={() => courses.refetch()} />
         </div>
-      ) : null}
-      {!courses.isLoading && !courses.data?.items.length ? <CoursesEmptyState /> : null}
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {courses.data?.items.map((course) => (
-          <Link key={course.id} to={`/courses/${course.id}`}>
-            <CourseCard course={course} />
-          </Link>
-        ))}
-      </div>
-    </div>
+      )}
+
+      {!courses.isLoading && !courses.isError && !courses.data?.items.length && (
+        <div className="mt-10">
+          <EmptyState
+            icon={<BookOpen className="h-8 w-8" />}
+            title="Kurslar topilmadi"
+            description="Hozircha hech qanday kurs mavjud emas."
+          />
+        </div>
+      )}
+
+      {!!courses.data?.items.length && (
+        <MobileScreenSection className="mt-4">
+          {courses.data.items.map((course) => (
+            <CourseCard key={course.id} course={course} />
+          ))}
+        </MobileScreenSection>
+      )}
+    </MobileScreen>
   );
 };

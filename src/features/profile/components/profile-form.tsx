@@ -39,33 +39,42 @@ export const ProfileForm = ({ profile }: { profile: UserProfile }) => {
   });
 
   return (
-    <form className="space-y-4 rounded-lg border border-border bg-surface p-6 shadow-card" onSubmit={onSubmit}>
-      <div className="grid gap-4 md:grid-cols-2">
-        <FormField label="Имя" error={form.formState.errors.firstName?.message}>
-          <Input {...form.register("firstName")} />
+    <form className="space-y-4" onSubmit={onSubmit}>
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Ism" htmlFor="p-firstName" error={form.formState.errors.firstName?.message}>
+          <Input id="p-firstName" error={!!form.formState.errors.firstName} {...form.register("firstName")} />
         </FormField>
-        <FormField label="Фамилия" error={form.formState.errors.lastName?.message}>
-          <Input {...form.register("lastName")} />
-        </FormField>
-      </div>
-      <FormField label="Email" error={form.formState.errors.email?.message}>
-        <Input {...form.register("email")} />
-      </FormField>
-      <div className="grid gap-4 md:grid-cols-2">
-        <FormField label="Username" error={form.formState.errors.username?.message}>
-          <Input {...form.register("username")} />
-        </FormField>
-        <FormField label="Телефон" error={form.formState.errors.phoneNumber?.message}>
-          <Input {...form.register("phoneNumber")} />
+        <FormField label="Familiya" htmlFor="p-lastName" error={form.formState.errors.lastName?.message}>
+          <Input id="p-lastName" error={!!form.formState.errors.lastName} {...form.register("lastName")} />
         </FormField>
       </div>
-      <FormField label="Timezone" error={form.formState.errors.timezone?.message}>
-        <Input {...form.register("timezone")} />
+
+      <FormField label="Email" htmlFor="p-email" error={form.formState.errors.email?.message}>
+        <Input id="p-email" type="email" error={!!form.formState.errors.email} autoComplete="email" {...form.register("email")} />
       </FormField>
-      {mutation.error ? <p className="text-sm text-error">{getErrorMessage(mutation.error)}</p> : null}
-      {mutation.isSuccess ? <p className="text-sm text-primary">Профиль обновлён</p> : null}
-      <Button type="submit" disabled={mutation.isPending}>
-        Сохранить изменения
+
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Username" htmlFor="p-username" error={form.formState.errors.username?.message}>
+          <Input id="p-username" error={!!form.formState.errors.username} {...form.register("username")} />
+        </FormField>
+        <FormField label="Telefon" htmlFor="p-phone" error={form.formState.errors.phoneNumber?.message}>
+          <Input id="p-phone" type="tel" error={!!form.formState.errors.phoneNumber} {...form.register("phoneNumber")} />
+        </FormField>
+      </div>
+
+      {mutation.error && (
+        <p className="rounded-lg border border-danger/20 bg-danger/8 px-3 py-2 text-sm text-danger">
+          {getErrorMessage(mutation.error)}
+        </p>
+      )}
+      {mutation.isSuccess && (
+        <p className="rounded-lg border border-success/20 bg-success/8 px-3 py-2 text-sm text-success">
+          Profil yangilandi
+        </p>
+      )}
+
+      <Button fullWidth type="submit" loading={mutation.isPending}>
+        Saqlash
       </Button>
     </form>
   );

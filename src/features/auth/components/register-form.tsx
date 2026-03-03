@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Eye, EyeOff, Lock, User, Mail, Phone } from "lucide-react";
 import { useRegister } from "@/features/auth/hooks/use-register";
 import { registerSchema, type RegisterSchema } from "@/features/auth/schemas/register.schema";
 import { Button } from "@/shared/ui/button";
@@ -13,6 +15,8 @@ export const RegisterForm = () => {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const mutation = useRegister();
+  const [showPassword, setShowPassword] = useState(false);
+
   const form = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -34,48 +38,66 @@ export const RegisterForm = () => {
 
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
-      <div className="space-y-2">
-        <h2 className="text-3xl font-semibold text-text">{t("register")}</h2>
-        <p className="text-sm text-muted">Создайте новый аккаунт и переходите в продукт без миграции архитектуры.</p>
+      <div className="space-y-1">
+        <h2 className="text-2xl font-bold text-t-primary">{t("register")}</h2>
+        <p className="text-sm text-t-muted">Создайте аккаунт TopOne</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <FormField label={t("firstName")} error={form.formState.errors.firstName?.message}>
-          <Input {...form.register("firstName")} />
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label={t("firstName")} htmlFor="firstName" error={form.formState.errors.firstName?.message}>
+          <Input id="firstName" leadingIcon={<User className="h-4 w-4" />} error={!!form.formState.errors.firstName} {...form.register("firstName")} />
         </FormField>
-        <FormField label={t("lastName")} error={form.formState.errors.lastName?.message}>
-          <Input {...form.register("lastName")} />
+        <FormField label={t("lastName")} htmlFor="lastName" error={form.formState.errors.lastName?.message}>
+          <Input id="lastName" error={!!form.formState.errors.lastName} {...form.register("lastName")} />
         </FormField>
       </div>
 
-      <FormField label={t("email")} error={form.formState.errors.email?.message}>
-        <Input {...form.register("email")} autoComplete="email" />
-      </FormField>
-      <FormField label={t("username")} error={form.formState.errors.username?.message}>
-        <Input {...form.register("username")} />
-      </FormField>
-      <FormField label={t("phone")} error={form.formState.errors.phoneNumber?.message}>
-        <Input {...form.register("phoneNumber")} />
-      </FormField>
-      <FormField label={t("password")} error={form.formState.errors.password?.message}>
-        <Input {...form.register("password")} autoComplete="new-password" type="password" />
-      </FormField>
-      <FormField label="Подтверждение пароля" error={form.formState.errors.confirmPassword?.message}>
-        <Input {...form.register("confirmPassword")} autoComplete="new-password" type="password" />
-      </FormField>
-      <FormField label="Timezone" error={form.formState.errors.timezone?.message}>
-        <Input {...form.register("timezone")} />
+      <FormField label={t("email")} htmlFor="email" error={form.formState.errors.email?.message}>
+        <Input id="email" leadingIcon={<Mail className="h-4 w-4" />} error={!!form.formState.errors.email} autoComplete="email" {...form.register("email")} />
       </FormField>
 
-      {mutation.error ? <p className="text-sm text-error">{getErrorMessage(mutation.error)}</p> : null}
+      <FormField label={t("username")} htmlFor="reg-username" error={form.formState.errors.username?.message}>
+        <Input id="reg-username" leadingIcon={<User className="h-4 w-4" />} error={!!form.formState.errors.username} {...form.register("username")} />
+      </FormField>
 
-      <div className="grid gap-3">
-        <Button className="w-full" type="submit" disabled={mutation.isPending}>
+      <FormField label={t("phone")} htmlFor="phone" error={form.formState.errors.phoneNumber?.message}>
+        <Input id="phone" leadingIcon={<Phone className="h-4 w-4" />} error={!!form.formState.errors.phoneNumber} {...form.register("phoneNumber")} />
+      </FormField>
+
+      <FormField label={t("password")} htmlFor="reg-password" error={form.formState.errors.password?.message}>
+        <Input
+          id="reg-password"
+          leadingIcon={<Lock className="h-4 w-4" />}
+          trailingIcon={
+            <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} className="text-t-muted hover:text-t-primary transition">
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          }
+          error={!!form.formState.errors.password}
+          type={showPassword ? "text" : "password"}
+          autoComplete="new-password"
+          {...form.register("password")}
+        />
+      </FormField>
+
+      <FormField label="Подтверждение пароля" htmlFor="confirmPassword" error={form.formState.errors.confirmPassword?.message}>
+        <Input id="confirmPassword" error={!!form.formState.errors.confirmPassword} type="password" autoComplete="new-password" {...form.register("confirmPassword")} />
+      </FormField>
+
+      {mutation.error && (
+        <p className="rounded-lg border border-danger/20 bg-danger/8 px-3 py-2 text-sm text-danger">
+          {getErrorMessage(mutation.error)}
+        </p>
+      )}
+
+      <div className="space-y-3">
+        <Button fullWidth type="submit" loading={mutation.isPending}>
           {t("register")}
         </Button>
-        <Link className="text-sm text-muted hover:text-primary" to="/login">
-          Уже есть аккаунт
-        </Link>
+        <p className="text-center text-sm text-t-muted">
+          Уже есть аккаунт?{" "}
+          <Link className="text-gold hover:underline" to="/login">Войти</Link>
+        </p>
       </div>
     </form>
   );

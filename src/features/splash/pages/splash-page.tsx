@@ -10,16 +10,23 @@ export const SplashPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-white">
-      <div className="w-full max-w-md rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center">
-        <div className="mb-6 flex justify-center">
-          <Spinner />
+    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-base">
+      <div
+        data-glow
+        className="pointer-events-none absolute left-1/2 top-1/3 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/15 blur-3xl"
+      />
+
+      <div className="relative flex flex-col items-center gap-5 text-center animate-fade-in-up">
+        <div className="flex h-20 w-20 items-center justify-center rounded-[1.5rem] border border-gold/30 bg-gold/10">
+          <span className="text-3xl font-black text-gold">T1</span>
         </div>
-        <p className="text-xs uppercase tracking-[0.16em] text-primary">TopOne</p>
-        <h1 className="mt-3 text-3xl font-semibold">Splash</h1>
-        <p className="mt-3 text-sm text-slate-300">
-          Bootstrapping auth session, Telegram runtime and route graph before redirect.
-        </p>
+
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold text-t-primary">TopOne</h1>
+          <p className="text-sm text-t-muted">Образовательная платформа</p>
+        </div>
+
+        <Spinner size="md" />
       </div>
     </div>
   );
