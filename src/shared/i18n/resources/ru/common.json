@@ -1,0 +1,13 @@
+{
+  "appName": "TopOne",
+  "navigation.home": "Главная",
+  "navigation.courses": "Курсы",
+  "navigation.profile": "Профиль",
+  "navigation.miniApps": "Мини-аппы",
+  "actions.logout": "Выйти",
+  "actions.submit": "Сохранить",
+  "actions.cancel": "Отмена",
+  "actions.back": "Назад",
+  "states.loading": "Загрузка...",
+  "states.empty": "Пока пусто"
+}

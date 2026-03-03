@@ -1,0 +1,13 @@
+{
+  "appName": "TopOne",
+  "navigation.home": "Bosh sahifa",
+  "navigation.courses": "Kurslar",
+  "navigation.profile": "Profil",
+  "navigation.miniApps": "Mini-ilovalar",
+  "actions.logout": "Chiqish",
+  "actions.submit": "Saqlash",
+  "actions.cancel": "Bekor qilish",
+  "actions.back": "Orqaga",
+  "states.loading": "Yuklanmoqda...",
+  "states.empty": "Hozircha bo'sh"
+}
