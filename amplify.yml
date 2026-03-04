@@ -1,0 +1,53 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 20
+        - nvm use 20
+        - node --version
+        - npm --version
+        - |
+          cat > .env <<EOF
+          VITE_API_BASE_URL=${VITE_API_BASE_URL:-${API_BASE_URL:-https://api.top1secret.uz}}
+          VITE_APP_ENV=${VITE_APP_ENV:-production}
+          VITE_TELEGRAM_BOT_NAME=${VITE_TELEGRAM_BOT_NAME:-}
+          VITE_ENABLE_QUERY_DEVTOOLS=${VITE_ENABLE_QUERY_DEVTOOLS:-false}
+          EOF
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+
+customHeaders:
+  - pattern: 'assets/*.js'
+    headers:
+      - key: Cache-Control
+        value: 'public, max-age=31536000, immutable'
+  - pattern: 'assets/*.css'
+    headers:
+      - key: Cache-Control
+        value: 'public, max-age=31536000, immutable'
+  - pattern: 'assets/*.svg'
+    headers:
+      - key: Cache-Control
+        value: 'public, max-age=86400'
+  - pattern: 'assets/*.png'
+    headers:
+      - key: Cache-Control
+        value: 'public, max-age=86400'
+  - pattern: 'assets/*.jpg'
+    headers:
+      - key: Cache-Control
+        value: 'public, max-age=86400'
+  - pattern: 'index.html'
+    headers:
+      - key: Cache-Control
+        value: 'public, max-age=300, s-maxage=600'
