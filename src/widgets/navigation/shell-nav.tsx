@@ -239,6 +239,7 @@ const getBaseConfig = (pathname: string): Omit<ResolvedShellNav, "onBack" | "onC
     pathname === "/payment-waiting" ||
     pathname === "/payment-result" ||
     pathname === "/payment-success" ||
+    pathname === "/levels" ||
     pathname === "/account" ||
     pathname === "/transactions" ||
     pathname === "/transactions/xp" ||

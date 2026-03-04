@@ -38,6 +38,7 @@ const PaymentWaitingPage = lazy(() => import("@/features/payment/pages/payment-w
 const PaymentResultPage = lazy(() => import("@/features/payment/pages/payment-result-page").then((m) => ({ default: m.PaymentResultPage })));
 const PaymentSuccessPage = lazy(() => import("@/features/payment/pages/payment-success-page").then((m) => ({ default: m.PaymentSuccessPage })));
 const ReferralsPage = lazy(() => import("@/features/referrals/pages/referrals-page").then((m) => ({ default: m.ReferralsPage })));
+const LevelsPage = lazy(() => import("@/features/levels/pages/levels-page").then((m) => ({ default: m.LevelsPage })));
 const ResetPasswordPage = lazy(() => import("@/features/auth/pages/reset-password-page").then((m) => ({ default: m.ResetPasswordPage })));
 const SetPasswordPage = lazy(() => import("@/features/auth/pages/set-password-page").then((m) => ({ default: m.SetPasswordPage })));
 const TelegramLoginPage = lazy(() => import("@/features/auth/pages/telegram-login-page").then((m) => ({ default: m.TelegramLoginPage })));
@@ -97,6 +98,7 @@ const routesMeta: AppRouteDefinition[] = [
   { path: "/leaderboard", element: <LeaderboardPage />, meta: { requiresAuth: true, layout: "app" } },
   { path: "/subscription", element: <SubscriptionPage />, meta: { requiresAuth: true, layout: "app" } },
   { path: "/referrals", element: <ReferralsPage />, meta: { requiresAuth: true, layout: "app" } },
+  { path: "/levels", element: <LevelsPage />, meta: { requiresAuth: true, layout: "app" } },
   { path: "/account", element: <AccountPage />, meta: { requiresAuth: true, layout: "app" } },
   { path: "/resources", element: <ResourcesPage />, meta: { requiresAuth: true, layout: "app" } },
   { path: "/transactions", element: <TransactionsPage />, meta: { requiresAuth: true, layout: "app" } },
