@@ -26,8 +26,15 @@ const toActiveDaysBoundary = (now: Date, activeDays?: number) => {
     return null;
   }
 
+  const normalizedDays = Math.max(1, Math.floor(activeDays));
   const next = new Date(now);
-  next.setDate(next.getDate() + activeDays);
+  next.setHours(0, 0, 0, 0);
+  next.setDate(next.getDate() + normalizedDays);
+
+  if (next <= now) {
+    next.setDate(next.getDate() + normalizedDays);
+  }
+
   return next;
 };
 

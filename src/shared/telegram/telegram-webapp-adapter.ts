@@ -19,6 +19,10 @@ export class TelegramWebAppAdapter implements TelegramAdapter {
     this.webApp?.expand();
   }
 
+  requestFullscreen() {
+    this.webApp?.requestFullscreen?.();
+  }
+
   getInitData() {
     const initData = this.webApp?.initData;
     return initData && initData.trim().length > 0 ? initData : null;
@@ -36,6 +40,24 @@ export class TelegramWebAppAdapter implements TelegramAdapter {
       right: insets.right ?? 0,
       bottom: insets.bottom ?? 0,
       left: insets.left ?? 0,
+    };
+  }
+
+  getViewportHeight() {
+    const height = this.webApp?.viewportStableHeight ?? this.webApp?.viewportHeight;
+
+    if (typeof height !== "number" || Number.isNaN(height) || height <= 0) {
+      return null;
+    }
+
+    return height;
+  }
+
+  onViewportChanged(callback: () => void) {
+    this.webApp?.onEvent?.("viewportChanged", callback);
+
+    return () => {
+      this.webApp?.offEvent?.("viewportChanged", callback);
     };
   }
 

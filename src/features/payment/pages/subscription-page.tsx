@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, CalendarDays, CheckCircle2, CreditCard, RefreshCw, Sparkles, WalletCards } from "lucide-react";
+import { ArrowRight, CalendarDays, CheckCircle2, CreditCard, RefreshCw, Star, WalletCards } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "@/features/auth/api/auth.api";
 import { paymentApi } from "@/features/payment/api/payment.api";
@@ -205,7 +205,7 @@ const PlanCard = ({
           </>
         ) : trial ? (
           <>
-            <Sparkles className="h-4 w-4" />
+            <Star className="h-4 w-4" />
             {isCurrentPlan ? "Joriy reja" : "Bepul boshlash"}
           </>
         ) : (
@@ -352,7 +352,7 @@ export const SubscriptionPage = () => {
       <div className="mt-5 rounded-[1.75rem] border border-gold/10 bg-[linear-gradient(180deg,rgba(242,208,106,0.1),rgba(18,18,18,0.2))] px-4 py-4">
         <div className="flex items-start gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-gold/20 bg-gold/15 text-gold">
-            <Sparkles className="h-5 w-5" />
+            <Star className="h-5 w-5" />
           </div>
           <div className="flex-1">
             <p className="text-sm font-bold text-t-primary">

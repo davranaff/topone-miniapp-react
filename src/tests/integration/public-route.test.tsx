@@ -6,6 +6,8 @@ import { useAuthStore } from "@/features/auth/store/auth.store";
 
 describe("PublicRoute", () => {
   beforeEach(() => {
+    window.sessionStorage.clear();
+
     useAuthStore.setState({
       status: "anonymous",
       user: null,
@@ -91,5 +93,36 @@ describe("PublicRoute", () => {
     );
 
     expect(screen.getByText("Login Page")).toBeInTheDocument();
+  });
+
+  it("keeps fallback mode on other guest auth routes in mini-app", () => {
+    useAuthStore.setState({
+      status: "anonymous",
+      user: null,
+      tokens: null,
+      isTelegram: true,
+      isBootstrapped: true,
+      error: null,
+    });
+
+    window.sessionStorage.setItem("tg_auth_fallback", "1");
+
+    render(
+      <MemoryRouter initialEntries={["/login-form"]}>
+        <Routes>
+          <Route
+            path="/login-form"
+            element={
+              <PublicRoute>
+                <div>Login Form Page</div>
+              </PublicRoute>
+            }
+          />
+          <Route path="/telegram/init" element={<div>Telegram Init</div>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("Login Form Page")).toBeInTheDocument();
   });
 });

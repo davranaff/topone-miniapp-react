@@ -105,6 +105,26 @@ const DetailSurface = ({ children, className }: { children: ReactNode; className
   </div>
 );
 
+const CountdownUnit = ({
+  value,
+  label,
+  highlight = false,
+}: {
+  value: string;
+  label: string;
+  highlight?: boolean;
+}) => (
+  <div
+    className={cn(
+      "liquid-glass-surface-muted rounded-[0.95rem] border px-2.5 py-2.5 text-center",
+      highlight ? "border-gold/26" : "border-white/10",
+    )}
+  >
+    <p className={cn("text-[1.5rem] font-black leading-none tabular-nums", highlight ? "text-gold" : "text-t-primary")}>{value}</p>
+    <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/58">{label}</p>
+  </div>
+);
+
 const ChallengeDetailHero = ({ challenge }: { challenge: Challenge }) => {
   const typeLabel = getChallengeTypeLabel(
     challenge,
@@ -407,7 +427,7 @@ export const ChallengeDetailPage = () => {
         {cycleRemaining > 0 && !isCompleted ? (
           <DetailSurface className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="liquid-glass-surface-muted flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.95rem] text-gold">
+              <div className="liquid-glass-surface flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.95rem] text-gold">
                 <CalendarClock className="h-4.5 w-4.5" />
               </div>
               <div>
@@ -418,23 +438,11 @@ export const ChallengeDetailPage = () => {
 
             <div className={cn("grid gap-2", cycleParts.hasDays ? "grid-cols-4" : "grid-cols-3")}>
               {cycleParts.hasDays ? (
-                <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
-                  <p className="text-sm font-bold text-t-primary">{cycleParts.days}</p>
-                  <p className="text-2xs text-t-muted">kun</p>
-                </div>
+                <CountdownUnit value={cycleParts.days} label="kun" highlight />
               ) : null}
-              <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
-                <p className="text-sm font-bold text-t-primary">{cycleParts.hours}</p>
-                <p className="text-2xs text-t-muted">soat</p>
-              </div>
-              <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
-                <p className="text-sm font-bold text-t-primary">{cycleParts.minutes}</p>
-                <p className="text-2xs text-t-muted">daq</p>
-              </div>
-              <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
-                <p className="text-sm font-bold text-t-primary">{cycleParts.seconds}</p>
-                <p className="text-2xs text-t-muted">sek</p>
-              </div>
+              <CountdownUnit value={cycleParts.hours} label="soat" />
+              <CountdownUnit value={cycleParts.minutes} label="daq" />
+              <CountdownUnit value={cycleParts.seconds} label="sek" />
             </div>
           </DetailSurface>
         ) : null}

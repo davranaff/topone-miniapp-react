@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { CalendarDays, Check, Home, ShieldCheck, Sparkles } from "lucide-react";
+import { CalendarDays, Check, Home, ShieldCheck, Star } from "lucide-react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { paymentApi } from "@/features/payment/api/payment.api";
@@ -92,7 +92,7 @@ export const PaymentSuccessPage = () => {
           <div className="mt-6 grid grid-cols-1 gap-3 text-left sm:grid-cols-2">
             <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
               <div className="flex items-center gap-2 text-xs text-t-muted">
-                <Sparkles className="h-3.5 w-3.5" />
+                <Star className="h-3.5 w-3.5" />
                 Tarif
               </div>
               <p className="mt-1 text-base font-bold text-t-primary">{planName}</p>

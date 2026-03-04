@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Hls from "hls.js";
-import { AlertCircle, PlayCircle, RotateCcw, Sparkles } from "lucide-react";
+import { AlertCircle, PlayCircle, RotateCcw } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
 import { getMuxPlaybackUrl } from "@/shared/lib/mux";
 import { Button } from "@/shared/ui/button";
@@ -92,21 +92,19 @@ const loadMuxPlayerScript = () => {
   return muxPlayerScriptPromise;
 };
 
-const PlayerChrome = ({ title }: { title?: string }) => (
-  <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between p-4">
-    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 backdrop-blur-xl">
-      <Sparkles className="h-4 w-4 text-gold" />
-      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/78">
-        TopOne Player
-      </span>
+const PlayerFrame = ({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div className={cn("overflow-hidden rounded-[1.65rem] bg-black shadow-card", className)}>
+      {children}
     </div>
-    {title ? (
-      <div className="max-w-[55%] truncate rounded-full border border-white/10 bg-black/25 px-3 py-1.5 text-[11px] font-medium text-white/72 backdrop-blur-xl">
-        {title}
-      </div>
-    ) : null}
-  </div>
-);
+  );
+};
 
 export const LessonVideoPlayer = ({
   muxPlaybackId,
@@ -490,18 +488,18 @@ export const LessonVideoPlayer = ({
     }
 
     return (
-      <div className={cn("overflow-hidden rounded-[1.65rem] border border-white/10 bg-black shadow-card", className)}>
+      <PlayerFrame className={className}>
         <div className="relative aspect-video w-full">
-          <PlayerChrome title={title} />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(255,180,72,0.24),transparent_32%),radial-gradient(circle_at_86%_84%,rgba(212,160,23,0.22),transparent_34%),linear-gradient(180deg,rgba(0,0,0,0.3),rgba(0,0,0,0.72))]" />
           <iframe
-            className="h-full w-full"
+            className="relative z-10 h-full w-full"
             src={embedUrl}
             title={title ?? "Lesson video"}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
         </div>
-      </div>
+      </PlayerFrame>
     );
   }
 
@@ -517,15 +515,15 @@ export const LessonVideoPlayer = ({
 
   if (source.type === "mux-web" && source.playbackId) {
     return (
-      <div className={cn("overflow-hidden rounded-[1.65rem] border border-white/10 bg-black shadow-card", className)}>
-        <div className="relative aspect-video w-full overflow-hidden rounded-[1.65rem] bg-[radial-gradient(circle_at_top,rgba(245,200,66,0.14),transparent_32%),#050505]">
-          <PlayerChrome title={title} />
+      <PlayerFrame className={className}>
+        <div className="relative aspect-video w-full bg-black">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_16%,rgba(255,184,76,0.22),transparent_30%),radial-gradient(circle_at_86%_84%,rgba(212,160,23,0.2),transparent_34%),linear-gradient(180deg,rgba(0,0,0,0.34),rgba(0,0,0,0.76))]" />
           <mux-player
             key={sourceKey}
             ref={(node) => {
               muxPlayerRef.current = node;
             }}
-            className="h-full w-full"
+            className="relative z-10 h-full w-full"
             playback-id={source.playbackId}
             playback-token={source.playbackToken}
             stream-type="on-demand"
@@ -548,20 +546,20 @@ export const LessonVideoPlayer = ({
             </div>
           )}
         </div>
-      </div>
+      </PlayerFrame>
     );
   }
 
   return (
-    <div className={cn("overflow-hidden rounded-[1.65rem] border border-white/10 bg-black shadow-card", className)}>
+    <PlayerFrame className={className}>
       <div className="relative aspect-video w-full">
-        <PlayerChrome title={title} />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(255,180,72,0.24),transparent_32%),radial-gradient(circle_at_86%_84%,rgba(212,160,23,0.22),transparent_34%),linear-gradient(180deg,rgba(0,0,0,0.34),rgba(0,0,0,0.76))]" />
         <video
           ref={videoRef}
           controls
           playsInline
           preload="metadata"
-          className="h-full w-full bg-black"
+          className="relative z-10 h-full w-full bg-black"
         />
 
         {isLoading && (
@@ -575,7 +573,7 @@ export const LessonVideoPlayer = ({
           </div>
         )}
       </div>
-    </div>
+    </PlayerFrame>
   );
 };
 

@@ -7,7 +7,7 @@ import {
   ChevronRight,
   Shield,
   LogOut,
-  Sparkles,
+  Star,
   Droplets,
   Bell,
   UserSquare2,
@@ -54,7 +54,7 @@ export const SettingsPage = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {glassEffectEnabled ? (
-                  <Sparkles className="h-4 w-4 text-gold" />
+                  <Star className="h-4 w-4 text-gold" />
                 ) : (
                   <Droplets className="h-4 w-4 text-t-muted" />
                 )}

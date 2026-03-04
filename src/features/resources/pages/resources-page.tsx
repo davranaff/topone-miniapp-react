@@ -7,7 +7,7 @@ import {
   Lock,
   Newspaper,
   PlayCircle,
-  Sparkles,
+  Star,
   Wrench,
 } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
@@ -187,7 +187,7 @@ export const ResourcesPage = () => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-gold/25 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-gold">
-                <Sparkles className="h-3.5 w-3.5" />
+                <Star className="h-3.5 w-3.5" />
                 Library
               </div>
               <h2 className="text-[1.25rem] font-extrabold tracking-[-0.03em] text-t-primary">

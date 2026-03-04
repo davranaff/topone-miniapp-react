@@ -460,11 +460,6 @@ button, [role="button"] {
   50%       { box-shadow: 0 0 20px rgba(212, 160, 23, 0.6); }
 }
 
-@keyframes ambientFloat {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(0, -12px, 0) scale(1.03); }
-}
-
 @keyframes dockPulse {
   0%, 100% { box-shadow: 0 18px 44px rgba(0, 0, 0, 0.38), 0 0 0 rgba(245, 200, 66, 0); }
   50% { box-shadow: 0 22px 56px rgba(0, 0, 0, 0.42), 0 0 28px rgba(245, 200, 66, 0.12); }
@@ -475,7 +470,6 @@ button, [role="button"] {
 .animate-slide-up    { animation: slideUp 0.4s cubic-bezier(0.32, 0.72, 0, 1) both; }
 .animate-scale-in    { animation: scaleIn 0.25s ease both; }
 .animate-pulse-gold  { animation: pulse-gold 2s ease-in-out infinite; }
-.animate-ambient-float { animation: ambientFloat 7s ease-in-out infinite; }
 .animate-dock-pulse { animation: dockPulse 3.8s ease-in-out infinite; }
 
 /* Stagger utilities */

@@ -39,6 +39,27 @@ const sortCategories = (categories: ChallengeCategory[]) => {
   });
 };
 
+const CountdownTile = ({
+  value,
+  label,
+  highlight = false,
+}: {
+  value: string;
+  label: string;
+  highlight?: boolean;
+}) => (
+  <div
+    className={cn(
+      "relative overflow-hidden rounded-[1.05rem] border px-2.5 py-2.5 text-center backdrop-blur-[16px]",
+      "bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))]",
+      highlight ? "border-gold/30" : "border-white/10",
+    )}
+  >
+    <p className={cn("text-[1.55rem] font-black leading-none tabular-nums", highlight ? "text-gold" : "text-t-primary")}>{value}</p>
+    <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/58">{label}</p>
+  </div>
+);
+
 const ChallengeCycleTimerCard = ({
   category,
   disabled,
@@ -70,9 +91,9 @@ const ChallengeCycleTimerCard = ({
   const cycleLabel = getChallengeCycleLabel(category.typeCode);
 
   return (
-    <GlassCard className="rounded-[1.7rem]">
+    <GlassCard className="rounded-[1.75rem] border-transparent bg-[linear-gradient(155deg,rgba(8,10,12,0.76),rgba(8,10,12,0.58))]">
       <div className="flex items-center gap-3">
-        <div className="liquid-glass-surface-muted flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] text-gold">
+        <div className="liquid-glass-surface flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] text-gold">
           <Clock3 className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
@@ -83,23 +104,11 @@ const ChallengeCycleTimerCard = ({
 
       <div className={cn("mt-3 grid gap-2", parts.hasDays ? "grid-cols-4" : "grid-cols-3")}>
         {parts.hasDays ? (
-          <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
-            <p className="text-sm font-bold text-t-primary">{parts.days}</p>
-            <p className="text-2xs text-t-muted">kun</p>
-          </div>
+          <CountdownTile value={parts.days} label="kun" highlight />
         ) : null}
-        <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
-          <p className="text-sm font-bold text-t-primary">{parts.hours}</p>
-          <p className="text-2xs text-t-muted">soat</p>
-        </div>
-        <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
-          <p className="text-sm font-bold text-t-primary">{parts.minutes}</p>
-          <p className="text-2xs text-t-muted">daq</p>
-        </div>
-        <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
-          <p className="text-sm font-bold text-t-primary">{parts.seconds}</p>
-          <p className="text-2xs text-t-muted">sek</p>
-        </div>
+        <CountdownTile value={parts.hours} label="soat" />
+        <CountdownTile value={parts.minutes} label="daq" />
+        <CountdownTile value={parts.seconds} label="sek" />
       </div>
     </GlassCard>
   );
@@ -203,9 +212,9 @@ export const ChallengesPage = () => {
 
       <ChallengeCycleTimerCard category={activeCategory} disabled={permissionDenied} />
 
-      <GlassCard className="rounded-[1.6rem]">
+      <GlassCard className="rounded-[1.68rem] border-transparent bg-[linear-gradient(150deg,rgba(9,10,12,0.74),rgba(9,10,12,0.5))]">
         <div className="flex items-center gap-3">
-          <div className="liquid-glass-surface-muted flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] text-gold">
+          <div className="liquid-glass-surface flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] text-gold">
             <Trophy className="h-5 w-5" />
           </div>
           <div className="min-w-0">
@@ -225,8 +234,8 @@ export const ChallengesPage = () => {
         <ErrorState variant="network" onRetry={() => categoriesQuery.refetch()} />
       ) : null}
 
-      {!!categories.length ? (
-        <GlassCard className="rounded-[1.55rem]">
+      {categories.length > 0 ? (
+        <GlassCard className="rounded-[1.55rem] border-transparent bg-[linear-gradient(160deg,rgba(8,10,12,0.78),rgba(8,10,12,0.56))]">
           <div className="flex gap-2 overflow-x-auto pb-1">
             {categories.map((category) => (
               <button
@@ -235,8 +244,8 @@ export const ChallengesPage = () => {
                 onClick={() => setActiveCategoryId(category.typeId)}
                 className={`liquid-glass-surface-interactive rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                   category.typeId === resolvedActiveCategoryId
-                    ? "liquid-glass-button-chip-active text-black"
-                    : "liquid-glass-button-chip text-white/72"
+                    ? "liquid-glass-button-chip-active text-black uppercase tracking-[0.14em]"
+                    : "liquid-glass-button-chip text-white/72 uppercase tracking-[0.14em]"
                 }`}
               >
                 {category.title}
@@ -255,6 +264,7 @@ export const ChallengesPage = () => {
             <Button
               variant="ghost"
               size="xs"
+              className="liquid-glass-button-chip"
               loading={challenges.isFetching}
               onClick={() => challenges.refetch()}
             >

@@ -71,7 +71,7 @@ const CourseGridCard = ({
               </p>
             </div>
 
-            <div className="rounded-[1.35rem] border border-white/8 bg-[rgba(255,255,255,0.05)] p-3.5 backdrop-blur-xl">
+            <div className="rounded-[1.35rem] bg-[rgba(255,255,255,0.05)] p-3.5 backdrop-blur-xl">
               <ProgressBar
                 value={progress}
                 max={100}
@@ -181,9 +181,9 @@ export const CoursesPage = () => {
             columns={3}
           />
 
-          <GlassCard className="space-y-3 rounded-[1.7rem]">
+          <GlassCard className="space-y-3 rounded-[1.7rem] border-transparent">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,226,163,0.14),rgba(255,255,255,0.03))] text-gold">
+              <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] bg-[linear-gradient(180deg,rgba(255,226,163,0.14),rgba(255,255,255,0.03))] text-gold">
                 <BookOpen className="h-5 w-5" />
               </div>
               <div>
@@ -212,7 +212,7 @@ export const CoursesPage = () => {
                       type="button"
                       onClick={() => setSelectedCategoryId(category.id)}
                       className={[
-                        "liquid-glass-surface-interactive font-display rounded-full border px-4 py-2 text-sm font-bold tracking-[-0.02em] transition-all",
+                        "liquid-glass-surface-interactive font-display rounded-full border px-4 py-2 text-sm font-bold uppercase tracking-[0.08em] transition-all",
                         active
                           ? "liquid-glass-button-chip-active text-white"
                           : "liquid-glass-button-chip text-white/56 hover:text-white/78",

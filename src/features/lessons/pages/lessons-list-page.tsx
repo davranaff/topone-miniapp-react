@@ -10,7 +10,7 @@ import {
   FileText,
   HelpCircle,
   Lock,
-  Sparkles,
+  Star,
   PlayCircle,
   TrendingUp,
 } from "lucide-react";
@@ -78,7 +78,7 @@ const CoursePickerCard = ({ course }: { course: Course }) => {
             <div className="liquid-glass-surface flex items-center justify-between rounded-[1.35rem] px-4 py-3 text-white">
               <div className="flex min-w-0 items-center gap-2">
                 <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white/10 text-gold">
-                  <Sparkles className="h-4 w-4" />
+                  <Star className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">O'quv yo'li</p>
@@ -113,6 +113,7 @@ const LessonRow = ({
   const isBlocked = lesson.isLocked || !lesson.isOpen;
   const progressValue = lesson.userProgress?.progressPercentage ?? 0;
   const isCompleted = lesson.isCompleted || lesson.userProgress?.status === "COMPLETED";
+  const displayProgressValue = isCompleted ? Math.max(progressValue, 100) : progressValue;
   const statusLabel = isBlocked ? "Yopiq" : isCompleted ? "Tugallangan" : progressValue > 0 ? "Davom etmoqda" : "Yangi";
   const statusClass = isBlocked
     ? "liquid-glass-chip text-white"
@@ -166,7 +167,7 @@ const LessonRow = ({
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-t-primary">{lesson.title}</p>
-                  <p className="mt-1 text-xs text-t-muted">
+                  <p className="mt-1 line-clamp-2 text-xs leading-5 text-t-muted">
                     {isBlocked ? "Oldingi darslarni yakunlang" : lesson.description || "Darsni davom ettirish mumkin"}
                   </p>
                 </div>
@@ -196,9 +197,9 @@ const LessonRow = ({
             </div>
           </div>
 
-          {!isBlocked && progressValue > 0 && !isCompleted && (
+          {!isBlocked && (
             <div className="mt-4 rounded-[1.25rem] bg-black/15 p-3">
-              <ProgressBar value={progressValue} max={100} label="Progress" showLabel />
+              <ProgressBar value={displayProgressValue} max={100} label="Progress" showLabel />
             </div>
           )}
         </GlassCard>
@@ -363,20 +364,20 @@ export const LessonsListPage = () => {
     <MobileScreen className="space-y-4">
       <PageHeader title={course.title} subtitle={t("lessonsSubtitle")} backButton />
 
-      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_24px_64px_rgba(0,0,0,0.34)]">
+      <div className="relative overflow-hidden rounded-[2rem] shadow-[0_26px_70px_rgba(0,0,0,0.46)]">
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: courseImageUrl
-              ? `linear-gradient(180deg, rgba(9,11,15,0.12) 0%, rgba(9,11,15,0.74) 100%), url(${courseImageUrl})`
+              ? `linear-gradient(180deg, rgba(3,4,6,0.5) 0%, rgba(5,6,9,0.88) 55%, rgba(2,2,2,0.95) 100%), url(${courseImageUrl})`
               : "linear-gradient(135deg, rgba(212,160,23,0.26) 0%, rgba(15,23,42,0.92) 100%)",
             backgroundPosition: "center",
             backgroundSize: "cover",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/34 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/92 via-black/58 to-black/24" />
 
-        <div className="relative flex min-h-[220px] flex-col justify-between p-5">
+        <div className="relative flex min-h-[236px] flex-col justify-between p-6">
           <div className="flex flex-wrap items-center gap-2">
             <span className="liquid-glass-state-gold rounded-full px-3 py-1 text-[11px] font-semibold text-gold">
               {lessons.length} dars
@@ -391,7 +392,7 @@ export const LessonsListPage = () => {
           <div className="space-y-4">
             <div className="space-y-2">
               <h2 className="text-[1.4rem] font-extrabold tracking-[-0.03em] text-white">{course.title}</h2>
-              <p className="max-w-[92%] text-sm leading-6 text-white/78">{course.subtitle || t("continuePath")}</p>
+              <p className="max-w-[92%] text-sm leading-6 text-white/76">{course.subtitle || t("continuePath")}</p>
             </div>
 
             <div className="liquid-glass-surface rounded-[1.45rem] p-4 text-white">
@@ -435,31 +436,6 @@ export const LessonsListPage = () => {
         ]}
         columns={3}
       />
-
-      <GlassCard className="space-y-4 rounded-[1.7rem]">
-        <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-[1.25rem] bg-gold/10 text-gold">
-            <Sparkles className="h-5 w-5" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-t-primary">Darslar yo'l xaritasi</p>
-            <p className="mt-1 text-xs leading-5 text-t-muted">
-              Ketma-ketlik saqlanadi: yopiq darslar faqat oldingi bosqich tugagandan keyin ochiladi.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <div className="liquid-glass-surface-muted rounded-[1.15rem] px-3 py-3">
-            <p className="text-[11px] uppercase tracking-[0.14em] text-t-muted">Format</p>
-            <p className="mt-1 text-sm font-semibold text-t-primary">Video, matn, quiz</p>
-          </div>
-          <div className="liquid-glass-surface-muted rounded-[1.15rem] px-3 py-3">
-            <p className="text-[11px] uppercase tracking-[0.14em] text-t-muted">Tempo</p>
-            <p className="mt-1 text-sm font-semibold text-t-primary">{course.duration || "Flexible"}</p>
-          </div>
-        </div>
-      </GlassCard>
 
       {lessons.length === 0 ? (
         <EmptyState
