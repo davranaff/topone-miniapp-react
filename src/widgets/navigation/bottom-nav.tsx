@@ -13,10 +13,12 @@ const CircleDockButton = ({
   icon,
   label,
   onClick,
+  variant = "icon",
 }: {
   icon: ReactNode;
   label: string;
   onClick?: () => void;
+  variant?: "icon" | "chip";
 }) => {
   if (!onClick) return null;
 
@@ -26,7 +28,8 @@ const CircleDockButton = ({
       aria-label={label}
       onClick={onClick}
       className={cn(
-        "liquid-glass-button-icon liquid-glass-surface-interactive pointer-events-auto flex items-center justify-center rounded-full",
+        variant === "chip" ? "liquid-glass-chip" : "liquid-glass-button-icon",
+        "liquid-glass-surface-interactive pointer-events-auto flex items-center justify-center rounded-full",
         DOCK_BUTTON_SIZE_CLASS,
         "transition-transform duration-300 active:scale-95",
       )}
@@ -190,7 +193,8 @@ export const BottomNav = () => {
               <CircleDockButton
                 label="Open chat"
                 onClick={config.onChat}
-                icon={<MessageCircle className="h-5 w-5 text-gold" />}
+                variant="chip"
+                icon={<MessageCircle className="h-5 w-5 text-t-muted" />}
               />
             </div>
           )}

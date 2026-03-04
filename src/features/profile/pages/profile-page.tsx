@@ -1,77 +1,36 @@
-import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  CalendarClock,
   ChevronRight,
-  CreditCard,
-  Globe,
-  Mail,
-  Shield,
-  ShieldCheck,
-  UserRoundCheck,
-  UserSquare2,
-  WalletCards,
+  CircleDollarSign,
+  Flame,
+  Star,
+  Trophy,
 } from "lucide-react";
 import { useProfile } from "@/features/profile/hooks/use-profile";
+import { useMyAchievements } from "@/features/achievements/hooks/use-achievements";
+import { useUserStats } from "@/features/home/hooks/use-user-stats";
+import { useUnreadCount } from "@/features/notifications/hooks/use-notifications";
 import { MobileScreen } from "@/shared/ui/mobile-screen";
 import { PageHeader } from "@/shared/ui/page-header";
 import { Avatar } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
-import { StatusChip } from "@/shared/ui/status-chip";
 import { GlassCard } from "@/shared/ui/glass-card";
 import { SkeletonCard } from "@/shared/ui/skeleton";
 import { StatCardsRow } from "@/shared/ui/stat-card";
 import { cn } from "@/shared/lib/cn";
-
-const MenuItem = ({
-  icon,
-  label,
-  description,
-  to,
-  onClick,
-}: {
-  icon: ReactNode;
-  label: string;
-  description?: string;
-  to?: string;
-  onClick?: () => void;
-}) => {
-  const navigate = useNavigate();
-  return (
-    <button
-      className={cn(
-        "liquid-glass-button-chip liquid-glass-surface-interactive flex w-full items-center gap-3 rounded-xl px-3 py-3 text-t-secondary transition-all active:scale-98",
-      )}
-      onClick={() => { onClick?.(); if (to) navigate(to); }}
-    >
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] border border-gold/15 bg-gold/10 text-gold">
-        {icon}
-      </span>
-      <span className="flex-1 text-left">
-        <span className="block text-sm font-medium">{label}</span>
-        {description && <span className="mt-0.5 block text-xs text-t-muted">{description}</span>}
-      </span>
-      <ChevronRight className="h-4 w-4 text-t-muted" />
-    </button>
-  );
-};
-
-const InfoPill = ({ icon, label, value }: { icon: ReactNode; label: string; value: string }) => (
-  <div className="liquid-glass-surface-muted rounded-[1.15rem] px-3 py-3">
-    <div className="mb-1 flex items-center gap-2 text-t-muted">
-      <span className="text-gold">{icon}</span>
-      <span className="text-[11px] uppercase tracking-[0.14em]">{label}</span>
-    </div>
-    <p className="truncate text-sm font-semibold text-t-primary">{value}</p>
-  </div>
-);
+import { TopActionCluster } from "@/widgets/navigation/top-action-cluster";
 
 export const ProfilePage = () => {
+  const navigate = useNavigate();
   const profile = useProfile();
+  const stats = useUserStats();
+  const unread = useUnreadCount();
+  const achievements = useMyAchievements();
 
   if (profile.isLoading) {
     return (
       <MobileScreen>
+        <PageHeader title="Profil" subtitle="..." />
         <div className="flex flex-col items-center gap-4 py-6">
           <div className="h-20 w-20 rounded-full bg-elevated animate-shimmer bg-shimmer bg-[length:200%_100%]" />
           <div className="h-5 w-32 rounded-lg bg-elevated animate-shimmer bg-shimmer bg-[length:200%_100%]" />
@@ -86,90 +45,122 @@ export const ProfilePage = () => {
 
   const { data } = profile;
   const fullName = [data.firstName, data.lastName].filter(Boolean).join(" ") || data.username;
-  const isPremium = data.hasActiveSubscription;
-  const joinedLabel = data.joinedAt ? new Date(data.joinedAt).toLocaleDateString() : "Yaqinda qo'shilgan";
-  const membershipLabel = isPremium ? "Premium a'zo" : "Standard a'zo";
-  const securityLabel = data.hasPassword ? "Parol faol" : "Parol o'rnatilmagan";
+  const membershipTier = (data.subscriptionType?.trim() || (data.hasActiveSubscription ? "PREMIUM" : "FREE")).toUpperCase();
+  const roleLabel = (data.roles[0] ?? "BEGINNER").toUpperCase();
+  const coins = stats.isError ? 0 : (stats.data?.coins ?? 0);
+  const xp = stats.isError ? 0 : (stats.data?.xp ?? 0);
+  const streak = stats.isError ? 0 : (stats.data?.streak ?? 0);
+  const isStatsLoading = stats.isLoading && !stats.data;
+  const achievementsPreview = (achievements.data ?? []).slice(0, 4);
 
   return (
     <MobileScreen className="space-y-4">
-      <PageHeader title="Profil" subtitle={membershipLabel} />
+      <PageHeader
+        title="Profil"
+        subtitle={membershipTier}
+        actions={
+          <TopActionCluster
+            coins={coins}
+            stars={xp}
+            unreadNotifications={unread.data ?? 0}
+          />
+        }
+      />
 
-      <GlassCard padding="none" className="relative overflow-hidden rounded-[2rem]">
-        <div className="relative p-5">
-          <div className="flex items-start gap-4">
-            <Avatar src={data.avatarUrl} fallback={fullName} size="xl" gold={isPremium} />
+      <div className="flex items-center gap-4 px-1">
+        <Avatar src={data.avatarUrl} fallback={fullName} size="xl" gold={data.hasActiveSubscription} />
 
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                {isPremium && <StatusChip status="premium" showDot>Premium</StatusChip>}
-                {!isPremium && <Badge variant="outline" size="sm">Account</Badge>}
-                {data.roles[0] && (
-                  <Badge variant="muted" size="sm">{data.roles[0]}</Badge>
-                )}
-              </div>
-
-              <p className="mt-3 text-[1.2rem] font-extrabold tracking-[-0.03em] text-t-primary">{fullName}</p>
-              <p className="mt-1 text-sm text-t-muted">@{data.username}</p>
-              <p className="mt-2 text-sm leading-6 text-t-secondary">
-                Profil ma'lumotlari, obuna holati va referral statistikasi shu sahifada ko'rinadi.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-5 grid grid-cols-2 gap-2">
-            <InfoPill icon={<Mail className="h-3.5 w-3.5" />} label="Email" value={data.email} />
-            <InfoPill icon={<Globe className="h-3.5 w-3.5" />} label="Timezone" value={data.timezone} />
-            <InfoPill icon={<CalendarClock className="h-3.5 w-3.5" />} label="Joined" value={joinedLabel} />
-            <InfoPill icon={<ShieldCheck className="h-3.5 w-3.5" />} label="Security" value={securityLabel} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[2rem] font-black tracking-[-0.03em] text-t-primary">{fullName}</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Badge variant="info" size="md" className="uppercase">{roleLabel}</Badge>
+            <Badge
+              variant={data.hasActiveSubscription ? "success" : "outline"}
+              size="md"
+              className={cn("uppercase", !data.hasActiveSubscription && "text-t-secondary")}
+            >
+              {membershipTier}
+            </Badge>
           </div>
         </div>
-      </GlassCard>
+      </div>
 
       <StatCardsRow
         columns={3}
+        className="gap-2.5"
         stats={[
           {
-            label: "Plan",
-            value: isPremium ? "PRO" : "FREE",
-            icon: <CreditCard className="h-4 w-4" />,
-            highlight: isPremium,
+            label: "Ballar",
+            value: isStatsLoading ? "..." : coins,
+            icon: <CircleDollarSign className="h-4 w-4" />,
+            highlight: true,
+            className: "rounded-[1.45rem]",
           },
           {
-            label: "Roles",
-            value: data.roles.length || 1,
-            icon: <UserRoundCheck className="h-4 w-4" />,
+            label: "Topilgan",
+            value: isStatsLoading ? "..." : xp,
+            icon: <Star className="h-4 w-4" />,
+            className: "rounded-[1.45rem]",
           },
           {
-            label: "Security",
-            value: data.hasPassword ? "ON" : "SET",
-            icon: <Shield className="h-4 w-4" />,
+            label: "Streak",
+            value: isStatsLoading ? "..." : streak,
+            icon: <Flame className="h-4 w-4" />,
+            className: "rounded-[1.45rem]",
           },
         ]}
       />
 
-      <GlassCard padding="none" className="rounded-[1.8rem]">
-        <div className="space-y-1 p-1.5">
-          <MenuItem
-            icon={<UserSquare2 className="h-4 w-4" />}
-            label="Akkaunt ma'lumotlari"
-            description="Shaxsiy ma'lumotlar va parolni yangilash"
-            to="/account"
-          />
-          <MenuItem
-            icon={<WalletCards className="h-4 w-4" />}
-            label="Obuna"
-            description="Reja va premium imkoniyatlarni boshqarish"
-            to="/subscription"
-          />
-          <MenuItem
-            icon={<CreditCard className="h-4 w-4" />}
-            label="Referallar"
-            description="Takliflar va bonus tarixini ko'rish"
-            to="/referrals"
-          />
+      <button
+        type="button"
+        onClick={() => navigate("/subscription")}
+        className="liquid-glass-surface-interactive flex w-full items-center gap-3 rounded-[1.35rem] border border-gold/35 bg-gold/10 px-4 py-4 text-left transition-all active:scale-99"
+      >
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[0.95rem] border border-gold/35 bg-gold/15 text-gold">
+          <Trophy className="h-5 w-5" />
+        </span>
+        <span className="flex-1 text-lg font-semibold text-t-primary">Obuna rejalari</span>
+        <ChevronRight className="h-4 w-4 text-t-muted" />
+      </button>
+
+      <section>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-[1.9rem] font-bold tracking-[-0.03em] text-t-primary">Yutuqlar</h2>
+          <button
+            type="button"
+            onClick={() => navigate("/achievements")}
+            className="text-sm font-medium text-gold transition hover:text-gold/80"
+          >
+            Barchasini ko'rish
+          </button>
         </div>
-      </GlassCard>
+
+        {achievements.isLoading ? (
+          <SkeletonCard className="h-28 rounded-[1.45rem]" />
+        ) : achievementsPreview.length === 0 ? (
+          <GlassCard className="flex h-28 items-center justify-center rounded-[1.45rem]">
+            <p className="text-xl text-t-muted">Hali yutuqlar yo'q</p>
+          </GlassCard>
+        ) : (
+          <div className="-mx-1 overflow-x-auto px-1 [scrollbar-width:none]">
+            <div className="flex gap-2 pb-1">
+              {achievementsPreview.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => navigate("/achievements")}
+                  className="liquid-glass-surface-interactive flex h-24 w-[5.1rem] shrink-0 flex-col items-center justify-center rounded-[1rem] border border-border/45 px-2 text-center transition-all active:scale-95"
+                >
+                  <span className="text-lg">{item.iconKey ?? "🏆"}</span>
+                  <span className="mt-1 line-clamp-2 text-2xs font-semibold text-t-secondary">
+                    {item.title}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
     </MobileScreen>
   );
 };
