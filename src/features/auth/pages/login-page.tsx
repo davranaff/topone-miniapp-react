@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Send, UserPlus } from "lucide-react";
 import { useTelegram } from "@/shared/hooks/use-telegram";
@@ -12,11 +12,13 @@ import {
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation("auth");
   const telegram = useTelegram();
+  const from = (location.state as { from?: string } | null)?.from;
 
   return (
-    <div className="mx-auto flex w-full max-w-[30rem] flex-col justify-center py-4 sm:min-h-[38rem]">
+    <div className="mx-auto flex w-full max-w-[30rem] flex-col justify-center py-4 sm:min-h-[39rem]">
       <AuthGlassPanel>
         <div className="space-y-8">
           <AuthTitleBlock title={t("welcome")} subtitle={t("loginSubtitle")} />
@@ -36,8 +38,8 @@ export const LoginPage = () => {
               <AuthPrimaryButton
                 type="button"
                 icon={<ArrowRight className="h-6 w-6" />}
-                onClick={() => navigate("/login-form")}
-                className="bg-[rgba(255,255,255,0.06)] shadow-[0_16px_32px_rgba(0,0,0,0.22)]"
+                onClick={() => navigate("/login-form", { state: from ? { from } : undefined })}
+                variant="soft"
               >
                 {t("login")}
               </AuthPrimaryButton>
@@ -46,7 +48,7 @@ export const LoginPage = () => {
                 type="button"
                 icon={<UserPlus className="h-6 w-6" />}
                 onClick={() => navigate("/register")}
-                className="bg-[rgba(236,192,89,0.12)]"
+                variant="soft"
               >
                 {t("register")}
               </AuthPrimaryButton>

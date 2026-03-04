@@ -29,7 +29,11 @@ export const LoginForm = () => {
 
   const onSubmit = form.handleSubmit(async (values) => {
     await mutation.mutateAsync(values);
-    navigate((location.state as { from?: string } | undefined)?.from ?? "/home", { replace: true });
+    const from = (location.state as { from?: string } | undefined)?.from;
+    navigate("/splash", {
+      replace: true,
+      state: from ? { from } : undefined,
+    });
   });
 
   return (
@@ -58,7 +62,7 @@ export const LoginForm = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword((value) => !value)}
-                  className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:text-white"
+                  className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-10 w-10 items-center justify-center rounded-xl text-t-secondary transition-colors hover:text-t-primary"
                   aria-label={showPassword ? t("hidePassword") : t("showPassword")}
                 >
                   {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
@@ -69,14 +73,14 @@ export const LoginForm = () => {
             />
 
             <div className="flex justify-end">
-              <Link className="text-[0.95rem] font-semibold text-white/72 transition-colors hover:text-white" to="/forgot-password">
+              <Link className="text-[0.95rem] font-semibold text-t-secondary transition-colors hover:text-t-primary" to="/forgot-password">
                 {t("forgot")}
               </Link>
             </div>
           </div>
 
           {mutation.error ? (
-            <div className="rounded-[1.2rem] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            <div className="liquid-glass-state-danger rounded-[1.2rem] px-4 py-3 text-sm text-red-100">
               {getErrorMessage(mutation.error)}
             </div>
           ) : null}
@@ -87,9 +91,9 @@ export const LoginForm = () => {
 
           <AuthDivider label={t("or")} />
 
-          <p className="text-center text-[1rem] text-white/56">
+          <p className="text-center text-[1rem] text-t-secondary">
             {t("noAccount")}{" "}
-            <Link className="font-bold text-white transition-colors hover:text-[#f6d489]" to="/register">
+            <Link className="font-bold text-t-primary transition-colors hover:text-gold" to="/register">
               {t("register")}
             </Link>
           </p>

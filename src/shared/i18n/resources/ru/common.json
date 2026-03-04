@@ -9,5 +9,9 @@
   "actions.cancel": "Отмена",
   "actions.back": "Назад",
   "states.loading": "Загрузка...",
+  "states.checkingSession": "Проверяем сессию...",
+  "states.preparingData": "Подготавливаем данные...",
+  "states.checkingTelegram": "Проверяем авторизацию Telegram...",
+  "states.preparingLogin": "Подготавливаем вход...",
   "states.empty": "Пока пусто"
 }

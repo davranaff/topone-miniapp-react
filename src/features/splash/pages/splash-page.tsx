@@ -1,18 +1,42 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { Navigate, useLocation } from "react-router-dom";
 import { useSession } from "@/features/auth/hooks/use-session";
 import { TopOneLogo } from "@/shared/ui/topone-logo";
 import { prefetchAppShell } from "@/features/splash/lib/prefetch-app-shell";
 
+const getSplashTarget = (state: unknown) => {
+  if (!state || typeof state !== "object" || !("from" in state)) {
+    return null;
+  }
+
+  const from = (state as { from?: unknown }).from;
+
+  if (typeof from !== "string" || !from.startsWith("/") || from.startsWith("//")) {
+    return null;
+  }
+
+  if (
+    from === "/" ||
+    from === "/splash" ||
+    from.startsWith("/login") ||
+    from.startsWith("/register") ||
+    from.startsWith("/telegram")
+  ) {
+    return null;
+  }
+
+  return from;
+};
+
 export const SplashPage = () => {
-  const { t } = useTranslation("common");
   const session = useSession();
+  const location = useLocation();
   const [minDurationPassed, setMinDurationPassed] = useState(false);
   const [prefetchDone, setPrefetchDone] = useState(false);
+  const directTarget = getSplashTarget(location.state);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setMinDurationPassed(true), 900);
+    const timer = window.setTimeout(() => setMinDurationPassed(true), 1000);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -24,12 +48,16 @@ export const SplashPage = () => {
     let mounted = true;
 
     const warm = async () => {
-      if (session.status === "authenticated") {
-        await prefetchAppShell();
-      }
-
-      if (mounted) {
-        setPrefetchDone(true);
+      try {
+        if (session.status === "authenticated") {
+          await prefetchAppShell();
+        }
+      } catch {
+        // Prefetch is best-effort; navigation must continue even if one request fails.
+      } finally {
+        if (mounted) {
+          setPrefetchDone(true);
+        }
       }
     };
 
@@ -41,40 +69,35 @@ export const SplashPage = () => {
   }, [session.isBootstrapped, session.status]);
 
   if (session.isBootstrapped && minDurationPassed && prefetchDone) {
-    return <Navigate replace to={session.status === "authenticated" ? "/home" : "/login"} />;
+    if (session.status === "authenticated") {
+      return <Navigate replace to={directTarget ?? "/home"} />;
+    }
+
+    return <Navigate replace to={session.isTelegram ? "/telegram/init" : "/login"} />;
   }
 
+  const progressValue = Number(session.isBootstrapped) + Number(prefetchDone) + Number(minDurationPassed);
+  const progressWidth = `${Math.round((progressValue / 3) * 100)}%`;
+
   return (
-    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-base px-6">
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(145deg,#050301_0%,#0d0904_42%,#181108_100%)]" />
-      <div className="pointer-events-none absolute -left-20 -top-16 h-[20rem] w-[20rem] rounded-full bg-[#e1b458]/18 blur-[100px]" />
-      <div className="pointer-events-none absolute bottom-[-12%] right-[-6%] h-[20rem] w-[20rem] rounded-full bg-[#b57e1e]/18 blur-[110px]" />
+    <div className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-base px-6 py-10">
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(145deg,#000000_0%,#000000_78%,#2a1901_90%,#6f4308_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_90%_18%,rgba(212,160,23,0.25),transparent_28%),radial-gradient(circle_at_74%_88%,rgba(212,160,23,0.18),transparent_30%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-35 bg-[repeating-linear-gradient(120deg,rgba(255,215,128,0.08)_0px,rgba(255,215,128,0.08)_2px,transparent_2px,transparent_18px)]" />
 
-      <div className="relative flex w-full max-w-[28rem] flex-col items-center gap-7 text-center animate-fade-in-up">
-        <div className="relative">
-          <div className="absolute inset-[-20%] rounded-full bg-gold/18 blur-[74px]" />
-          <TopOneLogo size="xl" framed={false} className="relative" />
-        </div>
+      <div className="relative w-full max-w-[22rem] animate-fade-in-up">
+        <div className="mx-auto flex flex-col items-center gap-8 text-center">
+          <TopOneLogo size="xl" framed={false} className="drop-shadow-[0_0_38px_rgba(212,160,23,0.46)]" />
 
-        <div className="space-y-2">
-          <h1 className="font-display text-[2.25rem] font-extrabold tracking-[-0.055em] text-t-primary">
-            {t("appName")}
-          </h1>
-          <p className="mx-auto max-w-xs text-sm leading-6 text-white/56">
-            {session.isBootstrapped && session.status === "authenticated"
-              ? t("states.loading")
-              : t("states.loading")}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-gold/95 [animation-delay:-0.3s]" />
-          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-gold/70 [animation-delay:-0.15s]" />
-          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-gold/45" />
-        </div>
-
-        <div className="w-full max-w-[18rem] overflow-hidden rounded-full bg-white/8">
-          <div className="h-1.5 w-1/2 animate-[pulse_1.2s_ease-in-out_infinite] rounded-full bg-[linear-gradient(90deg,rgba(245,200,66,0.38),rgba(245,200,66,0.94),rgba(255,255,255,0.42))]" />
+          <div className="w-full">
+            <div className="relative h-2.5 overflow-hidden rounded-full bg-black/65 shadow-[inset_0_0_0_1px_rgba(242,205,127,0.3)]">
+              <div
+                className="h-full rounded-full bg-[linear-gradient(90deg,rgba(255,236,184,0.96)_0%,rgba(245,200,66,0.96)_45%,rgba(167,109,19,0.95)_100%)] shadow-[0_0_20px_rgba(245,200,66,0.5)] transition-[width] duration-500"
+                style={{ width: progressWidth }}
+              />
+              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_26%,rgba(255,255,255,0.45)_48%,transparent_74%)] bg-[length:220%_100%] animate-[shimmer_1.8s_ease-in-out_infinite]" />
+            </div>
+          </div>
         </div>
       </div>
     </div>

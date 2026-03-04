@@ -9,15 +9,14 @@ export const AuthShell = () => {
   }
 
   return (
-    <div className="relative min-h-[100dvh] overflow-hidden bg-[#050301] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(145deg,#050301_0%,#0d0904_38%,#181108_100%)]" />
+    <div className="relative min-h-[100dvh] overflow-hidden bg-base text-t-primary">
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(155deg,#000000_0%,#000000_80%,#2f1d03_92%,#7a4b0c_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_86%_12%,rgba(212,160,23,0.24),transparent_30%),radial-gradient(circle_at_78%_86%,rgba(180,123,29,0.2),transparent_32%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-35 bg-[repeating-linear-gradient(120deg,rgba(255,219,145,0.07)_0px,rgba(255,219,145,0.07)_2px,transparent_2px,transparent_16px)]" />
+      <div className="pointer-events-none absolute left-1/2 top-[-14rem] h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-[#f5c842]/12 blur-[120px]" />
       <div className="relative z-10 flex min-h-[100dvh] items-center justify-center px-4 py-8 sm:px-6">
-        <div className="relative w-full max-w-[34rem] overflow-hidden rounded-[2.25rem] bg-[rgba(255,255,255,0.06)] p-[1px] shadow-[0_30px_110px_rgba(0,0,0,0.58)]">
-          <div className="absolute inset-[1px] rounded-[calc(2.25rem-1px)] bg-[linear-gradient(145deg,rgba(41,29,12,0.42),rgba(10,8,4,0.78))]" />
-          <div className="absolute inset-[1px] rounded-[calc(2.25rem-1px)] backdrop-blur-xl" />
-          <div className="relative px-5 py-6 sm:px-8 sm:py-8">
-            <Outlet />
-          </div>
+        <div className="relative w-full max-w-[34rem]">
+          <Outlet />
         </div>
       </div>
     </div>

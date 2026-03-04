@@ -9,6 +9,7 @@ import { apiClient } from "@/shared/api/client";
 import { endpoints } from "@/shared/api/endpoints";
 import {
   AuthField,
+  AuthGlassPanel,
   AuthPrimaryButton,
   AuthTitleBlock,
 } from "@/features/auth/components/auth-ui";
@@ -52,76 +53,78 @@ export const ResetPasswordPage = () => {
 
   return (
     <div className="mx-auto flex w-full max-w-[28rem] flex-col justify-center py-6 sm:min-h-[38rem]">
-      {success ? (
-        <div className="space-y-5 text-center">
-          <AuthTitleBlock
-            title="Parol yangilandi"
-            subtitle="Endi yangi parol bilan tizimga kirishingiz mumkin"
-          />
-          <AuthPrimaryButton type="button" onClick={() => navigate("/login-form")}>
-            Kirish
-          </AuthPrimaryButton>
-        </div>
-      ) : (
-        <form className="space-y-5" onSubmit={onSubmit}>
-          <AuthTitleBlock
-            title="Parolni yangilash"
-            subtitle="Emailingizga yuborilgan kod va yangi parolni kiriting"
-          />
+      <AuthGlassPanel>
+        {success ? (
+          <div className="space-y-5 text-center">
+            <AuthTitleBlock
+              title="Parol yangilandi"
+              subtitle="Endi yangi parol bilan tizimga kirishingiz mumkin"
+            />
+            <AuthPrimaryButton type="button" onClick={() => navigate("/login-form")}>
+              Kirish
+            </AuthPrimaryButton>
+          </div>
+        ) : (
+          <form className="space-y-5" onSubmit={onSubmit}>
+            <AuthTitleBlock
+              title="Parolni yangilash"
+              subtitle="Emailingizga yuborilgan kod va yangi parolni kiriting"
+            />
 
-          {mutation.isError ? (
-            <div className="rounded-[1.2rem] border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-              Xato yuz berdi. Token yaroqsiz yoki muddati o'tgan.
-            </div>
-          ) : null}
+            {mutation.isError ? (
+              <div className="liquid-glass-state-danger rounded-[1.2rem] px-4 py-3 text-sm text-red-100">
+                Xato yuz berdi. Token yaroqsiz yoki muddati o'tgan.
+              </div>
+            ) : null}
 
-          <AuthField
-            label="Tasdiqlash kodi"
-            placeholder="Token"
-            icon={<KeyRound className="h-6 w-6" />}
-            error={form.formState.errors.token?.message}
-            {...form.register("token")}
-          />
-          <AuthField
-            label="Yangi parol"
-            placeholder="Kamida 8 ta belgi"
-            type={showPassword ? "text" : "password"}
-            icon={<Lock className="h-6 w-6" />}
-            trailing={(
-              <button
-                type="button"
-                onClick={() => setShowPassword((value) => !value)}
-                className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:text-white"
-              >
-                {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
-              </button>
-            )}
-            error={form.formState.errors.password?.message}
-            {...form.register("password")}
-          />
-          <AuthField
-            label="Parolni tasdiqlash"
-            placeholder="Parolni qayta kiriting"
-            type={showConfirmPassword ? "text" : "password"}
-            icon={<Lock className="h-6 w-6" />}
-            trailing={(
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword((value) => !value)}
-                className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:text-white"
-              >
-                {showConfirmPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
-              </button>
-            )}
-            error={form.formState.errors.confirmPassword?.message}
-            {...form.register("confirmPassword")}
-          />
+            <AuthField
+              label="Tasdiqlash kodi"
+              placeholder="Token"
+              icon={<KeyRound className="h-6 w-6" />}
+              error={form.formState.errors.token?.message}
+              {...form.register("token")}
+            />
+            <AuthField
+              label="Yangi parol"
+              placeholder="Kamida 8 ta belgi"
+              type={showPassword ? "text" : "password"}
+              icon={<Lock className="h-6 w-6" />}
+              trailing={(
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((value) => !value)}
+                  className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-10 w-10 items-center justify-center rounded-xl text-t-secondary transition-colors hover:text-t-primary"
+                >
+                  {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
+                </button>
+              )}
+              error={form.formState.errors.password?.message}
+              {...form.register("password")}
+            />
+            <AuthField
+              label="Parolni tasdiqlash"
+              placeholder="Parolni qayta kiriting"
+              type={showConfirmPassword ? "text" : "password"}
+              icon={<Lock className="h-6 w-6" />}
+              trailing={(
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((value) => !value)}
+                  className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-10 w-10 items-center justify-center rounded-xl text-t-secondary transition-colors hover:text-t-primary"
+                >
+                  {showConfirmPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
+                </button>
+              )}
+              error={form.formState.errors.confirmPassword?.message}
+              {...form.register("confirmPassword")}
+            />
 
-          <AuthPrimaryButton type="submit" loading={mutation.isPending}>
-            Yangilash
-          </AuthPrimaryButton>
-        </form>
-      )}
+            <AuthPrimaryButton type="submit" loading={mutation.isPending}>
+              Yangilash
+            </AuthPrimaryButton>
+          </form>
+        )}
+      </AuthGlassPanel>
     </div>
   );
 };

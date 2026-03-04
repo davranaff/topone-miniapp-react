@@ -35,4 +35,33 @@ describe("ProtectedRoute", () => {
 
     expect(screen.getByText("Login Page")).toBeInTheDocument();
   });
+
+  it("redirects anonymous mini-app users to telegram init", () => {
+    useAuthStore.setState({
+      status: "anonymous",
+      user: null,
+      tokens: null,
+      isTelegram: true,
+      isBootstrapped: true,
+      error: null,
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/private"]}>
+        <Routes>
+          <Route path="/telegram/init" element={<div>Telegram Init</div>} />
+          <Route
+            path="/private"
+            element={
+              <ProtectedRoute>
+                <div>Private Page</div>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("Telegram Init")).toBeInTheDocument();
+  });
 });

@@ -115,7 +115,7 @@ export const RegisterForm = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword((value) => !value)}
-                  className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:text-white"
+                  className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-10 w-10 items-center justify-center rounded-xl text-t-secondary transition-colors hover:text-t-primary"
                   aria-label={showPassword ? t("hidePassword") : t("showPassword")}
                 >
                   {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
@@ -134,7 +134,7 @@ export const RegisterForm = () => {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((value) => !value)}
-                  className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:text-white"
+                  className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-10 w-10 items-center justify-center rounded-xl text-t-secondary transition-colors hover:text-t-primary"
                   aria-label={showConfirmPassword ? t("hidePassword") : t("showPassword")}
                 >
                   {showConfirmPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
@@ -153,7 +153,7 @@ export const RegisterForm = () => {
           </div>
 
           {mutation.error ? (
-            <div className="rounded-[1.2rem] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            <div className="liquid-glass-state-danger rounded-[1.2rem] px-4 py-3 text-sm text-red-100">
               {getErrorMessage(mutation.error)}
             </div>
           ) : null}
@@ -162,9 +162,9 @@ export const RegisterForm = () => {
             {t("register")}
           </AuthPrimaryButton>
 
-          <p className="text-center text-[1rem] text-white/56">
+          <p className="text-center text-[1rem] text-t-secondary">
             {t("haveAccount")}{" "}
-            <Link className="font-bold text-white transition-colors hover:text-[#f6d489]" to="/login-form">
+            <Link className="font-bold text-t-primary transition-colors hover:text-gold" to="/login-form">
               {t("login")}
             </Link>
           </p>
