@@ -29,6 +29,10 @@ export const endpoints = {
     delete: (id: string) => `/api/v2/notifications/${id}`,
     unreadCount: "/api/v2/notifications/unread-count",
   },
+  ws: {
+    notifications: "/api/v2/ws/notifications",
+    stats: "/api/v2/ws/notifications/stats",
+  },
   payment: {
     plans: "/api/v1/payment/plans/active",
     subscribePlan: (planId: string) => `/api/v1/payment/plans/${planId}/subscribe`,
@@ -37,6 +41,11 @@ export const endpoints = {
     invoiceStatus: (id: string) => `/api/v1/payment/invoices/${id}/status`,
     subscriptions: "/api/v1/payment/subscriptions/",
     subscriptionHistory: "/api/v1/payment/subscriptions/history",
+    payFromReferralEarnings: "/api/v1/payment/subscriptions/pay-from-referral-earnings",
+    extendFromReferralEarnings: "/api/v1/payment/subscriptions/extend-from-referral-earnings",
+  },
+  levels: {
+    list: "/api/v1/levels",
   },
   achievements: {
     catalog: "/api/v1/achievements/catalog",
@@ -47,14 +56,19 @@ export const endpoints = {
   },
   leaderboard: {
     xp: "/api/v2/statistics/leaderboard/xp",
-    coins: "/api/v2/statistics/leaderboard/coins",
     referrals: "/api/v2/statistics/leaderboard/referrals",
+    myPosition: {
+      xp: "/api/v2/statistics/my-position/xp",
+      referrals: "/api/v2/statistics/my-position/referrals",
+    },
     myStats: "/api/v2/statistics/my-statistics/",
   },
   referrals: {
     stats: "/api/v1/referrals/stats/my-stats",
     history: "/api/v1/referrals/history/",
     levels: "/api/v1/referrals/levels/",
+    checkoutCreate: "/api/v1/checkout_referral/checkout-referrals",
+    checkoutMine: "/api/v1/checkout_referral/checkout-referrals/me",
   },
   transactions: {
     list: "/api/v2/gamification/transactions/",

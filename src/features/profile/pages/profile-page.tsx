@@ -50,6 +50,7 @@ export const ProfilePage = () => {
   const coins = stats.isError ? 0 : (stats.data?.coins ?? 0);
   const xp = stats.isError ? 0 : (stats.data?.xp ?? 0);
   const streak = stats.isError ? 0 : (stats.data?.streak ?? 0);
+  const level = stats.isError ? 0 : (stats.data?.level ?? 0);
   const isStatsLoading = stats.isLoading && !stats.data;
   const achievementsPreview = (achievements.data ?? []).slice(0, 4);
 
@@ -73,7 +74,15 @@ export const ProfilePage = () => {
         <div className="min-w-0 flex-1">
           <p className="truncate text-[2rem] font-black tracking-[-0.03em] text-t-primary">{fullName}</p>
           <div className="mt-2 flex flex-wrap gap-2">
-            <Badge variant="info" size="md" className="uppercase">{roleLabel}</Badge>
+            <button
+              type="button"
+              onClick={() => navigate("/levels")}
+              className="rounded-full"
+            >
+              <Badge variant="info" size="md" className="uppercase">
+                {level > 0 ? `${roleLabel} • LVL ${level}` : roleLabel}
+              </Badge>
+            </button>
             <Badge
               variant={data.hasActiveSubscription ? "success" : "outline"}
               size="md"
@@ -110,6 +119,25 @@ export const ProfilePage = () => {
           },
         ]}
       />
+
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={() => navigate("/leaderboard?type=xp")}
+          className="liquid-glass-surface-interactive flex items-center justify-center gap-2 rounded-[1.1rem] border border-border/50 px-3 py-2.5 text-sm font-semibold text-t-primary"
+        >
+          <Star className="h-4 w-4 text-gold" />
+          XP Reyting
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate("/leaderboard?type=referrals")}
+          className="liquid-glass-surface-interactive flex items-center justify-center gap-2 rounded-[1.1rem] border border-border/50 px-3 py-2.5 text-sm font-semibold text-t-primary"
+        >
+          <Trophy className="h-4 w-4 text-gold" />
+          Referral Reyting
+        </button>
+      </div>
 
       <button
         type="button"

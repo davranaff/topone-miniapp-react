@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Trophy, Star, CircleDollarSign, Users, Crown } from "lucide-react";
+import { Crown, Star, Trophy, Users, type LucideIcon } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 import { MobileScreen, MobileScreenSection } from "@/shared/ui/mobile-screen";
 import { PageHeader } from "@/shared/ui/page-header";
 import { GlassCard } from "@/shared/ui/glass-card";
@@ -7,164 +7,289 @@ import { Avatar } from "@/shared/ui/avatar";
 import { SkeletonCard } from "@/shared/ui/skeleton";
 import { ErrorState } from "@/shared/ui/error-state";
 import { EmptyState } from "@/shared/ui/empty-state";
-import { useLeaderboard } from "@/features/leaderboard/hooks/use-leaderboard";
-import type { LeaderboardType, LeaderboardEntry } from "@/entities/leaderboard/types";
+import {
+  useLeaderboard,
+  useMyLeaderboardPosition,
+} from "@/features/leaderboard/hooks/use-leaderboard";
+import type {
+  LeaderboardEntry,
+  LeaderboardType,
+} from "@/entities/leaderboard/types";
 import { cn } from "@/shared/lib/cn";
 
-const TABS: { id: LeaderboardType; label: string; icon: typeof Star }[] = [
+const TABS: Array<{ id: LeaderboardType; label: string; icon: LucideIcon }> = [
   { id: "xp", label: "XP", icon: Star },
-  { id: "coins", label: "Coins", icon: CircleDollarSign },
-  { id: "referrals", label: "Referallar", icon: Users },
+  { id: "referrals", label: "Referral", icon: Users },
 ];
 
-const PodiumCard = ({ entry, position }: { entry: LeaderboardEntry; position: 1 | 2 | 3 }) => {
-  const heights = { 1: "h-24", 2: "h-20", 3: "h-16" };
-  const colors = {
-    1: "border-gold/40 bg-gold/10",
-    2: "border-border/60 bg-elevated",
-    3: "border-border/40 bg-surface",
+const parseLeaderboardType = (
+  typeParam: string | null,
+  tabParam: string | null,
+): LeaderboardType => {
+  const normalizedType = typeParam?.trim().toLowerCase();
+  if (normalizedType === "referrals" || normalizedType === "referral") {
+    return "referrals";
+  }
+  if (normalizedType === "xp") {
+    return "xp";
+  }
+
+  return tabParam === "1" ? "referrals" : "xp";
+};
+
+const formatNumber = (value: number): string => {
+  const safe = Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : 0;
+  return safe.toLocaleString();
+};
+
+const getValueLabel = (type: LeaderboardType): string => {
+  return type === "xp" ? "XP" : "referal";
+};
+
+const getTitleByType = (type: LeaderboardType): string => {
+  return type === "xp"
+    ? "XP bo'yicha top foydalanuvchilar"
+    : "Referral bo'yicha top foydalanuvchilar";
+};
+
+const getDisplayName = (entry: LeaderboardEntry): string => {
+  const name = [entry.firstName, entry.lastName].filter(Boolean).join(" ").trim();
+  return name || entry.username || "User";
+};
+
+const PodiumCard = ({
+  entry,
+  position,
+  type,
+}: {
+  entry: LeaderboardEntry;
+  position: 1 | 2 | 3;
+  type: LeaderboardType;
+}) => {
+  const heights = {
+    1: "h-[7.7rem]",
+    2: "h-[6.4rem]",
+    3: "h-[5.2rem]",
   };
+  const valueIcon = type === "xp" ? Star : Users;
+  const ValueIcon = valueIcon;
 
   return (
-    <div className={cn("flex flex-col items-center", position === 1 ? "order-2" : position === 2 ? "order-1" : "order-3")}>
-      <Avatar
-        src={entry.avatarUrl}
-        fallback={entry.username}
-        size={position === 1 ? "lg" : "md"}
-        gold={position === 1}
-      />
-      <p className="mt-1 text-xs font-semibold text-t-primary truncate max-w-20">
-        {entry.firstName || entry.username}
+    <div
+      className={cn(
+        "flex min-w-0 flex-col items-center",
+        position === 1 ? "order-2" : position === 2 ? "order-1" : "order-3",
+      )}
+    >
+      <Avatar src={entry.avatarUrl} fallback={getDisplayName(entry)} size={position === 1 ? "lg" : "md"} gold={position === 1} />
+      <p className="mt-2 max-w-20 truncate text-xs font-semibold text-t-primary">
+        {getDisplayName(entry)}
       </p>
-      <div className={cn("mt-2 flex w-16 flex-col items-center justify-end rounded-t-xl border-t border-x", colors[position], heights[position])}>
-        <div className="mb-2 flex h-6 w-6 items-center justify-center rounded-full bg-gold/20 text-xs font-bold text-gold">
+      <div
+        className={cn(
+          "mt-2 flex w-[5.2rem] flex-col items-center justify-end rounded-t-2xl border border-border/55 bg-elevated/80",
+          heights[position],
+        )}
+      >
+        <div className="mb-2 flex h-6 w-6 items-center justify-center rounded-full border border-gold/30 bg-gold/20 text-xs font-bold text-gold">
           {position}
         </div>
-        <p className="mb-1 text-sm font-bold text-t-primary tabular-nums">{entry.value.toLocaleString()}</p>
+        <div className="mb-2 flex items-center gap-1 text-xs font-bold text-t-primary">
+          <ValueIcon className="h-3.5 w-3.5 text-gold" />
+          <span>{formatNumber(entry.value)}</span>
+        </div>
       </div>
     </div>
   );
 };
 
-const LeaderboardRow = ({ entry, type }: { entry: LeaderboardEntry; type: LeaderboardType }) => (
-  <GlassCard
-    goldBorder={entry.isCurrentUser}
-    className={cn(entry.isCurrentUser && "ring-1 ring-gold/20")}
-  >
-    <div className="flex items-center gap-3">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border/40 bg-elevated text-xs font-bold text-t-muted">
-        {entry.rank}
+const LeaderboardRow = ({
+  entry,
+  type,
+}: {
+  entry: LeaderboardEntry;
+  type: LeaderboardType;
+}) => {
+  const ValueIcon = type === "xp" ? Star : Users;
+  return (
+    <GlassCard goldBorder={entry.isCurrentUser} className={cn(entry.isCurrentUser && "ring-1 ring-gold/20")} radius="xl">
+      <div className="flex items-center gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/50 bg-elevated text-xs font-bold text-t-muted">
+          {entry.rank}
+        </div>
+        <Avatar src={entry.avatarUrl} fallback={getDisplayName(entry)} size="sm" />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-t-primary">
+            {getDisplayName(entry)}
+            {entry.isCurrentUser && <span className="ml-1 text-xs text-gold">(Siz)</span>}
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-1">
+          <ValueIcon className="h-3.5 w-3.5 text-gold" />
+          <span className="text-sm font-bold text-t-primary">{formatNumber(entry.value)}</span>
+        </div>
       </div>
-      <Avatar src={entry.avatarUrl} fallback={entry.username} size="sm" />
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-t-primary">
-          {entry.firstName || entry.username}
-          {entry.isCurrentUser && <span className="ml-1 text-xs text-gold">(Siz)</span>}
-        </p>
-      </div>
-      <div className="flex items-center gap-1 shrink-0">
-        {type === "xp" && <Star className="h-3.5 w-3.5 text-gold" />}
-        {type === "coins" && <CircleDollarSign className="h-3.5 w-3.5 text-info" />}
-        {type === "referrals" && <Users className="h-3.5 w-3.5 text-t-muted" />}
-        <span className="text-sm font-bold text-t-primary tabular-nums">{entry.value.toLocaleString()}</span>
-      </div>
-    </div>
-  </GlassCard>
-);
+    </GlassCard>
+  );
+};
 
 export const LeaderboardPage = () => {
-  const [type, setType] = useState<LeaderboardType>("xp");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const type = parseLeaderboardType(searchParams.get("type"), searchParams.get("tab"));
   const leaderboard = useLeaderboard(type);
+  const myPosition = useMyLeaderboardPosition(type);
 
-  if (leaderboard.isLoading) {
-    return (
-      <MobileScreen>
-        <div className="h-8 w-1/3 rounded-xl bg-elevated animate-shimmer bg-shimmer bg-[length:200%_100%]" />
-        <div className="mt-6 h-32 rounded-xl bg-elevated animate-shimmer bg-shimmer bg-[length:200%_100%]" />
-        <MobileScreenSection className="mt-4">
-          {Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
-        </MobileScreenSection>
-      </MobileScreen>
-    );
-  }
+  const updateType = (nextType: LeaderboardType) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("type", nextType);
+    if (nextType === "referrals") {
+      nextParams.set("tab", "1");
+    } else {
+      nextParams.delete("tab");
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
 
-  if (leaderboard.isError) {
-    return (
-      <MobileScreen>
-        <ErrorState variant="network" onRetry={() => leaderboard.refetch()} />
-      </MobileScreen>
-    );
-  }
-
-  const items = leaderboard.data ?? [];
-  const top3 = items.slice(0, 3);
+  const sortedItems = [...(leaderboard.data ?? [])].sort((left, right) => {
+    if (left.rank !== right.rank) {
+      return left.rank - right.rank;
+    }
+    return right.value - left.value;
+  });
+  const myRank = myPosition.data?.rank ?? null;
+  const items = sortedItems.map((entry) => ({
+    ...entry,
+    isCurrentUser: myRank != null ? entry.rank === myRank : Boolean(entry.isCurrentUser),
+  }));
+  const topThree = items.slice(0, 3);
   const rest = items.slice(3);
-  const myPosition = items.find((entry) => entry.isCurrentUser);
+  const myRow = items.find((entry) => entry.isCurrentUser);
+  const showLoading = leaderboard.isLoading && !leaderboard.data;
+  const headerRank = myPosition.data?.rank ?? myRow?.rank ?? null;
+  const headerValue = myPosition.data?.value ?? myRow?.value ?? 0;
+  const headerTotalUsers = myPosition.data?.totalUsers ?? 0;
+  const headerIcon = type === "xp" ? Trophy : Users;
+  const HeaderIcon = headerIcon;
 
   return (
     <MobileScreen>
-      <PageHeader title="Liderlar" subtitle="Top foydalanuvchilar reytingi" backButton />
+      <PageHeader title="Reyting" subtitle={getTitleByType(type)} backButton />
 
-      {/* Tabs */}
-      <div className="mt-3 flex gap-2">
-        {TABS.map((t) => {
-          const Icon = t.icon;
+      <div className="mt-2 flex gap-2">
+        {TABS.map((tab) => {
+          const Icon = tab.icon;
           return (
             <button
-              key={t.id}
-              onClick={() => setType(t.id)}
+              key={tab.id}
+              type="button"
+              onClick={() => updateType(tab.id)}
               className={cn(
                 "liquid-glass-surface-interactive flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-semibold transition-all",
-                type === t.id
+                tab.id === type
                   ? "liquid-glass-button-chip-active text-gold"
                   : "liquid-glass-button-chip text-t-muted hover:border-gold/20",
               )}
             >
               <Icon className="h-3.5 w-3.5" />
-              {t.label}
+              {tab.label}
             </button>
           );
         })}
       </div>
 
-      {items.length === 0 ? (
+      <GlassCard className="mt-3" radius="2xl">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-gold/35 bg-gold/15 text-gold">
+            <HeaderIcon className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-xs font-medium uppercase tracking-[0.08em] text-t-muted">Sizning o'rningiz</p>
+            <p className="mt-0.5 text-2xl font-black leading-tight text-t-primary">
+              {headerRank ? `#${headerRank}` : "—"}
+            </p>
+            <p className="text-sm text-t-muted">
+              {formatNumber(headerValue)} {getValueLabel(type)}
+              {headerTotalUsers > 0 && <span className="ml-1">/ {headerTotalUsers} foydalanuvchi</span>}
+            </p>
+          </div>
+        </div>
+      </GlassCard>
+
+      {showLoading && (
+        <>
+          <div className="mt-6 flex items-end justify-center gap-2 pb-2">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "w-20 rounded-2xl bg-elevated animate-shimmer bg-shimmer bg-[length:200%_100%]",
+                  index === 1 ? "h-40" : index === 0 ? "h-32" : "h-28",
+                )}
+              />
+            ))}
+          </div>
+          <MobileScreenSection className="mt-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </MobileScreenSection>
+        </>
+      )}
+
+      {!showLoading && leaderboard.isError && (
+        <ErrorState
+          variant="network"
+          onRetry={() => {
+            void leaderboard.refetch();
+            void myPosition.refetch();
+          }}
+        />
+      )}
+
+      {!showLoading && !leaderboard.isError && items.length === 0 && (
         <div className="mt-10">
           <EmptyState
             icon={<Trophy className="h-8 w-8" />}
-            title="Reyting tez kunda"
-            description="Leaderboard tizimi ishlab chiqilmoqda."
+            title="Hozircha reyting bo'sh"
+            description="Ma'lumotlar paydo bo'lishi bilan bu yerda ko'rsatiladi."
           />
         </div>
-      ) : (
+      )}
+
+      {!showLoading && !leaderboard.isError && items.length > 0 && (
         <>
-          {/* Podium */}
-          {top3.length > 0 && (
-            <div className="mt-6 flex items-end justify-center gap-2 pb-4">
-              {top3.map((entry, i) => (
-                <PodiumCard key={entry.userId} entry={entry} position={(i + 1) as 1 | 2 | 3} />
+          {topThree.length > 0 && (
+            <div className="mt-6 flex items-end justify-center gap-2 pb-3">
+              {topThree.map((entry, index) => (
+                <PodiumCard
+                  key={`${entry.userId}-${entry.rank}`}
+                  entry={entry}
+                  position={(index + 1) as 1 | 2 | 3}
+                  type={type}
+                />
               ))}
             </div>
           )}
 
-          {/* My position card */}
-          {myPosition && myPosition.rank > 3 && (
-            <GlassCard goldBorder className="mt-4">
+          {myRank != null && !myRow && (
+            <GlassCard goldBorder className="mt-4" radius="2xl">
               <div className="flex items-center gap-3">
                 <Crown className="h-5 w-5 text-gold" />
-                <p className="text-sm font-semibold text-t-primary">Sizning o'rningiz:</p>
-                <div className="ml-auto flex items-center gap-2">
-                  <span className="text-lg font-bold text-gold">#{myPosition.rank}</span>
-                  <span className="text-sm text-t-muted">({myPosition.value.toLocaleString()})</span>
+                <p className="text-sm font-semibold text-t-primary">Sizning natijangiz</p>
+                <div className="ml-auto text-right">
+                  <p className="text-lg font-bold text-gold">#{myRank}</p>
+                  <p className="text-xs text-t-muted">
+                    {formatNumber(headerValue)} {getValueLabel(type)}
+                  </p>
                 </div>
               </div>
             </GlassCard>
           )}
 
-          {/* List */}
           {rest.length > 0 && (
             <MobileScreenSection className="mt-4">
               {rest.map((entry) => (
-                <LeaderboardRow key={entry.userId} entry={entry} type={type} />
+                <LeaderboardRow key={`${entry.userId}-${entry.rank}`} entry={entry} type={type} />
               ))}
             </MobileScreenSection>
           )}
