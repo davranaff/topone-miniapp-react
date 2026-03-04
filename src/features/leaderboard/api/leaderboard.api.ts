@@ -26,15 +26,4 @@ export const leaderboardApi = {
     const items = Array.isArray(payload) ? payload : (payload?.items ?? payload?.leaderboard ?? []);
     return (items as Array<Record<string, unknown>>).map(mapEntry);
   },
-
-  async getMyPosition(type: LeaderboardType): Promise<LeaderboardEntry | null> {
-    try {
-      const res = await apiClient.get(endpoints.leaderboard.myPositionXp);
-      const data = res.data?.data ?? res.data;
-      if (!data) return null;
-      return mapEntry(data as Record<string, unknown>);
-    } catch {
-      return null;
-    }
-  },
 };

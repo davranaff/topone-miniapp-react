@@ -10,7 +10,7 @@ import { TopOneLogo } from "@/shared/ui/topone-logo";
 
 export const AuthLogoBadge = () => {
   return (
-    <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.16),rgba(255,255,255,0.02),transparent_72%)] shadow-[0_16px_36px_rgba(0,0,0,0.34)] backdrop-blur-md">
+    <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border border-white/8 bg-[rgba(255,255,255,0.04)] shadow-[0_16px_36px_rgba(0,0,0,0.34)] backdrop-blur-md">
       <TopOneLogo size="md" framed={false} className="drop-shadow-[0_14px_34px_rgba(245,200,66,0.22)]" />
     </div>
   );
@@ -58,11 +58,11 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
           </span>
           <div
             className={cn(
-              "flex min-h-[4.65rem] items-center rounded-[1.55rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))]",
-              "shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_18px_44px_rgba(0,0,0,0.22)] backdrop-blur-xl transition-all duration-200",
+              "flex min-h-[4.65rem] items-center rounded-[1.55rem] border border-white/8 bg-[rgba(255,255,255,0.04)]",
+              "shadow-[0_18px_44px_rgba(0,0,0,0.22)] backdrop-blur-xl transition-all duration-200",
               error
                 ? "ring-1 ring-red-400/70"
-                : "ring-1 ring-white/8 focus-within:ring-white/18 focus-within:bg-[linear-gradient(180deg,rgba(255,255,255,0.1),rgba(255,255,255,0.04))]",
+                : "ring-1 ring-white/8 focus-within:ring-white/18 focus-within:bg-[rgba(255,255,255,0.05)]",
             )}
           >
             {icon ? (
@@ -111,9 +111,7 @@ export const AuthPrimaryButton = ({
   return (
     <button
       className={cn(
-        "flex h-14 w-full items-center justify-center gap-3 rounded-[1.45rem] px-6 text-[1.02rem] font-bold text-white",
-        "bg-[linear-gradient(135deg,rgba(238,192,89,0.92)_0%,rgba(209,154,52,0.84)_48%,rgba(145,102,31,0.7)_100%)]",
-        "shadow-[0_16px_36px_rgba(181,126,30,0.18),inset_0_1px_0_rgba(255,255,255,0.24)] backdrop-blur-lg",
+        "liquid-glass-accent liquid-glass-surface-interactive flex h-14 w-full items-center justify-center gap-3 rounded-[1.45rem] px-6 text-[1.02rem] font-bold text-white",
         "transition-all duration-200 hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.99]",
         "disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0",
         className,
@@ -151,7 +149,7 @@ export const AuthBackButton = ({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex h-11 w-11 items-center justify-center rounded-full text-white/92 transition-colors hover:bg-white/8",
+        "liquid-glass-button-icon liquid-glass-surface-interactive inline-flex h-11 w-11 items-center justify-center rounded-full text-white/92 transition-colors hover:text-white",
         className,
       )}
       aria-label="Back"
@@ -165,14 +163,13 @@ export const AuthGlassPanel = ({ children, className }: { children: ReactNode; c
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-[1px]",
+        "relative overflow-hidden rounded-[2rem] bg-[rgba(255,255,255,0.06)] p-[1px]",
         "shadow-[0_28px_90px_rgba(0,0,0,0.4)]",
         className,
       )}
     >
       <div className="absolute inset-[1px] rounded-[calc(2rem-1px)] bg-[linear-gradient(145deg,rgba(36,27,15,0.34),rgba(10,8,5,0.76))]" />
       <div className="absolute inset-[1px] rounded-[calc(2rem-1px)] backdrop-blur-xl" />
-      <div className="pointer-events-none absolute inset-x-10 top-0 h-16 rounded-b-[1.5rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.14),transparent)]" />
       <div className="relative p-5 sm:p-6">{children}</div>
     </div>
   );

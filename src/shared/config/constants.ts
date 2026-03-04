@@ -4,6 +4,8 @@ export const STORAGE_KEYS = {
   sessionUser: "topone.session-user",
   locale: "topone.locale",
   theme: "topone.theme",
+  economyMode: "topone.economy-mode",
+  glassEffect: "topone.glass-effect",
 } as const;
 
 export const APP_NAME = "TopOne";

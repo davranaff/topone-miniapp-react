@@ -209,7 +209,7 @@ export const PaymentMethodsPage = () => {
               type="button"
               onClick={() => setSelectedProvider(method.provider)}
               className={cn(
-                "block w-full text-left transition-transform duration-200",
+                "block w-full rounded-[1.6rem] text-left transition-transform duration-200",
                 selected && "translate-y-[-1px]",
               )}
             >

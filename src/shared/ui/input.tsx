@@ -18,11 +18,9 @@ const sizeClasses: Record<InputSize, string> = {
 };
 
 const inputBaseClasses = [
-  "w-full rounded-[1rem] border text-t-primary placeholder:text-t-muted",
-  "bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(10,10,10,0.5))]",
-  "shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]",
+  "w-full rounded-[1rem] border text-t-primary placeholder:text-t-muted liquid-glass-field",
   "transition-all duration-200 outline-none",
-  "focus:ring-2 focus:ring-gold/20 focus:border-gold/45 focus:bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(14,14,14,0.56))]",
+  "focus:ring-2 focus:ring-gold/20 focus:border-[color:var(--liquid-glass-stroke-strong)]",
   "disabled:cursor-not-allowed disabled:opacity-40",
 ].join(" ");
 
@@ -38,8 +36,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           className={cn(
             inputBaseClasses,
             error
-              ? "border-danger/60 focus:ring-danger/30 focus:border-danger/60"
-              : "border-white/10 hover:border-white/15",
+              ? "liquid-glass-field-error focus:ring-danger/30"
+              : "hover:border-[color:var(--liquid-glass-stroke-strong)]",
             sizeClasses[inputSize],
             className,
           )}
@@ -60,8 +58,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           className={cn(
             inputBaseClasses,
             error
-              ? "border-danger/60 focus:ring-danger/30 focus:border-danger/60"
-              : "border-white/10 hover:border-white/15",
+              ? "liquid-glass-field-error focus:ring-danger/30"
+              : "hover:border-[color:var(--liquid-glass-stroke-strong)]",
             hasLeading && "pl-11",
             hasTrailing && "pr-11",
             sizeClasses[inputSize],

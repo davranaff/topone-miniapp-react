@@ -49,7 +49,6 @@ export const SplashPage = () => {
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(145deg,#050301_0%,#0d0904_42%,#181108_100%)]" />
       <div className="pointer-events-none absolute -left-20 -top-16 h-[20rem] w-[20rem] rounded-full bg-[#e1b458]/18 blur-[100px]" />
       <div className="pointer-events-none absolute bottom-[-12%] right-[-6%] h-[20rem] w-[20rem] rounded-full bg-[#b57e1e]/18 blur-[110px]" />
-      <div className="pointer-events-none absolute left-1/2 top-[32%] h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/5 blur-[130px]" />
 
       <div className="relative flex w-full max-w-[28rem] flex-col items-center gap-7 text-center animate-fade-in-up">
         <div className="relative">

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Clock3, ShieldCheck, Trophy } from "lucide-react";
+import { Clock3, RefreshCcw, ShieldCheck, Trophy } from "lucide-react";
 import { challengesApi } from "@/features/challenges/api/challenges.api";
 import { ChallengeShowcaseCard } from "@/features/challenges/components/challenge-showcase-card";
 import { useChallengesList } from "@/features/challenges/hooks/use-challenges-list";
@@ -9,6 +9,11 @@ import {
   challengePlaceholderCategories,
   getChallengePlaceholders,
 } from "@/features/challenges/lib/challenge-placeholders";
+import {
+  formatCountdownParts,
+  getChallengeCycleLabel,
+  getChallengeCycleRemaining,
+} from "@/features/challenges/lib/challenge-timing";
 import type { Challenge, ChallengeCategory } from "@/entities/challenge/types";
 import { hasApiStatus } from "@/shared/api/error-helpers";
 import { MobileScreen, MobileScreenSection } from "@/shared/ui/mobile-screen";
@@ -18,6 +23,8 @@ import { GlassCard } from "@/shared/ui/glass-card";
 import { SkeletonCard } from "@/shared/ui/skeleton";
 import { ErrorState } from "@/shared/ui/error-state";
 import { EmptyState } from "@/shared/ui/empty-state";
+import { Button } from "@/shared/ui/button";
+import { cn } from "@/shared/lib/cn";
 
 const sortCategories = (categories: ChallengeCategory[]) => {
   return [...categories].sort((left, right) => {
@@ -30,6 +37,72 @@ const sortCategories = (categories: ChallengeCategory[]) => {
 
     return priority(left) - priority(right);
   });
+};
+
+const ChallengeCycleTimerCard = ({
+  category,
+  disabled,
+}: {
+  category?: ChallengeCategory;
+  disabled?: boolean;
+}) => {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    if (!category || disabled) {
+      return;
+    }
+
+    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, [category, disabled]);
+
+  if (!category || disabled) {
+    return null;
+  }
+
+  const remaining = getChallengeCycleRemaining(now, category.typeCode, category.activeDays);
+  if (remaining <= 0) {
+    return null;
+  }
+
+  const parts = formatCountdownParts(remaining);
+  const cycleLabel = getChallengeCycleLabel(category.typeCode);
+
+  return (
+    <GlassCard className="rounded-[1.7rem]">
+      <div className="flex items-center gap-3">
+        <div className="liquid-glass-surface-muted flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] text-gold">
+          <Clock3 className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-t-primary">{cycleLabel}</p>
+          <p className="text-xs text-t-muted">{category.title} kategoriyasi yangilanish vaqtigacha</p>
+        </div>
+      </div>
+
+      <div className={cn("mt-3 grid gap-2", parts.hasDays ? "grid-cols-4" : "grid-cols-3")}>
+        {parts.hasDays ? (
+          <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
+            <p className="text-sm font-bold text-t-primary">{parts.days}</p>
+            <p className="text-2xs text-t-muted">kun</p>
+          </div>
+        ) : null}
+        <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
+          <p className="text-sm font-bold text-t-primary">{parts.hours}</p>
+          <p className="text-2xs text-t-muted">soat</p>
+        </div>
+        <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
+          <p className="text-sm font-bold text-t-primary">{parts.minutes}</p>
+          <p className="text-2xs text-t-muted">daq</p>
+        </div>
+        <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
+          <p className="text-sm font-bold text-t-primary">{parts.seconds}</p>
+          <p className="text-2xs text-t-muted">sek</p>
+        </div>
+      </div>
+    </GlassCard>
+  );
 };
 
 export const ChallengesPage = () => {
@@ -115,114 +188,119 @@ export const ChallengesPage = () => {
     !hasApiStatus(categoriesQuery.error, 403);
 
   return (
-    <MobileScreen>
-      <PageHeader title="Challenjlar" subtitle="Flutter ilovadagi challenge flow bilan bir xil sahifa" />
+    <MobileScreen className="space-y-4">
+      <PageHeader title="Challenjlar" subtitle="Daily, weekly va monthly challenge oqimi" />
 
-      <MobileScreenSection className="mt-4">
-        <StatCardsRow
-          columns={4}
-          stats={[
-            { label: "Jami", value: stats.total, icon: <Trophy className="h-4 w-4" /> },
-            { label: "Jarayonda", value: stats.inProgress, icon: <Clock3 className="h-4 w-4" /> },
-            { label: "Bajarilgan", value: stats.completed, icon: <ShieldCheck className="h-4 w-4" />, highlight: true },
-            { label: "Muvaffaqiyatsiz", value: stats.failed, icon: <Trophy className="h-4 w-4" /> },
-          ]}
-        />
-      </MobileScreenSection>
+      <StatCardsRow
+        columns={4}
+        stats={[
+          { label: "Jami", value: stats.total, icon: <Trophy className="h-4 w-4" /> },
+          { label: "Jarayonda", value: stats.inProgress, icon: <Clock3 className="h-4 w-4" /> },
+          { label: "Bajarilgan", value: stats.completed, icon: <ShieldCheck className="h-4 w-4" />, highlight: true },
+          { label: "Failed", value: stats.failed, icon: <Trophy className="h-4 w-4" /> },
+        ]}
+      />
 
-      <MobileScreenSection className="mt-4">
-        <GlassCard className="flex items-center gap-3 rounded-[1.55rem] border-white/10 px-4 py-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.15rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,226,163,0.14),rgba(255,255,255,0.03))] text-gold">
-            <Clock3 className="h-5 w-5" />
+      <ChallengeCycleTimerCard category={activeCategory} disabled={permissionDenied} />
+
+      <GlassCard className="rounded-[1.6rem]">
+        <div className="flex items-center gap-3">
+          <div className="liquid-glass-surface-muted flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] text-gold">
+            <Trophy className="h-5 w-5" />
           </div>
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0">
             <p className="text-sm font-semibold text-t-primary">
-              {permissionDenied ? "Premium challenjlar obuna bilan ochiladi" : "Challenge bo'limi har kuni yangilanadi"}
+              {permissionDenied ? "Premium challenjlar obuna bilan ochiladi" : "Challenjlar kategoriya bo'yicha ko'rsatiladi"}
             </p>
-            <p className="mt-0.5 text-xs text-white/54">
+            <p className="mt-0.5 text-xs text-t-muted">
               {permissionDenied
-                ? "Daily, weekly va monthly challenge'lar Flutter ilovadagi kabi kartalar bilan ko'rsatiladi."
-                : "Kategoriya bo'yicha challengeni tanlang va progress yaratilgach ichiga kiring."}
+                ? "Obunani faollashtirgandan keyin challenge ichida progress topshirish mumkin."
+                : "Boshlanmagan challenge ochilganda progress avtomatik yaratiladi."}
             </p>
           </div>
-        </GlassCard>
-      </MobileScreenSection>
+        </div>
+      </GlassCard>
 
       {showCategoriesError ? (
-        <div className="mt-6">
-          <ErrorState variant="network" onRetry={() => categoriesQuery.refetch()} />
-        </div>
+        <ErrorState variant="network" onRetry={() => categoriesQuery.refetch()} />
       ) : null}
 
-      {!!categories.length && (
-        <MobileScreenSection className="mt-4">
+      {!!categories.length ? (
+        <GlassCard className="rounded-[1.55rem]">
           <div className="flex gap-2 overflow-x-auto pb-1">
             {categories.map((category) => (
               <button
                 key={category.typeId}
                 type="button"
                 onClick={() => setActiveCategoryId(category.typeId)}
-                className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                className={`liquid-glass-surface-interactive rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                   category.typeId === resolvedActiveCategoryId
-                    ? "bg-gold text-black"
-                    : "border border-white/10 bg-white/5 text-white/72"
+                    ? "liquid-glass-button-chip-active text-black"
+                    : "liquid-glass-button-chip text-white/72"
                 }`}
               >
                 {category.title}
               </button>
             ))}
           </div>
-        </MobileScreenSection>
-      )}
+        </GlassCard>
+      ) : null}
 
-      {!permissionDenied && challenges.isLoading && (
-        <MobileScreenSection className="mt-4">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <SkeletonCard key={index} />
-          ))}
-        </MobileScreenSection>
-      )}
-
-      {!permissionDenied && challenges.isError && !hasApiStatus(challenges.error, 403) && (
-        <div className="mt-6">
-          <ErrorState variant="network" onRetry={() => challenges.refetch()} />
+      <MobileScreenSection className="space-y-3">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-t-muted">
+            {permissionDenied ? "Premium kartalar" : `Topildi: ${challenges.data?.items.length ?? 0}`}
+          </p>
+          {!permissionDenied ? (
+            <Button
+              variant="ghost"
+              size="xs"
+              loading={challenges.isFetching}
+              onClick={() => challenges.refetch()}
+            >
+              <RefreshCcw className="h-3.5 w-3.5" />
+              Yangilash
+            </Button>
+          ) : null}
         </div>
-      )}
 
-      {!permissionDenied && !challenges.isLoading && !challenges.isError && !challenges.data?.items.length && (
-        <div className="mt-10">
+        {!permissionDenied && challenges.isLoading ? (
+          Array.from({ length: 4 }).map((_, index) => <SkeletonCard key={index} />)
+        ) : null}
+
+        {!permissionDenied && challenges.isError && !hasApiStatus(challenges.error, 403) ? (
+          <ErrorState variant="network" onRetry={() => challenges.refetch()} />
+        ) : null}
+
+        {!permissionDenied && !challenges.isLoading && !challenges.isError && !challenges.data?.items.length ? (
           <EmptyState
             icon={<Trophy className="h-8 w-8" />}
             title="Bu kategoriyada challengelar yo'q"
             description="Yangi challengelar paydo bo'lganda shu yerda ko'rinadi."
           />
-        </div>
-      )}
+        ) : null}
 
-      {permissionDenied && !!activePlaceholders.length && (
-        <MobileScreenSection className="mt-4">
-          {activePlaceholders.map((challenge) => (
-            <ChallengeShowcaseCard
-              key={challenge.id}
-              challenge={challenge}
-              placeholder
-              onClick={() => navigate("/subscription")}
-            />
-          ))}
-        </MobileScreenSection>
-      )}
+        {permissionDenied && !!activePlaceholders.length
+          ? activePlaceholders.map((challenge) => (
+              <ChallengeShowcaseCard
+                key={challenge.id}
+                challenge={challenge}
+                placeholder
+                onClick={() => navigate("/subscription")}
+              />
+            ))
+          : null}
 
-      {!permissionDenied && !!challenges.data?.items.length && (
-        <MobileScreenSection className="mt-4">
-          {challenges.data.items.map((challenge) => (
-            <ChallengeShowcaseCard
-              key={challenge.id}
-              challenge={challenge}
-              onClick={() => handleChallengeOpen(challenge)}
-            />
-          ))}
-        </MobileScreenSection>
-      )}
+        {!permissionDenied && !!challenges.data?.items.length
+          ? challenges.data.items.map((challenge) => (
+              <ChallengeShowcaseCard
+                key={challenge.id}
+                challenge={challenge}
+                onClick={() => handleChallengeOpen(challenge)}
+              />
+            ))
+          : null}
+      </MobileScreenSection>
     </MobileScreen>
   );
 };

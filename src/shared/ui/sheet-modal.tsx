@@ -29,7 +29,7 @@ export const SheetModal = ({
     <Dialog.Portal>
       <Dialog.Overlay
         className={cn(
-          "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm",
+          "liquid-glass-overlay fixed inset-0 z-50",
           "data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-in",
           overlayClassName,
         )}
@@ -37,7 +37,7 @@ export const SheetModal = ({
       <Dialog.Content
         className={cn(
           "fixed z-50 flex flex-col",
-          "bg-elevated border border-border/60",
+          "liquid-glass-surface-strong",
           "shadow-card",
           "data-[state=open]:animate-slide-up",
           side === "bottom" && [
@@ -63,7 +63,7 @@ export const SheetModal = ({
           )}
           <Dialog.Close asChild>
             <button
-              className="ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-surface text-t-muted transition hover:text-t-primary"
+              className="ml-auto flex h-8 w-8 items-center justify-center rounded-full liquid-glass-chip text-t-muted transition hover:text-t-primary"
               aria-label="Close"
             >
               <X className="h-4 w-4" />

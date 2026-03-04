@@ -58,7 +58,7 @@ export const LoginForm = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword((value) => !value)}
-                  className="transition-colors hover:text-white"
+                  className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:text-white"
                   aria-label={showPassword ? t("hidePassword") : t("showPassword")}
                 >
                   {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}

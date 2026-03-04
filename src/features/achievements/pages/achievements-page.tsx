@@ -128,10 +128,10 @@ export const AchievementsPage = () => {
             key={t.id}
             onClick={() => setTab(t.id)}
             className={cn(
-              "flex-1 rounded-xl border py-2 text-xs font-semibold transition-all",
+              "liquid-glass-surface-interactive flex-1 rounded-xl border py-2 text-xs font-semibold transition-all",
               tab === t.id
-                ? "border-gold/40 bg-gold/10 text-gold"
-                : "border-border/40 bg-elevated text-t-muted hover:border-gold/20",
+                ? "liquid-glass-button-chip-active text-gold"
+                : "liquid-glass-button-chip text-t-muted hover:border-gold/20",
             )}
           >
             {t.label}

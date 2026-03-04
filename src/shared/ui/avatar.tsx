@@ -65,8 +65,8 @@ export const Avatar = ({
         className={cn(
           "flex h-full w-full items-center justify-center font-semibold",
           gold
-            ? "bg-gold-135 text-t-inverse"
-            : "bg-elevated text-t-secondary",
+            ? "liquid-glass-accent text-t-inverse"
+            : "liquid-glass-surface-muted text-t-secondary",
         )}
       >
         {initials}

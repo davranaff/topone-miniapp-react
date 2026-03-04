@@ -5,6 +5,10 @@ import { Spinner } from "@/shared/ui/spinner";
 import { cn } from "@/shared/lib/cn";
 import { useResolvedShellNav, type ShellNavAction, type ShellNavTab } from "@/widgets/navigation/shell-nav";
 
+const DOCK_BUTTON_SIZE_CLASS = "h-[4.75rem] w-[4.75rem]";
+
+const DockShellDecoration = () => null;
+
 const CircleDockButton = ({
   icon,
   label,
@@ -22,9 +26,8 @@ const CircleDockButton = ({
       aria-label={label}
       onClick={onClick}
       className={cn(
-        "pointer-events-auto flex h-[4.25rem] w-[4.25rem] items-center justify-center rounded-full",
-        "border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(10,10,10,0.58))]",
-        "shadow-[0_24px_48px_rgba(0,0,0,0.45)] backdrop-blur-[18px]",
+        "liquid-glass-button-icon liquid-glass-surface-interactive pointer-events-auto flex items-center justify-center rounded-full",
+        DOCK_BUTTON_SIZE_CLASS,
         "transition-transform duration-300 active:scale-95",
       )}
     >
@@ -35,14 +38,14 @@ const CircleDockButton = ({
 
 const actionToneClass = (tone?: ShellNavAction["tone"]) => {
   if (tone === "danger") {
-    return "border-danger/30 bg-[linear-gradient(180deg,rgba(239,68,68,0.18),rgba(24,24,24,0.92))] text-white";
+    return "liquid-glass-state-danger text-white";
   }
 
   if (tone === "success") {
-    return "border-success/30 bg-[linear-gradient(180deg,rgba(34,197,94,0.18),rgba(24,24,24,0.92))] text-white";
+    return "liquid-glass-state-success text-white";
   }
 
-  return "border-gold/20 bg-[linear-gradient(180deg,rgba(245,200,66,0.2),rgba(24,24,24,0.92))] text-gold";
+  return "liquid-glass-state-gold text-gold";
 };
 
 export const BottomNav = () => {
@@ -117,18 +120,15 @@ export const BottomNav = () => {
             <div
               ref={tabsContainerRef}
               className={cn(
-                "glass-lg animate-dock-pulse pointer-events-auto relative flex min-h-[4.5rem] w-full items-center gap-1 rounded-[2rem] p-2",
-                "border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(8,8,8,0.34))]",
-                "shadow-[0_24px_60px_rgba(0,0,0,0.42)] backdrop-blur-[20px]",
-                config.showBackButton && "ml-[4.75rem]",
-                config.showChatButton && "mr-[4.75rem]",
+                "liquid-glass-nav-shell animate-dock-pulse pointer-events-auto relative flex min-h-[4.75rem] w-full items-center gap-1 overflow-hidden rounded-[70px] p-2.5",
+                config.showBackButton && "ml-[5.25rem]",
+                config.showChatButton && "mr-[5.25rem]",
               )}
             >
+              <DockShellDecoration />
               <div
                 className={cn(
-                  "pointer-events-none absolute top-2 h-[calc(100%-1rem)] rounded-[1.35rem]",
-                  "bg-[linear-gradient(180deg,rgba(255,226,163,0.18),rgba(212,160,23,0.08))]",
-                  "shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_12px_24px_rgba(0,0,0,0.22)]",
+                  "liquid-glass-nav-indicator pointer-events-none absolute top-2.5 h-[calc(100%-1.25rem)] rounded-[58px]",
                   "transition-[left,width,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                   indicator.visible ? "opacity-100" : "opacity-0",
                 )}
@@ -153,25 +153,26 @@ export const BottomNav = () => {
             <div
               key={`${config.action.label}-${config.action.tone ?? "gold"}`}
               className={cn(
-                "glass-lg pointer-events-auto flex h-[4.5rem] items-center rounded-[2rem] p-2 backdrop-blur-[20px]",
-                "animate-scale-in border bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(8,8,8,0.36))] shadow-[0_24px_60px_rgba(0,0,0,0.42)]",
-                config.showBackButton ? "ml-[4.75rem]" : "ml-0",
-                config.showChatButton ? "mr-[4.75rem]" : "mr-0",
-                showTabs ? "absolute inset-x-[5.25rem] bottom-0" : "w-full",
+                "liquid-glass-nav-shell pointer-events-auto flex h-[4.75rem] items-center overflow-hidden rounded-[70px] p-2.5",
+                "animate-scale-in",
+                config.showBackButton ? "ml-[5.25rem]" : "ml-0",
+                config.showChatButton ? "mr-[5.25rem]" : "mr-0",
+                showTabs ? "absolute inset-x-[5.75rem] bottom-0" : "w-full",
                 actionToneClass(config.action.tone),
               )}
             >
+              <DockShellDecoration />
               <button
                 type="button"
                 onClick={config.action.onClick}
                 disabled={config.action.disabled || config.action.loading}
                 className={cn(
-                  "flex h-full w-full items-center justify-center gap-2 rounded-[1.4rem] px-4 text-sm font-semibold",
+                  "liquid-glass-surface-interactive flex h-full w-full items-center justify-center gap-2 rounded-[1.4rem] px-4 text-sm font-semibold",
                   "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.985]",
                   "disabled:cursor-not-allowed disabled:opacity-60",
                   config.action.tone === "gold" || !config.action.tone
-                    ? "bg-gold text-t-inverse"
-                    : "bg-white/8 text-t-primary",
+                    ? "liquid-glass-accent text-t-inverse"
+                    : "liquid-glass-chip text-t-primary",
                 )}
               >
                 {config.action.loading ? (
@@ -218,12 +219,12 @@ const NavTabButton = ({
       type="button"
       onClick={onSelect}
       className={cn(
-        "relative z-10 flex min-w-0 flex-1 flex-col items-center gap-1 rounded-[1.35rem] px-3 py-2.5",
+        "relative z-10 flex min-w-0 flex-1 flex-col items-center gap-1 rounded-[58px] px-3 py-2.5",
         "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95",
         active ? "text-gold" : "text-t-muted hover:text-t-primary",
       )}
     >
-      <Icon className={cn("h-5 w-5 transition-transform duration-300", active && "scale-105 drop-shadow-[0_0_14px_rgba(212,160,23,0.28)]")} />
+      <Icon className={cn("h-5 w-5 transition-transform duration-300", active && "scale-110 drop-shadow-[0_0_18px_rgba(212,160,23,0.32)]")} />
       <span className={cn("truncate text-[0.68rem] font-medium transition-colors duration-300", active && "text-gold")}>
         {tab.label}
       </span>

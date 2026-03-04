@@ -32,11 +32,11 @@ export const ConfirmDialog = ({
 }: ConfirmDialogProps) => (
   <Dialog.Root open={open} onOpenChange={onOpenChange}>
     <Dialog.Portal>
-      <Dialog.Overlay className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm data-[state=open]:animate-fade-in" />
+      <Dialog.Overlay className="liquid-glass-overlay fixed inset-0 z-50 data-[state=open]:animate-fade-in" />
       <Dialog.Content
         className={cn(
           "fixed left-1/2 top-1/2 z-50 w-[min(92vw,360px)] -translate-x-1/2 -translate-y-1/2",
-          "rounded-2xl border border-border/60 bg-elevated p-6",
+          "liquid-glass-surface-strong rounded-2xl p-6",
           "shadow-card data-[state=open]:animate-scale-in",
         )}
       >
@@ -44,7 +44,7 @@ export const ConfirmDialog = ({
           <div
             className={cn(
               "mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl",
-              danger ? "bg-danger/10 text-danger" : "bg-gold/10 text-gold",
+              danger ? "liquid-glass-state-danger text-danger" : "liquid-glass-state-gold text-gold",
             )}
           >
             {icon}

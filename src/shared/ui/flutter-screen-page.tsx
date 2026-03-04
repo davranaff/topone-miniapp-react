@@ -33,13 +33,13 @@ export const FlutterScreenPage = ({
         }
       />
 
-      <section className="rounded-[1.5rem] border border-border bg-surface p-6 shadow-card">
+      <section className="liquid-glass-surface-strong rounded-[1.5rem] p-6 shadow-card">
         <div className="flex flex-wrap gap-3">
           <Badge>Flutter parity shell</Badge>
           <Badge>{path}</Badge>
         </div>
 
-        <div className="mt-5 rounded-xl border border-border/80 bg-background/80 p-4">
+        <div className="liquid-glass-surface-muted mt-5 rounded-xl p-4">
           <div className="flex items-center gap-2 text-sm font-medium text-text">
             <FileCode2 className="h-4 w-4 text-primary" />
             Flutter source
@@ -54,13 +54,13 @@ export const FlutterScreenPage = ({
       </section>
 
       {siblings.length ? (
-        <section className="rounded-[1.5rem] border border-border bg-surface p-6 shadow-card">
+        <section className="liquid-glass-surface-strong rounded-[1.5rem] p-6 shadow-card">
           <h2 className="text-lg font-semibold text-text">Sibling screens</h2>
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {siblings.map((item) => (
               <Link
                 key={item.path}
-                className="group flex items-center justify-between rounded-xl border border-border bg-background/60 px-4 py-3 transition hover:border-primary/50 hover:bg-primary/5"
+                className="liquid-glass-surface-muted liquid-glass-surface-interactive group flex items-center justify-between rounded-xl px-4 py-3 transition hover:border-primary/50"
                 to={item.path}
               >
                 <span className="text-sm font-medium text-text">{item.title}</span>
@@ -71,7 +71,7 @@ export const FlutterScreenPage = ({
         </section>
       ) : null}
 
-      <section className="rounded-[1.5rem] border border-dashed border-border bg-background/70 p-6">
+      <section className="liquid-glass-surface-muted rounded-[1.5rem] border-dashed p-6">
         <div className="flex flex-wrap gap-3">
           <Button type="button" variant="secondary" onClick={() => window.history.back()}>
             Назад

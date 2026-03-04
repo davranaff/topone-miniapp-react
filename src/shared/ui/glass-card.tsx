@@ -21,18 +21,16 @@ export const GlassCard = ({
   goldBorder = false,
   interactive = false,
   radius = "xl",
+  style,
   ...props
 }: GlassCardProps) => (
   <div
     className={cn(
-      "glass-premium shine-sweep relative overflow-hidden",
-      "border border-white/10 bg-[linear-gradient(180deg,rgba(34,28,18,0.58),rgba(18,18,18,0.76),rgba(10,10,10,0.84))]",
-      "shadow-card before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-white/10",
-      "after:pointer-events-none after:absolute after:inset-x-5 after:bottom-0 after:h-px after:bg-white/6",
+      "glass-premium relative overflow-hidden",
+      "shadow-card",
       radMap[radius],
       padMap[padding],
       glow && "shadow-glow",
-      goldBorder && "border-gold/30",
       interactive && [
         "cursor-pointer transition-all duration-300 ease-out will-change-transform",
         "hover:-translate-y-1 hover:border-gold/35 hover:shadow-[0_20px_40px_rgba(0,0,0,0.34)]",
@@ -40,6 +38,7 @@ export const GlassCard = ({
       ],
       className,
     )}
+    style={goldBorder ? { ...style, borderColor: "rgba(212, 160, 23, 0.3)" } : style}
     {...props}
   >
     {children}

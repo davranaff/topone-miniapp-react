@@ -30,7 +30,7 @@ export const SkeletonText = ({ lines = 2, className }: { lines?: number; classNa
 );
 
 export const SkeletonCard = ({ className }: { className?: string }) => (
-  <div className={cn("rounded-2xl border border-border/40 bg-card p-4 space-y-3", className)}>
+  <div className={cn("liquid-glass-surface-muted rounded-2xl p-4 space-y-3", className)}>
     <Skeleton className="h-5 w-2/3" />
     <SkeletonText lines={2} />
     <Skeleton className="h-9 w-full rounded-lg" />

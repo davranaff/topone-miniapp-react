@@ -93,7 +93,7 @@ export const TelegramLoginPage = () => {
             {t("haveAccount")}{" "}
             <button
               type="button"
-              className="font-bold text-white transition-colors hover:text-[#f6d489]"
+              className="liquid-glass-button-link liquid-glass-surface-interactive rounded-full px-3 py-1.5 font-bold text-white transition-colors hover:text-[#f6d489]"
               onClick={() => navigate("/login-form")}
             >
               {t("login")}

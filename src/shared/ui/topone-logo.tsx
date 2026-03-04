@@ -36,8 +36,8 @@ export const TopOneLogo = ({
     <div
       className={cn(
         "relative flex items-center justify-center rounded-[2rem] border border-white/10",
-        "bg-[radial-gradient(circle_at_35%_25%,rgba(255,255,255,0.2),transparent_38%),linear-gradient(180deg,rgba(255,226,163,0.18),rgba(214,163,67,0.08),rgba(18,18,18,0.58))]",
-        "shadow-[0_24px_60px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-xl",
+        "bg-[linear-gradient(180deg,rgba(255,226,163,0.12),rgba(214,163,67,0.06),rgba(18,18,18,0.58))]",
+        "shadow-[0_24px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl",
         size === "sm" && "h-16 w-16",
         size === "md" && "h-20 w-20",
         size === "lg" && "h-24 w-24",

@@ -37,7 +37,7 @@ export const LoginPage = () => {
                 type="button"
                 icon={<ArrowRight className="h-6 w-6" />}
                 onClick={() => navigate("/login-form")}
-                className="bg-[linear-gradient(135deg,rgba(255,255,255,0.13),rgba(255,255,255,0.06))] shadow-[0_16px_32px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.14)]"
+                className="bg-[rgba(255,255,255,0.06)] shadow-[0_16px_32px_rgba(0,0,0,0.22)]"
               >
                 {t("login")}
               </AuthPrimaryButton>
@@ -46,7 +46,7 @@ export const LoginPage = () => {
                 type="button"
                 icon={<UserPlus className="h-6 w-6" />}
                 onClick={() => navigate("/register")}
-                className="bg-[linear-gradient(135deg,rgba(255,255,255,0.1),rgba(236,192,89,0.18))]"
+                className="bg-[rgba(236,192,89,0.12)]"
               >
                 {t("register")}
               </AuthPrimaryButton>

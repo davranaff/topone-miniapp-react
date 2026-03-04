@@ -34,3 +34,4 @@ export { Skeleton, SkeletonText, SkeletonCard } from "./skeleton";
 export { Spinner } from "./spinner";
 export { StatCard, StatCardsRow } from "./stat-card";
 export { StatusChip } from "./status-chip";
+export { Switch } from "./switch";

@@ -17,12 +17,12 @@ const sizeMap = {
 };
 
 const variantMap = {
-  gold:    "bg-gold/15 text-gold border border-gold/25",
-  surface: "bg-elevated text-t-secondary border border-border/50",
-  success: "bg-success/10 text-success border border-success/25",
-  danger:  "bg-danger/10 text-danger border border-danger/25",
-  info:    "bg-info/10 text-info border border-info/25",
-  muted:   "bg-elevated text-t-muted border border-border/40",
+  gold:    "liquid-glass-state-gold text-gold",
+  surface: "liquid-glass-chip text-t-secondary",
+  success: "liquid-glass-state-success text-success",
+  danger:  "liquid-glass-state-danger text-danger",
+  info:    "liquid-glass-state-info text-info",
+  muted:   "liquid-glass-surface-muted text-t-muted",
 };
 
 export const IconBadge = ({

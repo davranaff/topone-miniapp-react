@@ -73,13 +73,13 @@ const OtpSlot = ({
 }: OtpSlotProps) => (
   <div
     className={cn(
-      "relative flex h-12 w-10 items-center justify-center rounded-lg border text-base font-semibold",
-      "text-t-primary transition-all duration-200 bg-elevated",
+      "liquid-glass-field relative flex h-12 w-10 items-center justify-center rounded-lg border text-base font-semibold",
+      "text-t-primary transition-all duration-200",
       isActive
-        ? cn("border-gold/70 ring-2 ring-gold/30", activeSlotClassName)
+        ? cn("liquid-glass-state-gold ring-2 ring-gold/30", activeSlotClassName)
         : error
-        ? cn("border-danger/60", errorSlotClassName)
-        : "border-border/60",
+        ? cn("liquid-glass-field-error", errorSlotClassName)
+        : "",
       slotClassName,
     )}
   >

@@ -52,9 +52,9 @@ export const SegmentedTabsList = ({
   <RadixTabs.List
     className={cn(
       "flex w-full items-center",
-      variant === "pill" && "rounded-xl bg-elevated p-1 gap-1",
+      variant === "pill" && "liquid-glass-surface-muted rounded-xl p-1 gap-1",
       variant === "line" && "border-b border-border/40 gap-0",
-      variant === "glass" && "glass rounded-xl p-1 gap-1",
+      variant === "glass" && "liquid-glass-surface rounded-xl p-1 gap-1",
       className,
     )}
   >
@@ -63,18 +63,17 @@ export const SegmentedTabsList = ({
         key={tab.value}
         value={tab.value}
         className={cn(
-          "flex flex-1 items-center justify-center gap-1.5 text-sm font-medium transition-all duration-200 outline-none",
+          "flex flex-1 items-center justify-center gap-1.5 border border-transparent text-sm font-medium transition-all duration-200 outline-none",
           variant === "pill" && [
-            "rounded-lg py-2 px-3 text-t-muted",
-            "data-[state=active]:bg-card data-[state=active]:text-t-primary data-[state=active]:shadow-soft",
+            "segmented-tab-pill rounded-lg py-2 px-3 text-t-muted",
+            "data-[state=active]:shadow-soft",
           ],
           variant === "line" && [
             "border-b-2 border-transparent px-4 py-3 text-t-muted rounded-none",
             "data-[state=active]:border-gold data-[state=active]:text-gold",
           ],
           variant === "glass" && [
-            "rounded-lg py-2 px-3 text-t-muted",
-            "data-[state=active]:bg-gold/15 data-[state=active]:text-gold",
+            "segmented-tab-glass rounded-lg py-2 px-3 text-t-muted",
           ],
         )}
       >
@@ -84,7 +83,7 @@ export const SegmentedTabsList = ({
           <span
             className={cn(
               "rounded-full px-1.5 py-0.5 text-2xs font-semibold",
-              "bg-gold/15 text-gold",
+              "liquid-glass-state-gold text-gold",
             )}
           >
             {tab.badge}

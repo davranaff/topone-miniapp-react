@@ -7,7 +7,7 @@ import { Avatar } from "@/shared/ui/avatar";
 import { SkeletonCard } from "@/shared/ui/skeleton";
 import { ErrorState } from "@/shared/ui/error-state";
 import { EmptyState } from "@/shared/ui/empty-state";
-import { useLeaderboard, useMyPosition } from "@/features/leaderboard/hooks/use-leaderboard";
+import { useLeaderboard } from "@/features/leaderboard/hooks/use-leaderboard";
 import type { LeaderboardType, LeaderboardEntry } from "@/entities/leaderboard/types";
 import { cn } from "@/shared/lib/cn";
 
@@ -75,7 +75,6 @@ const LeaderboardRow = ({ entry, type }: { entry: LeaderboardEntry; type: Leader
 export const LeaderboardPage = () => {
   const [type, setType] = useState<LeaderboardType>("xp");
   const leaderboard = useLeaderboard(type);
-  const myPos = useMyPosition(type);
 
   if (leaderboard.isLoading) {
     return (
@@ -100,6 +99,7 @@ export const LeaderboardPage = () => {
   const items = leaderboard.data ?? [];
   const top3 = items.slice(0, 3);
   const rest = items.slice(3);
+  const myPosition = items.find((entry) => entry.isCurrentUser);
 
   return (
     <MobileScreen>
@@ -114,10 +114,10 @@ export const LeaderboardPage = () => {
               key={t.id}
               onClick={() => setType(t.id)}
               className={cn(
-                "flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-semibold transition-all",
+                "liquid-glass-surface-interactive flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-semibold transition-all",
                 type === t.id
-                  ? "border-gold/40 bg-gold/10 text-gold"
-                  : "border-border/40 bg-elevated text-t-muted hover:border-gold/20",
+                  ? "liquid-glass-button-chip-active text-gold"
+                  : "liquid-glass-button-chip text-t-muted hover:border-gold/20",
               )}
             >
               <Icon className="h-3.5 w-3.5" />
@@ -147,14 +147,14 @@ export const LeaderboardPage = () => {
           )}
 
           {/* My position card */}
-          {myPos.data && myPos.data.rank > 3 && (
+          {myPosition && myPosition.rank > 3 && (
             <GlassCard goldBorder className="mt-4">
               <div className="flex items-center gap-3">
                 <Crown className="h-5 w-5 text-gold" />
                 <p className="text-sm font-semibold text-t-primary">Sizning o'rningiz:</p>
                 <div className="ml-auto flex items-center gap-2">
-                  <span className="text-lg font-bold text-gold">#{myPos.data.rank}</span>
-                  <span className="text-sm text-t-muted">({myPos.data.value.toLocaleString()})</span>
+                  <span className="text-lg font-bold text-gold">#{myPosition.rank}</span>
+                  <span className="text-sm text-t-muted">({myPosition.value.toLocaleString()})</span>
                 </div>
               </div>
             </GlassCard>

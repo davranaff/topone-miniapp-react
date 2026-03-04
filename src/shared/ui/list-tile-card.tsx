@@ -24,14 +24,14 @@ export const ListTileCard = ({
 }: ListTileCardProps) => (
   <div
     className={cn(
-      "flex items-center gap-3 rounded-xl border border-border/40 bg-card px-4 py-3.5",
+      "liquid-glass-surface liquid-glass-surface-interactive flex items-center gap-3 rounded-xl px-4 py-3.5",
       "transition-all duration-200",
       interactive && [
         "cursor-pointer",
-        "hover:border-gold/30 hover:bg-elevated",
+        "hover:border-gold/30",
         "active:scale-[0.98]",
       ],
-      highlight && "border-gold/30 bg-gold/5",
+      highlight && "liquid-glass-state-gold",
       locked && "opacity-60",
       className,
     )}

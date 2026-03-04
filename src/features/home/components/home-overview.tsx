@@ -34,6 +34,12 @@ import { ProgressBar } from "@/shared/ui/progress-bar";
 import { Badge } from "@/shared/ui/badge";
 import { cn } from "@/shared/lib/cn";
 import { TopActionCluster } from "@/widgets/navigation/top-action-cluster";
+import {
+  getChallengeCardBackground,
+  getChallengeRewardLabel,
+  getChallengeStatusLabel,
+  getChallengeTypeLabel,
+} from "@/features/challenges/lib/challenge-presentation";
 
 type StaticChallengeCard = {
   id: string;
@@ -51,43 +57,6 @@ const ANNOUNCEMENT_GRADIENTS = [
   "linear-gradient(135deg, rgba(139,92,246,0.92) 0%, rgba(236,72,153,0.88) 100%)",
 ];
 
-const getChallengeTypeLabel = (challenge: Challenge, t: (key: string) => string) => {
-  if (challenge.typeLabel) {
-    return challenge.typeLabel;
-  }
-
-  switch (challenge.typeCode) {
-    case "daily":
-      return t("challengeTypeDaily");
-    case "weekly":
-      return t("challengeTypeWeekly");
-    case "monthly":
-      return t("challengeTypeMonthly");
-    default:
-      return t("challengeTypeOther");
-  }
-};
-
-const getChallengeStatusLabel = (challenge: Challenge, t: (key: string) => string) => {
-  if (challenge.statusLabel) {
-    return challenge.statusLabel;
-  }
-
-  if (challenge.isCompleted) {
-    return t("challengeStatusActive");
-  }
-
-  return challenge.isStarted ? t("challengeStatusActive") : t("challengeStatusPending");
-};
-
-const getChallengeReward = (challenge: Challenge) => {
-  if (challenge.coinReward && challenge.coinReward > 0) {
-    return `${challenge.coinReward} Coin`;
-  }
-
-  return `${challenge.xpReward} XP`;
-};
-
 const HomeAnnouncementCard = ({
   announcement,
   index,
@@ -103,7 +72,7 @@ const HomeAnnouncementCard = ({
     <button
       type="button"
       onClick={onOpen}
-      className="group block w-full text-left"
+      className="group block w-full rounded-[2rem] text-left"
       aria-label={announcement.title}
     >
       <div className="relative min-h-[190px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_26px_70px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_32px_84px_rgba(0,0,0,0.52)]">
@@ -117,9 +86,7 @@ const HomeAnnouncementCard = ({
             backgroundSize: "cover",
           }}
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_28%)]" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
-        <div className="absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),transparent)]" />
 
         <div className="relative flex min-h-[180px] flex-col justify-end gap-2 p-5">
           <h2 className="max-w-[90%] text-xl font-bold leading-tight text-white">
@@ -145,12 +112,12 @@ const HomeMiniAppsRow = ({
   subtitle: string;
   onTap: () => void;
 }) => (
-  <button type="button" className="group block w-full text-left" onClick={onTap}>
+  <button type="button" className="group block w-full rounded-[1.55rem] text-left" onClick={onTap}>
     <GlassCard
       interactive
       className="flex items-center gap-4 rounded-[1.55rem] border-white/10 px-4 py-4"
     >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.15rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,226,163,0.14),rgba(255,255,255,0.03))] text-gold shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.15rem] border border-white/10 bg-[rgba(255,255,255,0.05)] text-gold">
         <Sparkles className="h-5 w-5" />
       </div>
       <div className="min-w-0 flex-1">
@@ -183,9 +150,7 @@ const FeaturedCourseCard = ({ course }: { course: Course }) => {
             backgroundSize: "cover",
           }}
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.16),transparent_26%)]" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
-        <div className="absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),transparent)]" />
 
         <div className="relative flex h-full flex-col justify-between p-5">
           <div className="flex items-start justify-between gap-3">
@@ -210,7 +175,7 @@ const FeaturedCourseCard = ({ course }: { course: Course }) => {
             </div>
 
             {progress > 0 && (
-              <div className="rounded-[1.35rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
+              <div className="rounded-[1.35rem] border border-white/8 bg-[rgba(255,255,255,0.05)] p-3.5 backdrop-blur-xl">
                 <ProgressBar
                   value={progress}
                   max={100}
@@ -246,26 +211,20 @@ const HomeChallengeCard = ({
   return (
     <Link
       to={`/challenges/${challenge.id}`}
-      className="group block w-[304px] shrink-0 snap-start"
+      className="block w-[304px] shrink-0 snap-start"
     >
-      <div className="relative h-[188px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_26px_70px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_34px_86px_rgba(0,0,0,0.5)]">
+      <div className="relative h-[188px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_26px_70px_rgba(0,0,0,0.42)]">
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: imageUrl
               ? `url(${imageUrl})`
-              : completed
-                ? "linear-gradient(135deg, rgba(16,185,129,0.88) 0%, rgba(15,118,110,0.94) 100%)"
-                : challenge.isStarted
-                  ? "linear-gradient(135deg, rgba(212,160,23,0.92) 0%, rgba(139,105,20,0.94) 100%)"
-                  : "linear-gradient(135deg, rgba(71,85,105,0.92) 0%, rgba(39,39,42,0.94) 100%)",
+              : getChallengeCardBackground(challenge),
             backgroundPosition: "center",
             backgroundSize: "cover",
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
-        <div className="absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.12),transparent)]" />
-
         <div className="relative flex h-full flex-col justify-between p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -287,7 +246,7 @@ const HomeChallengeCard = ({
             </div>
 
             <div className="rounded-full border border-white/15 bg-black/20 px-3 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-sm">
-              {getChallengeReward(challenge)}
+              {getChallengeRewardLabel(challenge)}
             </div>
           </div>
 
@@ -387,7 +346,6 @@ const StaticSubscriptionCourseCard = ({ index }: { index: number }) => {
           className="absolute inset-0"
           style={{ backgroundImage: gradients[index % gradients.length] }}
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.14),transparent_28%)]" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/40 to-transparent" />
         <div className="absolute inset-0 backdrop-blur-[2px]" />
         <div className="relative flex h-full flex-col justify-between p-5">
@@ -406,7 +364,7 @@ const StaticSubscriptionCourseCard = ({ index }: { index: number }) => {
               <div className="h-4 w-1/2 rounded-full bg-white/10 backdrop-blur-sm" />
             </div>
 
-            <div className="rounded-[1.35rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.1),rgba(255,255,255,0.04))] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
+            <div className="rounded-[1.35rem] border border-white/8 bg-[rgba(255,255,255,0.05)] p-3.5 backdrop-blur-xl">
               <div className="h-2.5 w-full rounded-full bg-white/10" />
               <div className="mt-3 flex items-center justify-between">
                 <div className="h-3 w-24 rounded-full bg-white/12" />
@@ -454,7 +412,6 @@ const ChallengeTimerCard = ({
 
   return (
     <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-card px-5 py-4 shadow-card">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(212,160,23,0.18),transparent_58%),linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))]" />
       <div className="relative flex items-center justify-center gap-3">
         <Clock3 className="h-6 w-6 shrink-0 text-t-primary" />
         <div className="flex items-center text-[2.3rem] font-bold leading-none tracking-[0.18em] text-t-primary">
@@ -747,8 +704,17 @@ export const HomeOverview = () => {
                 <HomeChallengeCard
                   key={challenge.id}
                   challenge={challenge}
-                  typeLabel={getChallengeTypeLabel(challenge, t)}
-                  statusLabel={getChallengeStatusLabel(challenge, t)}
+                  typeLabel={getChallengeTypeLabel(challenge, {
+                    daily: t("challengeTypeDaily"),
+                    weekly: t("challengeTypeWeekly"),
+                    monthly: t("challengeTypeMonthly"),
+                    other: t("challengeTypeOther"),
+                  })}
+                  statusLabel={getChallengeStatusLabel(challenge, {
+                    active: t("challengeStatusActive"),
+                    pending: t("challengeStatusPending"),
+                    completed: t("challengeStatusActive"),
+                  })}
                 />
               ))}
             </div>

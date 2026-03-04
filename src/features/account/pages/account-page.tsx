@@ -158,7 +158,11 @@ export const AccountPage = () => {
                 id="ac-cur-pw"
                 type={showCurrent ? "text" : "password"}
                 trailingIcon={
-                  <button type="button" onClick={() => setShowCurrent((v) => !v)}>
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrent((v) => !v)}
+                    className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-8 w-8 items-center justify-center rounded-lg text-t-muted hover:text-t-primary"
+                  >
                     {showCurrent ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 }
@@ -171,7 +175,11 @@ export const AccountPage = () => {
                 id="ac-new-pw"
                 type={showNew ? "text" : "password"}
                 trailingIcon={
-                  <button type="button" onClick={() => setShowNew((v) => !v)}>
+                  <button
+                    type="button"
+                    onClick={() => setShowNew((v) => !v)}
+                    className="liquid-glass-button-icon liquid-glass-surface-interactive flex h-8 w-8 items-center justify-center rounded-lg text-t-muted hover:text-t-primary"
+                  >
                     {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 }

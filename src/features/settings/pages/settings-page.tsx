@@ -1,77 +1,35 @@
-import { useState } from "react";
-import { Moon, Sun, Zap, ZapOff, Globe, ChevronRight, Shield, LogOut } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  Zap,
+  ZapOff,
+  Globe,
+  ChevronRight,
+  Shield,
+  LogOut,
+  Sparkles,
+  Droplets,
+  Bell,
+  UserSquare2,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "@/app/providers/theme-provider";
 import { MobileScreen } from "@/shared/ui/mobile-screen";
 import { PageHeader } from "@/shared/ui/page-header";
 import { GlassCard } from "@/shared/ui/glass-card";
+import { Switch } from "@/shared/ui/switch";
 import { useLogout } from "@/features/auth/hooks/use-logout";
-import { cn } from "@/shared/lib/cn";
-
-const THEME_KEY = "topone-theme";
-const ECONOMY_KEY = "topone-economy";
-
-const Toggle = ({
-  checked,
-  onChange,
-}: {
-  checked: boolean;
-  onChange: (v: boolean) => void;
-}) => (
-  <button
-    type="button"
-    role="switch"
-    aria-checked={checked}
-    onClick={() => onChange(!checked)}
-    className={cn(
-      "relative h-6 w-11 rounded-full border transition-all duration-200",
-      checked
-        ? "border-gold/40 bg-gold/20"
-        : "border-border/60 bg-elevated",
-    )}
-  >
-    <span
-      className={cn(
-        "absolute top-0.5 h-5 w-5 rounded-full transition-all duration-200",
-        checked
-          ? "left-[calc(100%-1.375rem)] bg-gold"
-          : "left-0.5 bg-t-muted",
-      )}
-    />
-  </button>
-);
+import { useLocale } from "@/shared/hooks/use-locale";
 
 export const SettingsPage = () => {
   const navigate = useNavigate();
   const logout = useLogout();
-
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    return (localStorage.getItem(THEME_KEY) as "dark" | "light") ?? "dark";
-  });
-
-  const [economy, setEconomy] = useState(() => {
-    return localStorage.getItem(ECONOMY_KEY) === "true";
-  });
-
-  const handleTheme = (isDark: boolean) => {
-    const next = isDark ? "dark" : "light";
-    setTheme(next);
-    localStorage.setItem(THEME_KEY, next);
-    document.documentElement.setAttribute("data-theme", next);
-  };
-
-  const handleEconomy = (val: boolean) => {
-    setEconomy(val);
-    localStorage.setItem(ECONOMY_KEY, String(val));
-    if (val) {
-      document.documentElement.classList.add("economy-mode");
-    } else {
-      document.documentElement.classList.remove("economy-mode");
-    }
-  };
+  const { theme, setTheme, glassEffectEnabled, setGlassEffectEnabled, economyMode, setEconomyMode } = useTheme();
+  const { locale, setLocale } = useLocale();
 
   return (
     <MobileScreen>
-      <PageHeader title="Sozlamalar" />
+      <PageHeader title="Sozlamalar" subtitle="Interfeys, account va xavfsizlik parametrlari" />
 
       <div className="mt-4 space-y-4">
         {/* Appearance */}
@@ -87,25 +45,40 @@ export const SettingsPage = () => {
                 )}
                 <div>
                   <p className="text-sm font-medium text-t-primary">Qora tema</p>
-                  <p className="text-xs text-t-muted">Premium dark/gold interfeys</p>
+                  <p className="text-xs text-t-muted">Dark va light tema bir xil glass tizimda ishlaydi</p>
                 </div>
               </div>
-              <Toggle checked={theme === "dark"} onChange={handleTheme} />
+              <Switch checked={theme === "dark"} onCheckedChange={(isDark) => setTheme(isDark ? "dark" : "light")} />
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {economy ? (
+                {glassEffectEnabled ? (
+                  <Sparkles className="h-4 w-4 text-gold" />
+                ) : (
+                  <Droplets className="h-4 w-4 text-t-muted" />
+                )}
+                <div>
+                  <p className="text-sm font-medium text-t-primary">Liquid glass</p>
+                  <p className="text-xs text-t-muted">O'chirilsa effekt soddalashadi, faqat yengil blur qoladi</p>
+                </div>
+              </div>
+              <Switch checked={glassEffectEnabled} onCheckedChange={setGlassEffectEnabled} />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {economyMode ? (
                   <ZapOff className="h-4 w-4 text-t-muted" />
                 ) : (
                   <Zap className="h-4 w-4 text-gold" />
                 )}
                 <div>
                   <p className="text-sm font-medium text-t-primary">Tejamkor rejim</p>
-                  <p className="text-xs text-t-muted">Animatsiya va blur o'chiriladi</p>
+                  <p className="text-xs text-t-muted">Animatsiya kamayadi, glass va shadow yengillashadi</p>
                 </div>
               </div>
-              <Toggle checked={economy} onChange={handleEconomy} />
+              <Switch checked={economyMode} onCheckedChange={setEconomyMode} />
             </div>
           </div>
         </GlassCard>
@@ -113,32 +86,62 @@ export const SettingsPage = () => {
         {/* Language */}
         <GlassCard>
           <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-t-muted">Til</p>
-          <button className="flex w-full items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setLocale(locale === "ru" ? "uz" : "ru")}
+            className="liquid-glass-button-chip liquid-glass-surface-interactive flex w-full items-center gap-3 rounded-xl px-3 py-3"
+          >
             <Globe className="h-4 w-4 text-gold" />
             <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-t-primary">O'zbek</p>
+              <p className="text-sm font-medium text-t-primary">{locale === "ru" ? "Русский" : "O'zbek"}</p>
               <p className="text-xs text-t-muted">Interfeys tili</p>
             </div>
             <ChevronRight className="h-4 w-4 text-t-muted" />
           </button>
         </GlassCard>
 
-        {/* Security */}
+        {/* Account */}
         <GlassCard padding="none">
-          <button
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 hover:bg-elevated transition-all"
-            onClick={() => navigate("/profile")}
-          >
-            <Shield className="h-4 w-4 text-gold" />
-            <span className="flex-1 text-left text-sm font-medium text-t-primary">Parol o'zgartirish</span>
-            <ChevronRight className="h-4 w-4 text-t-muted" />
-          </button>
+          <div className="space-y-1 p-1.5">
+            <button
+              className="liquid-glass-button-chip liquid-glass-surface-interactive flex w-full items-center gap-3 rounded-xl px-4 py-3 transition-all"
+              onClick={() => navigate("/account")}
+            >
+              <UserSquare2 className="h-4 w-4 text-gold" />
+              <span className="flex-1 text-left text-sm font-medium text-t-primary">
+                Akkaunt ma'lumotlari
+              </span>
+              <ChevronRight className="h-4 w-4 text-t-muted" />
+            </button>
+
+            <button
+              className="liquid-glass-button-chip liquid-glass-surface-interactive flex w-full items-center gap-3 rounded-xl px-4 py-3 transition-all"
+              onClick={() => navigate("/notifications")}
+            >
+              <Bell className="h-4 w-4 text-gold" />
+              <span className="flex-1 text-left text-sm font-medium text-t-primary">
+                Bildirishnomalar
+              </span>
+              <ChevronRight className="h-4 w-4 text-t-muted" />
+            </button>
+
+            <button
+              className="liquid-glass-button-chip liquid-glass-surface-interactive flex w-full items-center gap-3 rounded-xl px-4 py-3 transition-all"
+              onClick={() => navigate("/profile")}
+            >
+              <Shield className="h-4 w-4 text-gold" />
+              <span className="flex-1 text-left text-sm font-medium text-t-primary">
+                Profil ko'rinishi
+              </span>
+              <ChevronRight className="h-4 w-4 text-t-muted" />
+            </button>
+          </div>
         </GlassCard>
 
         {/* Logout */}
         <GlassCard padding="none">
           <button
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-danger hover:bg-danger/5 transition-all"
+            className="liquid-glass-button-danger-soft liquid-glass-surface-interactive flex w-full items-center gap-3 rounded-xl px-4 py-3 text-danger transition-all"
             onClick={async () => {
               await logout();
               navigate("/login", { replace: true });

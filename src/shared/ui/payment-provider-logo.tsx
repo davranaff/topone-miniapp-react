@@ -60,7 +60,7 @@ export const PaymentProviderLogo = ({
     <div
       className={cn(
         baseClassName,
-        "border-white/10 bg-white/5 text-white/70",
+        "liquid-glass-chip text-white/70",
         className,
       )}
     >

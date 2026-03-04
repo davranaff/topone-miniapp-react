@@ -7,13 +7,13 @@ export const badgeVariants = cva(
   {
     variants: {
       variant: {
-        gold:    "border border-gold/30 bg-gold/10 text-gold",
-        outline: "border border-border/60 bg-transparent text-t-secondary",
-        success: "border border-success/30 bg-success/10 text-success",
-        danger:  "border border-danger/30 bg-danger/10 text-danger",
-        info:    "border border-info/30 bg-info/10 text-info",
-        muted:   "border border-border/40 bg-elevated text-t-muted",
-        solid:   "border-transparent bg-gold text-t-inverse",
+        gold:    "liquid-glass-state-gold text-gold",
+        outline: "liquid-glass-chip text-t-secondary",
+        success: "liquid-glass-state-success text-success",
+        danger:  "liquid-glass-state-danger text-danger",
+        info:    "liquid-glass-state-info text-info",
+        muted:   "liquid-glass-surface-muted text-t-muted",
+        solid:   "liquid-glass-accent text-t-inverse",
       },
       size: {
         sm: "px-2 py-0.5 text-2xs",

@@ -32,7 +32,7 @@ export const EmptyState = ({
     {icon && (
       <div
         className={cn(
-          "flex items-center justify-center rounded-2xl border border-border/40 bg-elevated text-t-muted",
+          "liquid-glass-surface-muted flex items-center justify-center rounded-2xl text-t-muted",
           compact ? "h-12 w-12 text-xl" : "h-16 w-16 text-3xl",
         )}
       >

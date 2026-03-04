@@ -20,9 +20,9 @@ const posMap = {
 
 const sizeMap = { sm: "h-11 w-11 text-sm", md: "h-14 w-14 text-base", lg: "h-16 w-16 text-xl" };
 const variantMap = {
-  gold:    "bg-gold-135 text-t-inverse shadow-glow hover:shadow-glow-lg",
-  surface: "bg-elevated border border-border/60 text-t-primary shadow-card",
-  danger:  "bg-danger text-white shadow-soft",
+  gold:    "liquid-glass-accent text-t-inverse shadow-glow hover:shadow-glow-lg",
+  surface: "liquid-glass-surface text-t-primary shadow-card",
+  danger:  "liquid-glass-state-danger text-white shadow-soft",
 };
 
 export const FloatingButton = ({
@@ -38,7 +38,7 @@ export const FloatingButton = ({
   <button
     aria-label={label}
     className={cn(
-      "relative z-40 flex items-center justify-center rounded-full",
+      "relative z-40 flex items-center justify-center rounded-full liquid-glass-surface-interactive",
       "transition-all duration-200 active:scale-95",
       posMap[position],
       sizeMap[size],

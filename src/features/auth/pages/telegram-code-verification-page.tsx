@@ -93,8 +93,8 @@ export const TelegramCodeVerificationPage = () => {
             disabled={mutation.isPending}
             error={mutation.isError}
             className="gap-3"
-            slotClassName="h-[4.8rem] w-[3.65rem] rounded-[1.35rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] text-[1.95rem] font-bold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
-            activeSlotClassName="bg-[linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0.04))] ring-0"
+            slotClassName="h-[4.8rem] w-[3.65rem] rounded-[1.35rem] border border-white/8 bg-[rgba(255,255,255,0.05)] text-[1.95rem] font-bold text-white"
+            activeSlotClassName="bg-[rgba(255,255,255,0.07)] ring-0"
             errorSlotClassName="ring-1 ring-red-400/70"
           />
 
@@ -115,7 +115,7 @@ export const TelegramCodeVerificationPage = () => {
           {botUrl ? (
             <button
               type="button"
-              className="w-full text-center text-[0.98rem] font-semibold text-white/66 transition-colors hover:text-white"
+              className="liquid-glass-button-link liquid-glass-surface-interactive w-full rounded-[1.2rem] px-4 py-3 text-center text-[0.98rem] font-semibold text-white/66 transition-colors hover:text-white"
               onClick={() => openTelegramLink(botUrl)}
             >
               {t("telegramOpenAgain")}

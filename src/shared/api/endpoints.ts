@@ -49,13 +49,12 @@ export const endpoints = {
     xp: "/api/v2/statistics/leaderboard/xp",
     coins: "/api/v2/statistics/leaderboard/coins",
     referrals: "/api/v2/statistics/leaderboard/referrals",
-    myPositionXp: "/api/v2/statistics/my-position/xp",
     myStats: "/api/v2/statistics/my-statistics/",
   },
   referrals: {
-    stats: "/api/v1/referrals/my-stats",
-    history: "/api/v1/referrals/history",
-    levels: "/api/v1/referrals/levels",
+    stats: "/api/v1/referrals/stats/my-stats",
+    history: "/api/v1/referrals/history/",
+    levels: "/api/v1/referrals/levels/",
   },
   transactions: {
     list: "/api/v2/gamification/transactions/",

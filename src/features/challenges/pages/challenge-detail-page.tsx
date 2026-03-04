@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  CalendarClock,
   CheckCircle2,
   Clock3,
   ExternalLink,
@@ -14,7 +15,11 @@ import {
 } from "lucide-react";
 import { challengesApi } from "@/features/challenges/api/challenges.api";
 import { useChallengeDetail } from "@/features/challenges/hooks/use-challenge-detail";
-import { ChallengeShowcaseCard } from "@/features/challenges/components/challenge-showcase-card";
+import {
+  getChallengeRewardLabel,
+  getChallengeStatusLabel,
+  getChallengeTypeLabel,
+} from "@/features/challenges/lib/challenge-presentation";
 import { MobileScreen } from "@/shared/ui/mobile-screen";
 import { PageHeader } from "@/shared/ui/page-header";
 import { GlassCard } from "@/shared/ui/glass-card";
@@ -30,6 +35,11 @@ import { hasApiStatus } from "@/shared/api/error-helpers";
 import { cn } from "@/shared/lib/cn";
 import { useShellNav } from "@/widgets/navigation/shell-nav";
 import type { Challenge } from "@/entities/challenge/types";
+import {
+  formatCountdownParts,
+  getChallengeCycleLabel,
+  getChallengeCycleRemaining,
+} from "@/features/challenges/lib/challenge-timing";
 
 const difficultyVariant: Record<Challenge["difficulty"], "success" | "info" | "danger"> = {
   easy: "success",
@@ -78,11 +88,78 @@ const DetailSection = ({
   title: string;
   children: ReactNode;
 }) => (
-  <GlassCard className="space-y-3">
+  <div className="liquid-glass-surface-muted space-y-3 rounded-[1.55rem] border border-white/8 px-4 py-4">
     <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-white/58">{title}</h2>
     {children}
-  </GlassCard>
+  </div>
 );
+
+const DetailSurface = ({ children, className }: { children: ReactNode; className?: string }) => (
+  <div
+    className={cn(
+      "liquid-glass-surface-muted rounded-[1.55rem] border border-white/8 px-4 py-4",
+      className,
+    )}
+  >
+    {children}
+  </div>
+);
+
+const ChallengeDetailHero = ({ challenge }: { challenge: Challenge }) => {
+  const typeLabel = getChallengeTypeLabel(
+    challenge,
+    {
+      daily: "Daily",
+      weekly: "Weekly",
+      monthly: "Monthly",
+      other: "Challenge",
+    },
+    "Challenge",
+  );
+  const statusLabel = getChallengeStatusLabel(challenge, {
+    active: "Faol",
+    pending: "Kutilmoqda",
+    completed: "Bajarilgan",
+    locked: "Yopiq",
+    fallback: "Faol",
+  });
+  const rewardLabel = getChallengeRewardLabel(challenge);
+
+  return (
+    <div className="relative overflow-hidden rounded-[1.9rem] border border-white/10 bg-[rgba(10,10,10,0.58)] shadow-[0_20px_50px_rgba(0,0,0,0.32)]">
+      {challenge.coverUrl ? (
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-26"
+          style={{ backgroundImage: `url(${challenge.coverUrl})` }}
+        />
+      ) : null}
+      <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(6,7,10,0.62),rgba(6,7,10,0.8))]" />
+
+      <div className="relative space-y-4 px-5 py-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="outline" size="sm" className="liquid-glass-chip text-white/92">
+              {typeLabel}
+            </Badge>
+            <Badge variant={challenge.isCompleted ? "success" : "muted"} size="sm">
+              {statusLabel}
+            </Badge>
+          </div>
+          <Badge variant="gold" size="sm">
+            {rewardLabel}
+          </Badge>
+        </div>
+
+        <div className="space-y-1.5">
+          <h1 className="text-[1.18rem] font-extrabold leading-tight tracking-[-0.03em] text-white">
+            {challenge.title}
+          </h1>
+          <p className="line-clamp-3 text-sm leading-6 text-white/72">{challenge.description}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const ChallengeDetailPage = () => {
   const { challengeId } = useParams();
@@ -93,6 +170,7 @@ export const ChallengeDetailPage = () => {
   const [completeOpen, setCompleteOpen] = useState(false);
   const [resultUrl, setResultUrl] = useState("");
   const [notes, setNotes] = useState("");
+  const [now, setNow] = useState(() => new Date());
   const submitRef = useRef<(() => void) | null>(null);
 
   const detailStats = useQuery({
@@ -154,6 +232,9 @@ export const ChallengeDetailPage = () => {
   const isCompleted = Boolean(data?.isCompleted);
   const isWeeklyOrMonthly = data?.typeCode === "weekly" || data?.typeCode === "monthly";
   const progress = data?.progress ?? 0;
+  const cycleRemaining = getChallengeCycleRemaining(now, data?.typeCode, data?.durationDays);
+  const cycleParts = formatCountdownParts(cycleRemaining);
+  const cycleLabel = getChallengeCycleLabel(data?.typeCode);
 
   const rewardsValue = rewards.data ?? {
     xp: data?.xpReward ?? 0,
@@ -169,6 +250,15 @@ export const ChallengeDetailPage = () => {
       completeMutation.mutate();
     };
   }, [completeMutation, notes, resultUrl]);
+
+  useEffect(() => {
+    if (!data || data.isCompleted) {
+      return;
+    }
+
+    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, [data]);
 
   useEffect(() => {
     if (!data || challenge.isError) {
@@ -285,10 +375,7 @@ export const ChallengeDetailPage = () => {
       />
 
       <div className="mt-4 space-y-4">
-        <ChallengeShowcaseCard
-          challenge={data}
-          onClick={() => undefined}
-        />
+        <ChallengeDetailHero challenge={data} />
 
         <StatCardsRow
           columns={4}
@@ -317,31 +404,66 @@ export const ChallengeDetailPage = () => {
           ]}
         />
 
-        <GlassCard className="grid grid-cols-2 gap-3 rounded-[1.7rem]">
-          <div className="rounded-[1.2rem] border border-white/10 bg-black/20 px-4 py-3">
+        {cycleRemaining > 0 && !isCompleted ? (
+          <DetailSurface className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="liquid-glass-surface-muted flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.95rem] text-gold">
+                <CalendarClock className="h-4.5 w-4.5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-t-primary">{cycleLabel}</p>
+                <p className="text-xs text-t-muted">Joriy challenge sikli tugashigacha qolgan vaqt</p>
+              </div>
+            </div>
+
+            <div className={cn("grid gap-2", cycleParts.hasDays ? "grid-cols-4" : "grid-cols-3")}>
+              {cycleParts.hasDays ? (
+                <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
+                  <p className="text-sm font-bold text-t-primary">{cycleParts.days}</p>
+                  <p className="text-2xs text-t-muted">kun</p>
+                </div>
+              ) : null}
+              <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
+                <p className="text-sm font-bold text-t-primary">{cycleParts.hours}</p>
+                <p className="text-2xs text-t-muted">soat</p>
+              </div>
+              <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
+                <p className="text-sm font-bold text-t-primary">{cycleParts.minutes}</p>
+                <p className="text-2xs text-t-muted">daq</p>
+              </div>
+              <div className="liquid-glass-surface-muted rounded-[0.9rem] px-2 py-2 text-center">
+                <p className="text-sm font-bold text-t-primary">{cycleParts.seconds}</p>
+                <p className="text-2xs text-t-muted">sek</p>
+              </div>
+            </div>
+          </DetailSurface>
+        ) : null}
+
+        <DetailSurface className="grid grid-cols-2 gap-3">
+          <div className="liquid-glass-surface rounded-[1.2rem] px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">XP reward</p>
             <div className="mt-2 flex items-center gap-2 text-gold">
               <Star className="h-4 w-4" />
               <span className="text-lg font-bold">{rewardsValue.xp}</span>
             </div>
           </div>
-          <div className="rounded-[1.2rem] border border-white/10 bg-black/20 px-4 py-3">
+          <div className="liquid-glass-surface rounded-[1.2rem] px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">Coin reward</p>
             <div className="mt-2 flex items-center gap-2 text-gold">
               <Trophy className="h-4 w-4" />
               <span className="text-lg font-bold">{rewardsValue.coin}</span>
             </div>
           </div>
-        </GlassCard>
+        </DetailSurface>
 
         {progress > 0 && (
-          <GlassCard>
+          <DetailSurface>
             <ProgressBar value={progress} max={100} showLabel label="Progress" />
-          </GlassCard>
+          </DetailSurface>
         )}
 
         {isCompleted && (
-          <GlassCard goldBorder className="rounded-[1.6rem]">
+          <DetailSurface className="border-gold/20">
             <div className="flex items-center gap-3">
               <CheckCircle2 className="h-5 w-5 text-gold" />
               <div>
@@ -351,13 +473,13 @@ export const ChallengeDetailPage = () => {
                 </p>
               </div>
             </div>
-          </GlassCard>
+          </DetailSurface>
         )}
 
         {isLocked && (
-          <GlassCard className="rounded-[1.6rem] border-gold/20 bg-gold/5">
+          <DetailSurface className="border-gold/20">
             <div className="flex items-start gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border border-gold/20 bg-gold/10 text-gold">
+              <div className="liquid-glass-surface-muted flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border border-gold/20 text-gold">
                 <Lock className="h-5 w-5" />
               </div>
               <div className="space-y-1">
@@ -369,7 +491,7 @@ export const ChallengeDetailPage = () => {
                 </p>
               </div>
             </div>
-          </GlassCard>
+          </DetailSurface>
         )}
 
         <DetailSection title="Tavsif">
@@ -380,7 +502,7 @@ export const ChallengeDetailPage = () => {
           <DetailSection title="Qanday ishlaydi">
             <div className="space-y-3">
               {data.howItWorks.map((item, index) => (
-                <div key={`${item}-${index}`} className="flex items-start gap-3 rounded-[1.1rem] border border-white/8 bg-black/15 px-3.5 py-3">
+                <div key={`${item}-${index}`} className="liquid-glass-surface flex items-start gap-3 rounded-[1.1rem] px-3.5 py-3">
                   <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" />
                   <p className="text-sm leading-6 text-t-secondary">{item}</p>
                 </div>
@@ -393,7 +515,7 @@ export const ChallengeDetailPage = () => {
           <DetailSection title="Muhim punktlar">
             <div className="space-y-3">
               {data.checkmark.map((item, index) => (
-                <div key={`${item}-${index}`} className="flex items-start gap-3 rounded-[1.1rem] border border-white/8 bg-black/15 px-3.5 py-3">
+                <div key={`${item}-${index}`} className="liquid-glass-surface flex items-start gap-3 rounded-[1.1rem] px-3.5 py-3">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-info" />
                   <p className="text-sm leading-6 text-t-secondary">{item}</p>
                 </div>
@@ -406,11 +528,22 @@ export const ChallengeDetailPage = () => {
           <DetailSection title="Subchallenge'lar">
             <div className="space-y-3">
               {subchallenges.data.items.map((item) => (
-                <ChallengeShowcaseCard
+                <button
                   key={item.id}
-                  challenge={item}
+                  type="button"
+                  className="liquid-glass-surface-interactive liquid-glass-surface-muted block w-full rounded-[1.2rem] px-4 py-3 text-left"
                   onClick={() => navigate(`/challenges/${item.id}`)}
-                />
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-t-primary">{item.title}</p>
+                      <p className="mt-1 line-clamp-2 text-xs leading-5 text-t-muted">{item.description}</p>
+                    </div>
+                    <Badge variant={item.isCompleted ? "success" : "muted"} size="sm">
+                      {item.isCompleted ? "Done" : "Open"}
+                    </Badge>
+                  </div>
+                </button>
               ))}
             </div>
           </DetailSection>
@@ -427,7 +560,7 @@ export const ChallengeDetailPage = () => {
                   rel="noreferrer"
                   className="block"
                 >
-                  <div className="rounded-[1.2rem] border border-white/10 bg-black/20 px-4 py-4 transition hover:border-gold/20 hover:bg-black/28">
+                  <div className="liquid-glass-surface-interactive liquid-glass-surface-muted rounded-[1.2rem] px-4 py-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="space-y-1">
                         <p className="text-sm font-semibold text-t-primary">{resource.title}</p>
@@ -440,7 +573,7 @@ export const ChallengeDetailPage = () => {
 
                     <div className="mt-3 flex flex-wrap items-center gap-2 text-2xs text-white/56">
                       {resource.type ? (
-                        <span className="rounded-full border border-white/10 px-2.5 py-1 uppercase tracking-[0.18em]">
+                        <span className="liquid-glass-chip rounded-full px-2.5 py-1 uppercase tracking-[0.18em]">
                           {resource.type}
                         </span>
                       ) : null}
@@ -481,14 +614,14 @@ export const ChallengeDetailPage = () => {
               onChange={(event) => setNotes(event.target.value)}
               placeholder="Qisqa natija yoki izoh yozing"
               className={cn(
-                "min-h-28 w-full resize-none rounded-[1rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(10,10,10,0.5))] px-4 py-3 text-sm text-t-primary outline-none transition focus:border-gold/45 focus:ring-2 focus:ring-gold/20",
+                "min-h-28 w-full resize-none rounded-[1rem] border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-t-primary outline-none transition focus:border-gold/45 focus:ring-2 focus:ring-gold/20",
               )}
             />
           </div>
 
-          <GlassCard className="rounded-[1.3rem] border-white/8 bg-black/20 text-xs leading-5 text-t-muted">
+          <DetailSurface className="rounded-[1.3rem] text-xs leading-5 text-t-muted">
             Flutter ilovadagi flow kabi submit paytida natija `result`, izoh esa `notes` sifatida progress update endpoint'iga yuboriladi.
-          </GlassCard>
+          </DetailSurface>
 
           <Button
             fullWidth

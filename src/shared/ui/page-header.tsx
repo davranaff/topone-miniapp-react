@@ -47,8 +47,7 @@ export const PageHeader = ({
           onClick={handleBack}
           aria-label="Go back"
           className={cn(
-            "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-            "border border-white/10 bg-[linear-gradient(180deg,rgba(24,24,24,0.9),rgba(8,8,8,0.82))] text-t-secondary backdrop-blur-xl",
+            "liquid-glass-chip liquid-glass-surface-interactive flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-t-secondary",
             "transition hover:border-gold/40 hover:text-t-primary active:scale-95",
           )}
         >

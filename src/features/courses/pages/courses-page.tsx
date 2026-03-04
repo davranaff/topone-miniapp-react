@@ -47,9 +47,7 @@ const CourseGridCard = ({
             backgroundSize: "cover",
           }}
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.15),transparent_30%)]" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/94 via-black/34 to-transparent" />
-        <div className="absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.12),transparent)]" />
 
         <div className="relative flex h-full flex-col justify-between p-5">
           <div className="flex items-start justify-between gap-3">
@@ -73,7 +71,7 @@ const CourseGridCard = ({
               </p>
             </div>
 
-            <div className="rounded-[1.35rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
+            <div className="rounded-[1.35rem] border border-white/8 bg-[rgba(255,255,255,0.05)] p-3.5 backdrop-blur-xl">
               <ProgressBar
                 value={progress}
                 max={100}
@@ -214,10 +212,10 @@ export const CoursesPage = () => {
                       type="button"
                       onClick={() => setSelectedCategoryId(category.id)}
                       className={[
-                        "font-display rounded-full px-4 py-2 text-sm font-bold tracking-[-0.02em] transition-all",
+                        "liquid-glass-surface-interactive font-display rounded-full border px-4 py-2 text-sm font-bold tracking-[-0.02em] transition-all",
                         active
-                          ? "bg-[linear-gradient(135deg,rgba(255,255,255,0.15),rgba(236,192,89,0.16))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] ring-1 ring-white/10"
-                          : "bg-white/5 text-white/56 ring-1 ring-white/8 hover:bg-white/8 hover:text-white/78",
+                          ? "liquid-glass-button-chip-active text-white"
+                          : "liquid-glass-button-chip text-white/56 hover:text-white/78",
                       ].join(" ")}
                     >
                       {category.title}

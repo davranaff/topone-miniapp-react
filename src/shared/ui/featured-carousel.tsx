@@ -71,10 +71,10 @@ export const FeaturedCarousel = ({
               onClick={() => goTo(i)}
               aria-label={`Slide ${i + 1}`}
               className={cn(
-                "rounded-full transition-all duration-200",
+                "liquid-glass-surface-interactive rounded-full border transition-all duration-200",
                 i === active
-                  ? "h-2 w-5 bg-gold"
-                  : "h-2 w-2 bg-border/60 hover:bg-gold/40",
+                  ? "liquid-glass-button-chip-active h-2 w-5"
+                  : "liquid-glass-button-chip h-2 w-2 hover:bg-gold/40",
               )}
             />
           ))}

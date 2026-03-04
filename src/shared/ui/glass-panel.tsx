@@ -21,6 +21,7 @@ export const GlassPanel = ({
   goldBorder = false,
   noBorder = false,
   padding = "md",
+  style,
   ...props
 }: GlassPanelProps) => (
   <div
@@ -29,10 +30,10 @@ export const GlassPanel = ({
       blurMap[blur],
       padMap[padding],
       glow && "shadow-glow",
-      goldBorder && "border-gold/40",
       noBorder && "border-transparent",
       className,
     )}
+    style={goldBorder ? { ...style, borderColor: "rgba(212, 160, 23, 0.4)" } : style}
     {...props}
   >
     {children}

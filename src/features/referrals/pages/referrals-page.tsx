@@ -8,12 +8,13 @@ import { Badge } from "@/shared/ui/badge";
 import { SkeletonCard } from "@/shared/ui/skeleton";
 import { ErrorState } from "@/shared/ui/error-state";
 import { EmptyState } from "@/shared/ui/empty-state";
-import { useReferralStats, useReferralHistory } from "@/features/referrals/hooks/use-referrals";
+import { useReferralStats, useReferralHistory, useReferralLevels } from "@/features/referrals/hooks/use-referrals";
 
 export const ReferralsPage = () => {
   const [copied, setCopied] = useState(false);
   const stats = useReferralStats();
   const history = useReferralHistory();
+  const levels = useReferralLevels();
 
   const handleCopy = () => {
     if (stats.data?.referralUrl) {
@@ -23,7 +24,7 @@ export const ReferralsPage = () => {
     }
   };
 
-  if (stats.isLoading) {
+  if (stats.isLoading || history.isLoading || levels.isLoading) {
     return (
       <MobileScreen>
         <div className="h-8 w-1/3 rounded-xl bg-elevated animate-shimmer bg-shimmer bg-[length:200%_100%]" />
@@ -44,6 +45,7 @@ export const ReferralsPage = () => {
 
   const data = stats.data!;
   const historyItems = history.data ?? [];
+  const levelItems = levels.data ?? [];
 
   return (
     <MobileScreen>
@@ -100,7 +102,14 @@ export const ReferralsPage = () => {
           <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-t-muted">
             Taklif qilinganlar ({historyItems.length})
           </p>
-          {historyItems.length === 0 ? (
+          {history.isError ? (
+            <GlassCard className="rounded-[1.2rem] border-danger/20">
+              <p className="text-sm text-t-secondary">Referral tarixini yuklab bo'lmadi.</p>
+              <Button variant="outline" size="sm" className="mt-3" onClick={() => history.refetch()}>
+                Qayta urinish
+              </Button>
+            </GlassCard>
+          ) : historyItems.length === 0 ? (
             <EmptyState
               icon={<Users className="h-8 w-8" />}
               title="Hali referal yo'q"
@@ -133,6 +142,49 @@ export const ReferralsPage = () => {
                   </div>
                 </GlassCard>
               ))}
+            </div>
+          )}
+        </div>
+
+        {/* Levels */}
+        <div>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-t-muted">
+            Referal darajalari ({levelItems.length})
+          </p>
+          {levels.isError ? (
+            <GlassCard className="rounded-[1.2rem] border-danger/20">
+              <p className="text-sm text-t-secondary">Darajalarni yuklab bo'lmadi.</p>
+              <Button variant="outline" size="sm" className="mt-3" onClick={() => levels.refetch()}>
+                Qayta urinish
+              </Button>
+            </GlassCard>
+          ) : levelItems.length === 0 ? (
+            <EmptyState
+              icon={<Award className="h-8 w-8" />}
+              title="Darajalar topilmadi"
+              description="Referral level ma'lumotlari keyinroq paydo bo'lishi mumkin."
+            />
+          ) : (
+            <div className="space-y-2">
+              {levelItems.map((level) => {
+                const unlocked = level.isUnlocked || data.totalReferrals >= level.minReferrals;
+
+                return (
+                  <GlassCard key={level.id || `${level.level}-${level.minReferrals}`}>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-t-primary">{level.name || `Level ${level.level}`}</p>
+                        <p className="text-xs text-t-muted">
+                          {level.minReferrals}+ referral • {level.rewardPercentage}% bonus
+                        </p>
+                      </div>
+                      <Badge variant={unlocked ? "success" : "muted"} size="sm">
+                        {unlocked ? "Ochilgan" : "Yopiq"}
+                      </Badge>
+                    </div>
+                  </GlassCard>
+                );
+              })}
             </div>
           )}
         </div>

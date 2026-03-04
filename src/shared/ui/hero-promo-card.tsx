@@ -29,9 +29,9 @@ export const HeroPromoCard = ({
     className={cn(
       "relative overflow-hidden rounded-2xl p-5",
       gradient === "gold" &&
-        "bg-gradient-to-br from-[#2a1f00] via-[#1a1200] to-[#0a0a0a] border border-gold/25",
+        "liquid-glass-surface-strong border-gold/25 bg-gradient-to-br from-[#2a1f00] via-[#1a1200] to-[#0a0a0a]",
       gradient === "dark" &&
-        "bg-card border border-border/50",
+        "liquid-glass-surface-strong",
       gradient === "custom" && gradientClass,
       className,
     )}
@@ -49,7 +49,7 @@ export const HeroPromoCard = ({
     <div className="relative flex items-start justify-between gap-3">
       <div className="flex-1 space-y-2">
         {badge && (
-          <span className="inline-flex items-center rounded-full border border-gold/30 bg-gold/10 px-2.5 py-0.5 text-2xs font-semibold uppercase tracking-wider text-gold">
+          <span className="liquid-glass-state-gold inline-flex items-center rounded-full px-2.5 py-0.5 text-2xs font-semibold uppercase tracking-wider text-gold">
             {badge}
           </span>
         )}

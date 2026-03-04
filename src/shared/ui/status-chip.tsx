@@ -7,17 +7,17 @@ const statusChipVariants = cva(
   {
     variants: {
       status: {
-        active:   "bg-success/10 text-success border border-success/25",
-        expired:  "bg-danger/10 text-danger border border-danger/25",
-        pending:  "bg-gold/10 text-gold border border-gold/25",
-        inactive: "bg-elevated text-t-muted border border-border/50",
-        locked:   "bg-elevated text-t-muted border border-border/50",
-        new:      "bg-info/10 text-info border border-info/25",
-        trial:    "bg-gold/10 text-gold border border-gold/25",
-        free:     "bg-elevated text-t-secondary border border-border/50",
-        premium:  "bg-gold-135 text-t-inverse border border-transparent",
-        completed:"bg-success/10 text-success border border-success/25",
-        failed:   "bg-danger/10 text-danger border border-danger/25",
+        active:   "liquid-glass-state-success text-success",
+        expired:  "liquid-glass-state-danger text-danger",
+        pending:  "liquid-glass-state-gold text-gold",
+        inactive: "liquid-glass-chip text-t-muted",
+        locked:   "liquid-glass-chip text-t-muted",
+        new:      "liquid-glass-state-info text-info",
+        trial:    "liquid-glass-state-gold text-gold",
+        free:     "liquid-glass-chip text-t-secondary",
+        premium:  "liquid-glass-accent text-t-inverse",
+        completed:"liquid-glass-state-success text-success",
+        failed:   "liquid-glass-state-danger text-danger",
       },
       size: {
         sm: "px-2 py-0.5 text-2xs",

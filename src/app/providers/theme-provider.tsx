@@ -2,47 +2,88 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { STORAGE_KEYS } from "@/shared/config/constants";
 
 type ThemeMode = "light" | "dark";
+type ThemePreferences = {
+  theme: ThemeMode;
+  glassEffectEnabled: boolean;
+  economyMode: boolean;
+};
 
 type ThemeContextValue = {
   theme: ThemeMode;
   setTheme: (theme: ThemeMode) => void;
+  glassEffectEnabled: boolean;
+  setGlassEffectEnabled: (v: boolean) => void;
   economyMode: boolean;
   setEconomyMode: (v: boolean) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
+const DEFAULT_THEME_PREFERENCES: ThemePreferences = {
+  theme: "dark",
+  glassEffectEnabled: true,
+  economyMode: false,
+};
+
+const readThemePreferences = (): ThemePreferences => {
+  if (typeof window === "undefined") {
+    return DEFAULT_THEME_PREFERENCES;
+  }
+
+  return {
+    theme: window.localStorage.getItem(STORAGE_KEYS.theme) === "light" ? "light" : "dark",
+    economyMode: window.localStorage.getItem(STORAGE_KEYS.economyMode) === "1",
+    glassEffectEnabled: window.localStorage.getItem(STORAGE_KEYS.glassEffect) !== "0",
+  };
+};
+
+const applyThemePreferences = (root: HTMLElement, preferences: ThemePreferences) => {
+  root.dataset.theme = preferences.theme;
+  root.dataset.glass = preferences.glassEffectEnabled ? "on" : "off";
+  root.classList.toggle("economy-mode", preferences.economyMode);
+  root.classList.toggle("glass-off", !preferences.glassEffectEnabled);
+};
+
+const persistThemePreferences = (preferences: ThemePreferences) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(STORAGE_KEYS.theme, preferences.theme);
+  window.localStorage.setItem(STORAGE_KEYS.economyMode, preferences.economyMode ? "1" : "0");
+  window.localStorage.setItem(STORAGE_KEYS.glassEffect, preferences.glassEffectEnabled ? "1" : "0");
+};
+
+const initialThemePreferences = (() => {
+  const preferences = readThemePreferences();
+
+  if (typeof document !== "undefined") {
+    applyThemePreferences(document.documentElement, preferences);
+  }
+
+  return preferences;
+})();
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<ThemeMode>(() => {
-    if (typeof window === "undefined") return "dark";
-    const stored = window.localStorage.getItem(STORAGE_KEYS.theme);
-    return stored === "light" ? "light" : "dark";
-  });
-
-  const [economyMode, setEconomyMode] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return window.localStorage.getItem("topone.economy-mode") === "1";
-  });
+  const [theme, setTheme] = useState<ThemeMode>(initialThemePreferences.theme);
+  const [economyMode, setEconomyMode] = useState<boolean>(initialThemePreferences.economyMode);
+  const [glassEffectEnabled, setGlassEffectEnabled] = useState<boolean>(initialThemePreferences.glassEffectEnabled);
 
   useEffect(() => {
-    const root = document.documentElement;
-    root.dataset.theme = theme;
-    window.localStorage.setItem(STORAGE_KEYS.theme, theme);
-  }, [theme]);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (economyMode) {
-      root.classList.add("economy");
-    } else {
-      root.classList.remove("economy");
-    }
-    window.localStorage.setItem("topone.economy-mode", economyMode ? "1" : "0");
-  }, [economyMode]);
+    const preferences = { theme, economyMode, glassEffectEnabled };
+    applyThemePreferences(document.documentElement, preferences);
+    persistThemePreferences(preferences);
+  }, [theme, economyMode, glassEffectEnabled]);
 
   const value = useMemo(
-    () => ({ theme, setTheme, economyMode, setEconomyMode }),
-    [theme, economyMode],
+    () => ({
+      theme,
+      setTheme,
+      glassEffectEnabled,
+      setGlassEffectEnabled,
+      economyMode,
+      setEconomyMode,
+    }),
+    [theme, glassEffectEnabled, economyMode],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
