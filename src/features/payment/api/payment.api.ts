@@ -136,6 +136,32 @@ export const paymentApi = {
     };
   },
 
+  async payFromReferralEarnings(planId: string): Promise<UserSubscription | null> {
+    const res = await apiClient.post(endpoints.payment.payFromReferralEarnings, {
+      plan_id: planId,
+    });
+    const payload = asRecord(res.data?.data ?? res.data);
+    const subscriptionRaw = asRecord(payload?.subscription) ?? payload;
+
+    if (!subscriptionRaw || !subscriptionRaw.id) {
+      return null;
+    }
+
+    return mapSubscription(subscriptionRaw);
+  },
+
+  async extendFromReferralEarnings(): Promise<UserSubscription | null> {
+    const res = await apiClient.post(endpoints.payment.extendFromReferralEarnings);
+    const payload = asRecord(res.data?.data ?? res.data);
+    const subscriptionRaw = asRecord(payload?.subscription) ?? payload;
+
+    if (!subscriptionRaw || !subscriptionRaw.id) {
+      return null;
+    }
+
+    return mapSubscription(subscriptionRaw);
+  },
+
   async createInvoiceWithLinks(planId: string, returnUrl?: string): Promise<InvoiceLinks> {
     const res = await apiClient.post(endpoints.payment.createInvoice, undefined, {
       params: {
