@@ -9,5 +9,9 @@
   "actions.cancel": "Bekor qilish",
   "actions.back": "Orqaga",
   "states.loading": "Yuklanmoqda...",
+  "states.checkingSession": "Sessiya tekshirilmoqda...",
+  "states.preparingData": "Ma'lumotlar tayyorlanmoqda...",
+  "states.checkingTelegram": "Telegram kirish holati tekshirilmoqda...",
+  "states.preparingLogin": "Kirish sahifasi tayyorlanmoqda...",
   "states.empty": "Hozircha bo'sh"
 }

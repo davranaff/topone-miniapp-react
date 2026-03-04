@@ -68,7 +68,7 @@ export const TelegramLoginPage = () => {
           <AuthTitleBlock title={t("telegram")} subtitle={t("telegramSubtitle")} />
 
           {requestMutation.isError ? (
-            <div className="rounded-[1.2rem] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            <div className="liquid-glass-state-danger rounded-[1.2rem] px-4 py-3 text-sm text-red-100">
               {getErrorMessage(requestMutation.error)}
             </div>
           ) : null}
@@ -89,11 +89,11 @@ export const TelegramLoginPage = () => {
 
           <AuthDivider label={t("or")} />
 
-          <p className="text-center text-[1rem] text-white/56">
+          <p className="text-center text-[1rem] text-t-secondary">
             {t("haveAccount")}{" "}
             <button
               type="button"
-              className="liquid-glass-button-link liquid-glass-surface-interactive rounded-full px-3 py-1.5 font-bold text-white transition-colors hover:text-[#f6d489]"
+              className="liquid-glass-button-link liquid-glass-surface-interactive rounded-full px-3 py-1.5 font-bold text-t-primary transition-colors hover:text-gold"
               onClick={() => navigate("/login-form")}
             >
               {t("login")}

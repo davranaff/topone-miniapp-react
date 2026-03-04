@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { telegramAuthApi } from "@/features/auth/api/telegram-auth.api";
 import { authApi } from "@/features/auth/api/auth.api";
 import { useTelegram } from "@/shared/hooks/use-telegram";
@@ -7,9 +7,12 @@ import { tokenStorage } from "@/shared/auth/token-storage";
 import { sessionStorage } from "@/shared/auth/session-storage";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { Spinner } from "@/shared/ui/spinner";
-import { Button } from "@/shared/ui/button";
 import { getErrorMessage } from "@/shared/lib/error-map";
 import { getTelegramInitDataWithRetry } from "@/shared/lib/telegram-webapp";
+import { TopOneLogo } from "@/shared/ui/topone-logo";
+import { AuthGlassPanel, AuthPrimaryButton } from "@/features/auth/components/auth-ui";
+
+const FALLBACK_LOGIN_PATH = "/login?fallback=telegram";
 
 export const TelegramInitPage = () => {
   const navigate = useNavigate();
@@ -21,9 +24,23 @@ export const TelegramInitPage = () => {
   useEffect(() => {
     let isDisposed = false;
 
+    const waitForTelegramRuntime = async () => {
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        if (telegram.isAvailable()) {
+          return true;
+        }
+
+        await new Promise((resolve) => globalThis.setTimeout(resolve, 200 * (attempt + 1)));
+      }
+
+      return false;
+    };
+
     const bootstrap = async () => {
-      if (!telegram.isAvailable()) {
-        navigate("/login", { replace: true });
+      const runtimeDetected = await waitForTelegramRuntime();
+
+      if (!runtimeDetected || isDisposed) {
+        navigate(FALLBACK_LOGIN_PATH, { replace: true });
         return;
       }
 
@@ -49,7 +66,7 @@ export const TelegramInitPage = () => {
 
             sessionStorage.setUser(user);
             useAuthStore.getState().setSession({ user, tokens: existingTokens });
-            navigate("/home", { replace: true });
+            navigate("/splash", { replace: true });
             return;
           } catch {
             tokenStorage.clear();
@@ -62,7 +79,7 @@ export const TelegramInitPage = () => {
         const initData = await getTelegramInitDataWithRetry(telegram);
 
         if (!initData) {
-          navigate("/login", { replace: true });
+          navigate(FALLBACK_LOGIN_PATH, { replace: true });
           return;
         }
 
@@ -80,7 +97,7 @@ export const TelegramInitPage = () => {
 
         sessionStorage.setUser(user);
         useAuthStore.getState().setSession({ user, tokens });
-        navigate("/home", { replace: true });
+        navigate("/splash", { replace: true });
       } catch (nextError) {
         if (isDisposed) {
           return;
@@ -104,45 +121,46 @@ export const TelegramInitPage = () => {
     };
   }, [navigate, telegram]);
 
-  if (!telegram.isAvailable()) {
-    return <Navigate to="/login" replace />;
-  }
-
   return (
     <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-base px-4">
-      <div
-        data-glow
-        className="pointer-events-none absolute left-1/2 top-1/3 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/12 blur-3xl"
-      />
-
-        <div className="relative flex w-full max-w-sm flex-col items-center gap-6 text-center animate-fade-in-up">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold/30 bg-gold/10">
-            <span className="text-2xl font-black text-gold">T1</span>
-          </div>
-
-        {isLoading ? (
-          <>
-            <Spinner size="lg" />
-            <div className="space-y-1">
-              <p className="font-semibold text-t-primary">Telegram orqali kirilmoqda</p>
-              <p className="text-sm text-t-muted">{statusMessage}</p>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_10%,rgba(245,200,66,0.2),transparent_34%),radial-gradient(circle_at_84%_84%,rgba(212,160,23,0.18),transparent_34%)]" />
+      <div className="relative w-full max-w-sm animate-fade-in-up">
+        <AuthGlassPanel className="text-center">
+          <div className="space-y-6">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full liquid-glass-surface">
+              <TopOneLogo size="md" framed={false} />
             </div>
-          </>
-        ) : null}
 
-        {error ? (
-          <div className="w-full space-y-4">
-            <div className="rounded-xl border border-danger/20 bg-danger/8 p-4">
-              <p className="text-sm text-danger">{error}</p>
+            <div className="space-y-2">
+              <h1 className="text-2xl font-extrabold tracking-[-0.03em] text-t-primary">Telegram Auth</h1>
+              <p className="text-sm text-t-secondary">{statusMessage}</p>
             </div>
-            <Button fullWidth variant="outline" onClick={() => window.location.reload()}>
-              Qayta urinish
-            </Button>
-            <Button fullWidth variant="ghost" onClick={() => navigate("/login")}>
-              Oddiy kirishga qaytish
-            </Button>
+
+            {isLoading ? (
+              <div className="flex justify-center">
+                <Spinner size="lg" />
+              </div>
+            ) : null}
+
+            {error ? (
+              <div className="space-y-3">
+                <div className="liquid-glass-state-danger rounded-[1.2rem] px-4 py-3 text-sm text-red-100">
+                  {error}
+                </div>
+                <AuthPrimaryButton type="button" variant="soft" onClick={() => window.location.reload()}>
+                  Qayta urinish
+                </AuthPrimaryButton>
+                <AuthPrimaryButton
+                  type="button"
+                  variant="ghost"
+                  onClick={() => navigate(FALLBACK_LOGIN_PATH, { replace: true })}
+                >
+                  Oddiy kirishga qaytish
+                </AuthPrimaryButton>
+              </div>
+            ) : null}
           </div>
-        ) : null}
+        </AuthGlassPanel>
       </div>
     </div>
   );

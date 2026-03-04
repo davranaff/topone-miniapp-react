@@ -54,7 +54,7 @@ export const TelegramCodeVerificationPage = () => {
       }
     },
     onSuccess: () => {
-      navigate("/home", { replace: true });
+      navigate("/splash", { replace: true });
     },
   });
 
@@ -74,7 +74,7 @@ export const TelegramCodeVerificationPage = () => {
           />
 
           {mutation.isError ? (
-            <div className="rounded-[1.2rem] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            <div className="liquid-glass-state-danger rounded-[1.2rem] px-4 py-3 text-sm text-red-100">
               {getErrorMessage(mutation.error)}
             </div>
           ) : null}
@@ -93,8 +93,8 @@ export const TelegramCodeVerificationPage = () => {
             disabled={mutation.isPending}
             error={mutation.isError}
             className="gap-3"
-            slotClassName="h-[4.8rem] w-[3.65rem] rounded-[1.35rem] border border-white/8 bg-[rgba(255,255,255,0.05)] text-[1.95rem] font-bold text-white"
-            activeSlotClassName="bg-[rgba(255,255,255,0.07)] ring-0"
+            slotClassName="liquid-glass-field h-[4.8rem] w-[3.65rem] rounded-[1.35rem] text-[1.95rem] font-bold text-t-primary"
+            activeSlotClassName="border-white/35"
             errorSlotClassName="ring-1 ring-red-400/70"
           />
 
@@ -115,7 +115,7 @@ export const TelegramCodeVerificationPage = () => {
           {botUrl ? (
             <button
               type="button"
-              className="liquid-glass-button-link liquid-glass-surface-interactive w-full rounded-[1.2rem] px-4 py-3 text-center text-[0.98rem] font-semibold text-white/66 transition-colors hover:text-white"
+              className="liquid-glass-button-link liquid-glass-surface-interactive w-full rounded-[1.2rem] px-4 py-3 text-center text-[0.98rem] font-semibold text-t-secondary transition-colors hover:text-t-primary"
               onClick={() => openTelegramLink(botUrl)}
             >
               {t("telegramOpenAgain")}

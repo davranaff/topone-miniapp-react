@@ -6,10 +6,11 @@ import { useShallow } from "zustand/react/shallow";
 
 export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
-  const { isBootstrapped, status } = useAuthStore(
+  const { isBootstrapped, status, isTelegram } = useAuthStore(
     useShallow((state) => ({
       isBootstrapped: state.isBootstrapped,
       status: state.status,
+      isTelegram: state.isTelegram,
     })),
   );
 
@@ -22,7 +23,8 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   }
 
   if (status !== "authenticated") {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+    const from = `${location.pathname}${location.search}${location.hash}`;
+    return <Navigate to={isTelegram ? "/telegram/init" : "/login"} replace state={{ from }} />;
   }
 
   return children;
