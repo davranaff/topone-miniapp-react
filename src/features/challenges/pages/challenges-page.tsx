@@ -6,10 +6,12 @@ import { PageHeader } from "@/shared/ui/page-header";
 import { SkeletonCard } from "@/shared/ui/skeleton";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { ErrorState } from "@/shared/ui/error-state";
+import { SubscriptionRequiredState } from "@/shared/ui/subscription-required-state";
 import { GlassCard } from "@/shared/ui/glass-card";
 import { Badge } from "@/shared/ui/badge";
 import { ProgressBar } from "@/shared/ui/progress-bar";
 import { cn } from "@/shared/lib/cn";
+import { hasApiStatus } from "@/shared/api/error-helpers";
 import type { Challenge } from "@/entities/challenge/types";
 
 const difficultyVariant: Record<Challenge["difficulty"], "success" | "info" | "danger"> = {
@@ -88,7 +90,13 @@ export const ChallengesPage = () => {
         </MobileScreenSection>
       )}
 
-      {challenges.isError && (
+      {challenges.isError && hasApiStatus(challenges.error, 403) && (
+        <div className="mt-6">
+          <SubscriptionRequiredState />
+        </div>
+      )}
+
+      {challenges.isError && !hasApiStatus(challenges.error, 403) && (
         <div className="mt-6">
           <ErrorState variant="network" onRetry={() => challenges.refetch()} />
         </div>

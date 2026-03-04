@@ -3,6 +3,7 @@ export type Challenge = {
   title: string;
   description: string;
   difficulty: "easy" | "medium" | "hard";
+  difficultyLabel?: string;
   xpReward: number;
   coinReward?: number;
   durationDays?: number;
@@ -12,6 +13,18 @@ export type Challenge = {
   progress?: number;
   categoryId?: string;
   coverUrl?: string;
+  typeLabel?: string;
+  typeCode?: "daily" | "weekly" | "monthly" | "other";
+  statusLabel?: string;
+  statusCode?: string;
+  icon?: string;
+  unlockDay?: number;
+  subchallengeProgress?: {
+    completedCount: number;
+    failedCount: number;
+    pendingCount: number;
+    totalCount: number;
+  };
 };
 
 export type ChallengeProgress = {

@@ -1,5 +1,21 @@
 {
   "title": "Курсы",
   "subtitle": "Каталог обучения и прогресс",
-  "details": "Детали курса"
+  "details": "Детали курса",
+  "completed": "Завершено",
+  "inProgress": "В процессе",
+  "notStarted": "Не начато",
+  "overallProgress": "Общий прогресс",
+  "continuePath": "Продолжайте с того места, где остановились",
+  "selectCourse": "Выберите курс",
+  "empty": "Курсы пока недоступны",
+  "emptyDescription": "Когда появятся новые программы, они появятся здесь.",
+  "openCourse": "Открыт",
+  "lockedCourse": "Закрыт",
+  "lessonsTitle": "Уроки",
+  "lessonsSubtitle": "Продолжайте свой путь",
+  "lessonsSelectCourse": "Сначала выберите курс",
+  "lessonsEmpty": "Для этого курса уроки пока не добавлены",
+  "subscriptionTitle": "Нужна подписка",
+  "subscriptionDescription": "Чтобы открыть курсы и уроки, оформите подписку."
 }

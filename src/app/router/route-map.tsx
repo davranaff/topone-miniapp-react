@@ -35,6 +35,7 @@ const ReferralsPage = lazy(() => import("@/features/referrals/pages/referrals-pa
 const ResetPasswordPage = lazy(() => import("@/features/auth/pages/reset-password-page").then((m) => ({ default: m.ResetPasswordPage })));
 const SetPasswordPage = lazy(() => import("@/features/auth/pages/set-password-page").then((m) => ({ default: m.SetPasswordPage })));
 const TelegramLoginPage = lazy(() => import("@/features/auth/pages/telegram-login-page").then((m) => ({ default: m.TelegramLoginPage })));
+const TelegramCodeVerificationPage = lazy(() => import("@/features/auth/pages/telegram-code-verification-page").then((m) => ({ default: m.TelegramCodeVerificationPage })));
 const AccountPage = lazy(() => import("@/features/account/pages/account-page").then((m) => ({ default: m.AccountPage })));
 const ResourcesPage = lazy(() => import("@/features/resources/pages/resources-page").then((m) => ({ default: m.ResourcesPage })));
 const TransactionsPage = lazy(() => import("@/features/transactions/pages/transactions-page").then((m) => ({ default: m.TransactionsPage })));
@@ -62,7 +63,7 @@ const routesMeta: AppRouteDefinition[] = [
   { path: "/set-password", element: <SetPasswordPage />, meta: { requiresAuth: false, layout: "auth" } },
   { path: "/login-form", element: <LoginPage />, meta: { requiresAuth: false, guestOnly: true, layout: "auth" } },
   { path: "/telegram-login", element: <TelegramLoginPage />, meta: { requiresAuth: false, guestOnly: true, layout: "auth" } },
-  { path: "/telegram-code-verification", element: <TelegramLoginPage />, meta: { requiresAuth: false, layout: "auth" } },
+  { path: "/telegram-code-verification", element: <TelegramCodeVerificationPage />, meta: { requiresAuth: false, guestOnly: true, layout: "auth" } },
   { path: "/telegram/init", element: <TelegramInitPage />, meta: { requiresAuth: false, layout: "telegram" } },
   { path: "/telegram-webapp-init", element: <TelegramInitPage />, meta: { requiresAuth: false, layout: "telegram" } },
   { path: "/home", element: <HomePage />, meta: { requiresAuth: true, layout: "app" } },

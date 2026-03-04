@@ -14,6 +14,8 @@ const PUBLIC_ENDPOINTS = new Set<string>([
   endpoints.auth.register,
   endpoints.auth.forgotPassword,
   endpoints.auth.refresh,
+  endpoints.auth.requestLoginByPhone,
+  endpoints.auth.verifyLoginCode,
   endpoints.auth.telegramAuth,
 ]);
 

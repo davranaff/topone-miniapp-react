@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { TelegramBrowserAdapter } from "@/shared/telegram/telegram-browser-adapter";
 import { TelegramWebAppAdapter } from "@/shared/telegram/telegram-webapp-adapter";
+import { isTelegramRuntime } from "@/shared/config/runtime";
 
 describe("telegram adapters", () => {
   beforeEach(() => {
@@ -27,5 +28,20 @@ describe("telegram adapters", () => {
     expect(adapter.isAvailable()).toBe(true);
     expect(adapter.getInitData()).toBe("query_id=1");
     expect(adapter.getSafeAreaInsets().bottom).toBe(5);
+  });
+
+  it("does not treat a bare SDK script as Telegram runtime", () => {
+    window.Telegram = {
+      WebApp: {
+        ready: () => undefined,
+        expand: () => undefined,
+        initData: "",
+      },
+    };
+
+    const adapter = new TelegramWebAppAdapter();
+    expect(adapter.isAvailable()).toBe(false);
+    expect(adapter.getInitData()).toBeNull();
+    expect(isTelegramRuntime()).toBe(false);
   });
 });

@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { telegramAuthApi } from "@/features/auth/api/telegram-auth.api";
 import { authApi } from "@/features/auth/api/auth.api";
@@ -10,27 +9,100 @@ import { useAuthStore } from "@/features/auth/store/auth.store";
 import { Spinner } from "@/shared/ui/spinner";
 import { Button } from "@/shared/ui/button";
 import { getErrorMessage } from "@/shared/lib/error-map";
+import { getTelegramInitDataWithRetry } from "@/shared/lib/telegram-webapp";
 
 export const TelegramInitPage = () => {
   const navigate = useNavigate();
   const telegram = useTelegram();
-  const mutation = useMutation({
-    mutationFn: telegramAuthApi.authenticate,
-    onSuccess: async (tokens) => {
-      tokenStorage.setTokens(tokens);
-      const user = await authApi.getCurrentUser();
-      sessionStorage.setUser(user);
-      useAuthStore.getState().setSession({ user, tokens });
-      navigate("/home", { replace: true });
-    },
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState("Telegram ishga tushirilmoqda...");
 
   useEffect(() => {
-    const initData = telegram.getInitData();
-    if (initData) {
-      void mutation.mutateAsync({ initData });
-    }
-  }, [mutation, telegram]);
+    let isDisposed = false;
+
+    const bootstrap = async () => {
+      if (!telegram.isAvailable()) {
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        telegram.ready();
+        telegram.expand();
+        telegram.disableVerticalSwipes();
+
+        const existingTokens = tokenStorage.getTokens();
+
+        if (existingTokens) {
+          setStatusMessage("Sessiya tekshirilmoqda...");
+
+          try {
+            const user = await authApi.getCurrentUser();
+
+            if (isDisposed) {
+              return;
+            }
+
+            sessionStorage.setUser(user);
+            useAuthStore.getState().setSession({ user, tokens: existingTokens });
+            navigate("/home", { replace: true });
+            return;
+          } catch {
+            tokenStorage.clear();
+            sessionStorage.clear();
+            useAuthStore.getState().clearSession();
+          }
+        }
+
+        setStatusMessage("Telegram bilan bog'lanmoqda...");
+        const initData = await getTelegramInitDataWithRetry(telegram);
+
+        if (!initData) {
+          navigate("/login", { replace: true });
+          return;
+        }
+
+        setStatusMessage("Akkaunt tekshirilmoqda...");
+        const tokens = await telegramAuthApi.authenticate({ initData });
+        authApi.ensureTokens(tokens);
+        tokenStorage.setTokens(tokens);
+
+        setStatusMessage("Profil yuklanmoqda...");
+        const user = await authApi.getCurrentUser();
+
+        if (isDisposed) {
+          return;
+        }
+
+        sessionStorage.setUser(user);
+        useAuthStore.getState().setSession({ user, tokens });
+        navigate("/home", { replace: true });
+      } catch (nextError) {
+        if (isDisposed) {
+          return;
+        }
+
+        tokenStorage.clear();
+        sessionStorage.clear();
+        useAuthStore.getState().clearSession();
+        setError(getErrorMessage(nextError));
+      } finally {
+        if (!isDisposed) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void bootstrap();
+
+    return () => {
+      isDisposed = true;
+    };
+  }, [navigate, telegram]);
 
   if (!telegram.isAvailable()) {
     return <Navigate to="/login" replace />;
@@ -43,31 +115,34 @@ export const TelegramInitPage = () => {
         className="pointer-events-none absolute left-1/2 top-1/3 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/12 blur-3xl"
       />
 
-      <div className="relative flex w-full max-w-sm flex-col items-center gap-6 text-center animate-fade-in-up">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold/30 bg-gold/10">
-          <span className="text-2xl font-black text-gold">T1</span>
-        </div>
+        <div className="relative flex w-full max-w-sm flex-col items-center gap-6 text-center animate-fade-in-up">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gold/30 bg-gold/10">
+            <span className="text-2xl font-black text-gold">T1</span>
+          </div>
 
-        {mutation.isPending && (
+        {isLoading ? (
           <>
             <Spinner size="lg" />
             <div className="space-y-1">
-              <p className="font-semibold text-t-primary">Входим через Telegram</p>
-              <p className="text-sm text-t-muted">Пожалуйста, подождите...</p>
+              <p className="font-semibold text-t-primary">Telegram orqali kirilmoqda</p>
+              <p className="text-sm text-t-muted">{statusMessage}</p>
             </div>
           </>
-        )}
+        ) : null}
 
-        {mutation.error && (
+        {error ? (
           <div className="w-full space-y-4">
             <div className="rounded-xl border border-danger/20 bg-danger/8 p-4">
-              <p className="text-sm text-danger">{getErrorMessage(mutation.error)}</p>
+              <p className="text-sm text-danger">{error}</p>
             </div>
-            <Button fullWidth variant="outline" onClick={() => navigate("/login")}>
-              Вернуться во вход
+            <Button fullWidth variant="outline" onClick={() => window.location.reload()}>
+              Qayta urinish
+            </Button>
+            <Button fullWidth variant="ghost" onClick={() => navigate("/login")}>
+              Oddiy kirishga qaytish
             </Button>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

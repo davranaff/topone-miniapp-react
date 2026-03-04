@@ -8,6 +8,8 @@ import { GlassCard } from "@/shared/ui/glass-card";
 import { ProgressBar } from "@/shared/ui/progress-bar";
 import { MobileScreen } from "@/shared/ui/mobile-screen";
 import { Button } from "@/shared/ui/button";
+import { SubscriptionRequiredState } from "@/shared/ui/subscription-required-state";
+import { hasApiStatus } from "@/shared/api/error-helpers";
 import { useCourseDetail } from "@/features/courses/hooks/use-course-detail";
 
 export const CourseDetailPage = () => {
@@ -25,6 +27,15 @@ export const CourseDetailPage = () => {
           <Skeleton className="h-24 w-full rounded-2xl" />
           <Skeleton className="h-24 w-full rounded-2xl" />
         </div>
+      </MobileScreen>
+    );
+  }
+
+  if (course.isError && hasApiStatus(course.error, 403)) {
+    return (
+      <MobileScreen>
+        <PageHeader title="Kurs" backButton />
+        <SubscriptionRequiredState />
       </MobileScreen>
     );
   }

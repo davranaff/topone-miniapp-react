@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, type ReactNode } from "react";
+import { useState, useRef, useCallback, useEffect, type ReactNode } from "react";
 import { cn } from "@/shared/lib/cn";
 
 type CarouselItem = {
@@ -24,17 +24,28 @@ export const FeaturedCarousel = ({
   const [active, setActive] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => {
+    if (!autoPlay || items.length <= 1) {
+      return;
+    }
+
+    timerRef.current = setTimeout(() => {
+      setActive((prev) => (prev + 1) % items.length);
+    }, autoPlayInterval);
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [active, autoPlay, autoPlayInterval, items.length]);
+
   const goTo = useCallback(
     (idx: number) => {
       setActive(idx);
-      if (autoPlay) {
-        if (timerRef.current) clearTimeout(timerRef.current);
-        timerRef.current = setTimeout(() => {
-          setActive((prev) => (prev + 1) % items.length);
-        }, autoPlayInterval);
-      }
+      if (timerRef.current) clearTimeout(timerRef.current);
     },
-    [autoPlay, autoPlayInterval, items.length],
+    [],
   );
 
   if (!items.length) return null;

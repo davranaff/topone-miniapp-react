@@ -44,3 +44,31 @@ export type ForgotPasswordPayload = {
 export type TelegramAuthPayload = {
   initData: string;
 };
+
+export type TelegramLoginRequestPayload = {
+  phoneNumber: string;
+};
+
+export type TelegramLoginRequestResult = {
+  botUrl: string;
+  expiresAt?: string;
+};
+
+export type TelegramCodeVerificationPayload = {
+  phoneNumber: string;
+  code: string;
+};
+
+export type TelegramCodeVerificationResult = {
+  tokens: Tokens;
+  user?: SessionUser;
+};
+
+export type SubscriptionStatus = {
+  subscribed: boolean;
+  isPremium: boolean;
+  status?: string;
+  purchaseDate?: string;
+  subscriptionEndDate?: string;
+  lastPurchaseTime?: string;
+};

@@ -9,11 +9,27 @@ export type UserStats = {
   streak: number;
 };
 
+const toNumber = (...values: unknown[]) => {
+  for (const value of values) {
+    if (value == null) {
+      continue;
+    }
+
+    const parsed = typeof value === "number" ? value : Number(value);
+
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+
+  return 0;
+};
+
 const mapStats = (raw: Record<string, unknown>): UserStats => ({
-  xp: Number(raw.xp ?? raw.total_xp ?? raw.stars ?? 0),
-  coins: Number(raw.coins ?? raw.total_coins ?? 0),
-  level: Number(raw.level ?? raw.current_level ?? 0),
-  streak: Number(raw.streak ?? raw.current_streak ?? 0),
+  xp: toNumber(raw.xp, raw.total_xp, raw.stars),
+  coins: toNumber(raw.coins, raw.total_coins),
+  level: toNumber(raw.level, raw.current_level),
+  streak: toNumber(raw.streak, raw.current_streak, raw.daily_streak_count),
 });
 
 export const useUserStats = () => {

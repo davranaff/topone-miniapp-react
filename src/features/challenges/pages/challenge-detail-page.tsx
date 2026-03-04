@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Swords, Star, Lock, Clock, ChevronRight, PlayCircle } from "lucide-react";
+import { Star, Lock, Clock, ChevronRight, PlayCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useChallengeDetail } from "@/features/challenges/hooks/use-challenge-detail";
 import { challengesApi } from "@/features/challenges/api/challenges.api";
@@ -11,7 +11,8 @@ import { Button } from "@/shared/ui/button";
 import { ProgressBar } from "@/shared/ui/progress-bar";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { ErrorState } from "@/shared/ui/error-state";
-import { cn } from "@/shared/lib/cn";
+import { SubscriptionRequiredState } from "@/shared/ui/subscription-required-state";
+import { hasApiStatus } from "@/shared/api/error-helpers";
 import type { Challenge } from "@/entities/challenge/types";
 
 const difficultyVariant: Record<Challenge["difficulty"], "success" | "info" | "danger"> = {
@@ -47,6 +48,15 @@ export const ChallengeDetailPage = () => {
           <Skeleton className="h-40 w-full rounded-2xl" />
           <Skeleton className="h-24 w-full rounded-2xl" />
         </div>
+      </MobileScreen>
+    );
+  }
+
+  if (challenge.isError && hasApiStatus(challenge.error, 403)) {
+    return (
+      <MobileScreen>
+        <PageHeader title="Challenj" backButton />
+        <SubscriptionRequiredState />
       </MobileScreen>
     );
   }

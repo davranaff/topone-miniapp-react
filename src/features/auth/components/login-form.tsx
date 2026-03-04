@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next";
 import { Eye, EyeOff, Lock, User, Send } from "lucide-react";
 import { loginSchema, type LoginSchema } from "@/features/auth/schemas/login.schema";
 import { useLogin } from "@/features/auth/hooks/use-login";
+import { useTelegram } from "@/shared/hooks/use-telegram";
+import { getTelegramLoginPath } from "@/shared/lib/telegram-webapp";
 import { Button } from "@/shared/ui/button";
 import { FormField } from "@/shared/ui/form-field";
 import { Input } from "@/shared/ui/input";
@@ -16,6 +18,7 @@ export const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const mutation = useLogin();
+  const telegram = useTelegram();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginSchema>({
@@ -91,10 +94,10 @@ export const LoginForm = () => {
           fullWidth
           type="button"
           variant="outline"
-          onClick={() => navigate("/telegram/init")}
+          onClick={() => navigate(getTelegramLoginPath(telegram.isAvailable()))}
         >
           <Send className="h-4 w-4" />
-          Войти через Telegram
+          {t("telegram")}
         </Button>
       </div>
 

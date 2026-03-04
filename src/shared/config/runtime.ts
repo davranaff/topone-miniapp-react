@@ -9,5 +9,6 @@ export const isTelegramRuntime = (): boolean => {
     return false;
   }
 
-  return Boolean(window.Telegram?.WebApp);
+  const initData = window.Telegram?.WebApp?.initData;
+  return typeof initData === "string" && initData.trim().length > 0;
 };

@@ -7,7 +7,8 @@ export class TelegramWebAppAdapter implements TelegramAdapter {
   }
 
   isAvailable() {
-    return Boolean(this.webApp);
+    const initData = this.webApp?.initData;
+    return typeof initData === "string" && initData.trim().length > 0;
   }
 
   ready() {
@@ -19,7 +20,8 @@ export class TelegramWebAppAdapter implements TelegramAdapter {
   }
 
   getInitData() {
-    return this.webApp?.initData ?? null;
+    const initData = this.webApp?.initData;
+    return initData && initData.trim().length > 0 ? initData : null;
   }
 
   getSafeAreaInsets(): TelegramInsets {

@@ -14,6 +14,10 @@ export const endpoints = {
     me: "/api/v1/auth/me",
     refresh: "/api/v1/auth/refresh",
     telegramAuth: "/api/v1/telegram/auth/telegram",
+    subscriptionStatus: "/api/v1/auth/subscription",
+  },
+  announcements: {
+    list: "/api/v1/announcements/",
   },
   notifications: {
     list: "/api/v2/notifications/",
@@ -63,8 +67,15 @@ export const endpoints = {
     token: "/api/v1/chat/token",
   },
   courses: {
+    categories: "/api/v1/courses/categories",
     list: "/api/v1/courses/",
     detail: (courseId: string) => `/api/v1/courses/${courseId}`,
+    stats: (courseId: string) => `/api/v1/courses/${courseId}/stats`,
+  },
+  challenges: {
+    list: "/api/v1/challenges/",
+    detail: (challengeId: string) => `/api/v1/challenges/${challengeId}`,
+    start: (challengeId: string) => `/api/v1/challenges/${challengeId}/start`,
   },
   profile: {
     me: "/api/v1/auth/me",
@@ -74,7 +85,8 @@ export const endpoints = {
     detail: (slug: string) => `/api/v1/mini-apps/${slug}`,
   },
   lessons: {
-    byCourse: (courseId: string) => `/api/v1/courses/${courseId}/lessons`,
+    byCourse: (courseId: string) => `/api/v1/lessons/by_course/${courseId}`,
+    progressStats: (courseId: string) => `/api/v1/lessons/by_course/${courseId}/progress-stats`,
     detail: (lessonId: string) => `/api/v1/lessons/${lessonId}`,
   },
 } as const;

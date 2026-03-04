@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { Bell, Settings, Star, CircleDollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/shared/lib/cn";
+import { formatCompactNumber } from "@/shared/lib/number";
+import { useLocale } from "@/shared/hooks/use-locale";
 
 type TopActionClusterProps = {
   coins?: number;
@@ -40,33 +42,38 @@ const ClusterButton = ({
   </button>
 );
 
-const StatPill = ({
-  icon,
-  value,
-  color,
+const StatsChip = ({
+  coins,
+  stars,
   onClick,
 }: {
-  icon: ReactNode;
-  value: number | undefined;
-  color: "gold" | "blue";
+  coins?: number;
+  stars?: number;
   onClick?: () => void;
-}) => (
+}) => {
+  const { locale } = useLocale();
+
+  return (
   <button
     onClick={onClick}
     className={cn(
-      "flex h-8 items-center gap-1 rounded-lg px-2.5",
-      "border transition-all duration-200 active:scale-95",
-      color === "gold"
-        ? "border-gold/20 bg-gold/10 text-gold hover:border-gold/40"
-        : "border-info/20 bg-info/10 text-info hover:border-info/40",
+      "flex h-9 items-center gap-2 rounded-full px-3",
+      "border border-border/50 bg-elevated text-t-primary transition-all duration-200",
+      "hover:border-gold/30 active:scale-95",
     )}
   >
-    <span className="text-sm">{icon}</span>
-    <span className="text-xs font-semibold tabular-nums">
-      {value !== undefined ? value.toLocaleString() : "—"}
-    </span>
+    <div className="flex items-center gap-1 text-[11px] font-bold tabular-nums text-t-primary">
+      <CircleDollarSign className="h-3.5 w-3.5 text-gold" />
+      <span>{formatCompactNumber(coins ?? 0, locale)}</span>
+    </div>
+    <span className="h-3.5 w-px bg-border/60" />
+    <div className="flex items-center gap-1 text-[11px] font-bold tabular-nums text-t-primary">
+      <Star className="h-3.5 w-3.5 text-gold" />
+      <span>{formatCompactNumber(stars ?? 0, locale)}</span>
+    </div>
   </button>
-);
+  );
+};
 
 export const TopActionCluster = ({
   coins,
@@ -78,16 +85,9 @@ export const TopActionCluster = ({
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <StatPill
-        icon={<Star className="h-3.5 w-3.5" />}
-        value={stars}
-        color="gold"
-        onClick={() => navigate("/transactions/xp")}
-      />
-      <StatPill
-        icon={<CircleDollarSign className="h-3.5 w-3.5" />}
-        value={coins}
-        color="blue"
+      <StatsChip
+        coins={coins}
+        stars={stars}
         onClick={() => navigate("/transactions/coins")}
       />
       <ClusterButton

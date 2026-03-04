@@ -1,5 +1,21 @@
 {
   "title": "Kurslar",
   "subtitle": "Ta'lim katalogi va progress",
-  "details": "Kurs tafsilotlari"
+  "details": "Kurs tafsilotlari",
+  "completed": "Tugallangan",
+  "inProgress": "Jarayonda",
+  "notStarted": "Boshlanmagan",
+  "overallProgress": "Umumiy progress",
+  "continuePath": "To'xtagan joyingizdan davom eting",
+  "selectCourse": "Kursni tanlang",
+  "empty": "Hozircha kurslar yo'q",
+  "emptyDescription": "Yangi kurslar paydo bo'lganda shu yerda ko'rinadi.",
+  "openCourse": "Ochiq",
+  "lockedCourse": "Yopiq",
+  "lessonsTitle": "Darslar",
+  "lessonsSubtitle": "Yo'lingizni davom ettiring",
+  "lessonsSelectCourse": "Avval kursni tanlang",
+  "lessonsEmpty": "Bu kurs uchun hali darslar qo'shilmagan",
+  "subscriptionTitle": "Obuna kerak",
+  "subscriptionDescription": "Kurslar va darslarni ochish uchun obuna rasmiylashtiring."
 }
