@@ -56,8 +56,11 @@ export const endpoints = {
   },
   leaderboard: {
     xp: "/api/v2/statistics/leaderboard/xp",
-    coins: "/api/v2/statistics/leaderboard/coins",
     referrals: "/api/v2/statistics/leaderboard/referrals",
+    myPosition: {
+      xp: "/api/v2/statistics/my-position/xp",
+      referrals: "/api/v2/statistics/my-position/referrals",
+    },
     myStats: "/api/v2/statistics/my-statistics/",
   },
   referrals: {

@@ -9,4 +9,10 @@ export type LeaderboardEntry = {
   isCurrentUser?: boolean;
 };
 
-export type LeaderboardType = "xp" | "coins" | "referrals";
+export type LeaderboardType = "xp" | "referrals";
+
+export type LeaderboardMyPosition = {
+  rank: number | null;
+  value: number;
+  totalUsers: number;
+};
