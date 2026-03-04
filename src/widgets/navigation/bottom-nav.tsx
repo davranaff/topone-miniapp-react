@@ -23,9 +23,9 @@ const CircleDockButton = ({
       onClick={onClick}
       className={cn(
         "pointer-events-auto flex h-[4.25rem] w-[4.25rem] items-center justify-center rounded-full",
-        "border border-white/10 bg-[linear-gradient(180deg,rgba(24,24,24,0.92),rgba(8,8,8,0.82))]",
-        "shadow-[0_24px_48px_rgba(0,0,0,0.45)] backdrop-blur-[28px]",
-        "transition-transform duration-200 active:scale-95",
+        "border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(10,10,10,0.58))]",
+        "shadow-[0_24px_48px_rgba(0,0,0,0.45)] backdrop-blur-[18px]",
+        "transition-transform duration-300 active:scale-95",
       )}
     >
       {icon}
@@ -117,9 +117,9 @@ export const BottomNav = () => {
             <div
               ref={tabsContainerRef}
               className={cn(
-                "glass-lg pointer-events-auto relative flex min-h-[4.5rem] w-full items-center gap-1 rounded-[2rem] p-2",
-                "border border-white/10 bg-[linear-gradient(180deg,rgba(24,24,24,0.52),rgba(8,8,8,0.36))]",
-                "shadow-[0_24px_60px_rgba(0,0,0,0.42)] backdrop-blur-[34px]",
+                "glass-lg animate-dock-pulse pointer-events-auto relative flex min-h-[4.5rem] w-full items-center gap-1 rounded-[2rem] p-2",
+                "border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(8,8,8,0.34))]",
+                "shadow-[0_24px_60px_rgba(0,0,0,0.42)] backdrop-blur-[20px]",
                 config.showBackButton && "ml-[4.75rem]",
                 config.showChatButton && "mr-[4.75rem]",
               )}
@@ -127,8 +127,8 @@ export const BottomNav = () => {
               <div
                 className={cn(
                   "pointer-events-none absolute top-2 h-[calc(100%-1rem)] rounded-[1.35rem]",
-                  "bg-[linear-gradient(180deg,rgba(245,200,66,0.16),rgba(212,160,23,0.08))]",
-                  "shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_12px_24px_rgba(0,0,0,0.22)]",
+                  "bg-[linear-gradient(180deg,rgba(255,226,163,0.18),rgba(212,160,23,0.08))]",
+                  "shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_12px_24px_rgba(0,0,0,0.22)]",
                   "transition-[left,width,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                   indicator.visible ? "opacity-100" : "opacity-0",
                 )}
@@ -153,8 +153,8 @@ export const BottomNav = () => {
             <div
               key={`${config.action.label}-${config.action.tone ?? "gold"}`}
               className={cn(
-                "glass-lg pointer-events-auto flex h-[4.5rem] items-center rounded-[2rem] p-2 backdrop-blur-[34px]",
-                "animate-scale-in border bg-[linear-gradient(180deg,rgba(24,24,24,0.52),rgba(8,8,8,0.36))] shadow-[0_24px_60px_rgba(0,0,0,0.42)]",
+                "glass-lg pointer-events-auto flex h-[4.5rem] items-center rounded-[2rem] p-2 backdrop-blur-[20px]",
+                "animate-scale-in border bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(8,8,8,0.36))] shadow-[0_24px_60px_rgba(0,0,0,0.42)]",
                 config.showBackButton ? "ml-[4.75rem]" : "ml-0",
                 config.showChatButton ? "mr-[4.75rem]" : "mr-0",
                 showTabs ? "absolute inset-x-[5.25rem] bottom-0" : "w-full",

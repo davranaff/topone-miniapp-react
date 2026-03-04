@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -63,6 +63,7 @@ export const LessonDetailPage = () => {
   const { setOverride, resetOverride } = useShellNav();
   const [tab, setTab] = useState<LessonTab>("details");
   const lastSavedRef = useRef(0);
+  const completeLessonRef = useRef<() => void>(() => undefined);
 
   const lesson = useQuery({
     queryKey: ["lessons", "detail", lessonId],
@@ -137,66 +138,67 @@ export const LessonDetailPage = () => {
     },
   });
   const isCompletingLesson = completeMutation.isPending;
-  const completeLesson = completeMutation.mutate;
+
+  useEffect(() => {
+    completeLessonRef.current = () => {
+      completeMutation.mutate();
+    };
+  }, [completeMutation]);
 
   const activeProgress = progress.data ?? lesson.data?.userProgress;
   const isLocked = lesson.data?.isLocked || lesson.data?.isOpen === false;
   const isCompleted = activeProgress?.status === "COMPLETED" || lesson.data?.isCompleted;
 
-  useEffect(() => {
+  const navOverride = useMemo(() => {
     if (!lesson.data || lesson.isError) {
-      setOverride({});
-      return () => resetOverride();
+      return null;
     }
 
     if (isLocked) {
-      setOverride({
+      return {
         action: {
           label: "Obuna olish",
           icon: <ChevronRight className="h-4 w-4" />,
           onClick: () => navigate("/subscription"),
         },
-      });
-      return () => resetOverride();
+      };
     }
 
     if (isCompleted) {
-      setOverride({
+      return {
         action: {
           label: "Bajarildi",
           icon: <CheckCircle2 className="h-4 w-4" />,
           onClick: () => undefined,
           disabled: true,
-          tone: "success",
+          tone: "success" as const,
         },
-      });
-      return () => resetOverride();
+      };
     }
 
-    setOverride({
+    return {
       showChatButton: true,
       action: {
         label: "Tugatdim",
         icon: <CheckCircle2 className="h-4 w-4" />,
         onClick: () => {
-          completeLesson();
+          completeLessonRef.current();
         },
         loading: isCompletingLesson,
       },
-    });
+    };
+  }, [isCompletingLesson, isCompleted, isLocked, lesson.data, lesson.isError, navigate]);
+
+  useEffect(() => {
+    if (!navOverride) {
+      resetOverride();
+      return;
+    }
+
+    setOverride(navOverride);
 
     return () => resetOverride();
-  }, [
-    completeLesson,
-    isCompletingLesson,
-    isCompleted,
-    isLocked,
-    lesson.data,
-    lesson.isError,
-    navigate,
-    resetOverride,
-    setOverride,
-  ]);
+  }, [navOverride, resetOverride, setOverride]);
 
   if (lesson.isLoading) {
     return (
@@ -342,7 +344,7 @@ export const LessonDetailPage = () => {
               }}
               onEnded={() => {
                 if (!isCompleted) {
-                  completeLesson();
+                  completeLessonRef.current();
                 }
               }}
             />

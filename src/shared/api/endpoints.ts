@@ -19,6 +19,9 @@ export const endpoints = {
   announcements: {
     list: "/api/v1/announcements/",
   },
+  feedback: {
+    mobile: "/api/v1/feedback/mobile",
+  },
   notifications: {
     list: "/api/v2/notifications/",
     markRead: (id: string) => `/api/v2/notifications/${id}/read`,
@@ -28,6 +31,7 @@ export const endpoints = {
   },
   payment: {
     plans: "/api/v1/payment/plans/active",
+    subscribePlan: (planId: string) => `/api/v1/payment/plans/${planId}/subscribe`,
     createInvoice: "/api/v1/payment/invoices",
     invoiceLinks: (id: string) => `/api/v1/payment/invoices/${id}/links`,
     invoiceStatus: (id: string) => `/api/v1/payment/invoices/${id}/status`,
@@ -73,9 +77,17 @@ export const endpoints = {
     stats: (courseId: string) => `/api/v1/courses/${courseId}/stats`,
   },
   challenges: {
+    categories: "/api/v1/challenges/categories",
     list: "/api/v1/challenges/",
+    stats: "/api/v1/challenges/stats",
     detail: (challengeId: string) => `/api/v1/challenges/${challengeId}`,
-    start: (challengeId: string) => `/api/v1/challenges/${challengeId}/start`,
+    detailStats: (challengeId: string) => `/api/v1/challenges/${challengeId}/stats`,
+    rewards: (challengeId: string) => `/api/v1/challenges/${challengeId}/rewards`,
+    subchallenges: (challengeId: string) => `/api/v1/challenges/${challengeId}/subchallenges`,
+    progressByChallenge: (challengeId: string) =>
+      `/api/v1/challenges/progress/by_challenge_id/${challengeId}`,
+    progressCreate: "/api/v1/challenges/progress/",
+    progressUpdate: (progressId: string) => `/api/v1/challenges/progress/${progressId}`,
   },
   profile: {
     me: "/api/v1/auth/me",

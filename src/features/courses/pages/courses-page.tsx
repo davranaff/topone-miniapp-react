@@ -44,8 +44,8 @@ const CourseGridCard = ({
   const progress = course.progress ?? 0;
 
   return (
-    <Link to={`/courses/${course.id}/lessons`} className="block">
-      <div className="relative h-[336px] overflow-hidden rounded-[1.75rem] border border-white/10 shadow-card">
+    <Link to={`/courses/${course.id}/lessons`} className="group block">
+      <div className="relative h-[352px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_26px_70px_rgba(0,0,0,0.46)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:border-gold/20 group-hover:shadow-[0_34px_86px_rgba(0,0,0,0.56)]">
         <div
           className="absolute inset-0"
           style={{
@@ -56,7 +56,9 @@ const CourseGridCard = ({
             backgroundSize: "cover",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.16),transparent_28%)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),transparent)]" />
 
         <div className="relative flex h-full flex-col justify-between p-5">
           <div className="flex items-start justify-between gap-3">
@@ -80,7 +82,7 @@ const CourseGridCard = ({
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-3 backdrop-blur-sm">
+            <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-3.5 backdrop-blur-md">
               <ProgressBar
                 value={progress}
                 max={100}
@@ -179,7 +181,15 @@ export const CoursesPage = () => {
       return catalog.data.courses;
     }
 
-    return catalog.data.courses.filter((course) => course.categoryId === activeCategoryId);
+    return catalog.data.courses
+      .filter((course) => course.categoryId === activeCategoryId)
+      .sort((left, right) => {
+        if (left.isLocked !== right.isLocked) {
+          return Number(left.isLocked) - Number(right.isLocked);
+        }
+
+        return (right.progress ?? 0) - (left.progress ?? 0);
+      });
   }, [activeCategoryId, catalog.data]);
 
   return (
@@ -244,9 +254,9 @@ export const CoursesPage = () => {
             columns={3}
           />
 
-          <GlassCard className="space-y-3 rounded-[1.5rem]">
+          <GlassCard className="space-y-3 rounded-[1.7rem]">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gold/10 text-gold">
+              <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,226,163,0.14),rgba(255,255,255,0.03))] text-gold">
                 <BookOpen className="h-5 w-5" />
               </div>
               <div>

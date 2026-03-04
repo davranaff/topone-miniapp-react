@@ -21,11 +21,11 @@ export const FormField = ({
   children,
   className,
 }: FormFieldProps) => (
-  <div className={cn("flex flex-col gap-1.5", className)}>
+  <div className={cn("flex flex-col gap-2", className)}>
     {label && (
       <RadixLabel.Root
         htmlFor={htmlFor}
-        className="flex items-center gap-1 text-sm font-medium text-t-secondary"
+        className="flex items-center gap-1 text-[0.82rem] font-semibold tracking-[0.01em] text-white/72"
       >
         {label}
         {required && (
@@ -38,7 +38,7 @@ export const FormField = ({
       <p className="text-xs text-t-muted">{hint}</p>
     )}
     {error && (
-      <p className="flex items-center gap-1 text-xs text-danger">
+      <p className="flex items-center gap-1 text-xs text-danger/95">
         <span>⚠</span>
         {error}
       </p>

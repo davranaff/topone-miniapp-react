@@ -27,9 +27,9 @@ const ClusterButton = ({
     onClick={onClick}
     aria-label={ariaLabel}
     className={cn(
-      "relative flex h-9 w-9 items-center justify-center rounded-xl",
-      "border border-border/50 bg-elevated text-t-muted",
-      "transition-all duration-200 hover:border-gold/30 hover:text-t-primary",
+      "glass relative flex h-10 w-10 items-center justify-center rounded-[1.1rem]",
+      "border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(10,10,10,0.56))] text-t-muted",
+      "transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/30 hover:text-t-primary",
       "active:scale-90",
     )}
   >
@@ -57,9 +57,9 @@ const StatsChip = ({
   <button
     onClick={onClick}
     className={cn(
-      "flex h-9 items-center gap-2 rounded-full px-3",
-      "border border-border/50 bg-elevated text-t-primary transition-all duration-200",
-      "hover:border-gold/30 active:scale-95",
+      "glass flex h-10 items-center gap-2 rounded-full px-3.5",
+      "border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(10,10,10,0.56))] text-t-primary transition-all duration-300",
+      "hover:-translate-y-0.5 hover:border-gold/30 active:scale-95",
     )}
   >
     <div className="flex items-center gap-1 text-[11px] font-bold tabular-nums text-t-primary">

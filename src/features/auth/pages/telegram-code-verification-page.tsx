@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { ArrowLeft, MessageCircleMore } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { authApi } from "@/features/auth/api/auth.api";
 import { sessionStorage } from "@/shared/auth/session-storage";
 import { tokenStorage } from "@/shared/auth/token-storage";
 import { useAuthStore } from "@/features/auth/store/auth.store";
-import { Button } from "@/shared/ui/button";
 import { OtpInput } from "@/shared/ui/otp-input";
 import { getErrorMessage } from "@/shared/lib/error-map";
 import { TELEGRAM_LOGIN_CODE_LENGTH, openTelegramLink } from "@/shared/lib/telegram-webapp";
+import {
+  AuthBackButton,
+  AuthPrimaryButton,
+  AuthTitleBlock,
+} from "@/features/auth/components/auth-ui";
 
 type TelegramVerificationState = {
   phoneNumber?: string;
@@ -19,6 +23,7 @@ type TelegramVerificationState = {
 export const TelegramCodeVerificationPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation("auth");
   const [searchParams] = useSearchParams();
   const locationState = (location.state as TelegramVerificationState | null) ?? null;
   const phoneNumber = locationState?.phoneNumber ?? searchParams.get("phone") ?? "";
@@ -26,8 +31,8 @@ export const TelegramCodeVerificationPage = () => {
   const [code, setCode] = useState("");
 
   const mutation = useMutation({
-    mutationFn: async (code: string) => {
-      const result = await authApi.verifyTelegramCode({ phoneNumber, code });
+    mutationFn: async (enteredCode: string) => {
+      const result = await authApi.verifyTelegramCode({ phoneNumber, code: enteredCode });
       authApi.ensureTokens(result.tokens);
       tokenStorage.setTokens(result.tokens);
 
@@ -57,71 +62,63 @@ export const TelegramCodeVerificationPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-base px-5">
-      <div className="w-full max-w-sm space-y-6">
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 text-sm text-t-muted transition hover:text-t-primary"
-          onClick={() => navigate("/telegram-login")}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Orqaga
-        </button>
+    <div className="mx-auto flex w-full max-w-[28rem] flex-col justify-center py-2 sm:min-h-[38rem]">
+      <div className="space-y-6">
+        <AuthBackButton onClick={() => navigate("/telegram-login")} className="-ml-2" />
 
-        <div className="flex flex-col items-center gap-2 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-gold/20 bg-gold/10">
-            <MessageCircleMore className="h-6 w-6 text-gold" />
+        <AuthTitleBlock
+          title={t("verifyCode")}
+          subtitle={`${t("verifySubtitle")} ${phoneNumber}`}
+        />
+
+        {mutation.isError ? (
+          <div className="rounded-[1.2rem] border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            {getErrorMessage(mutation.error)}
           </div>
-          <h1 className="text-xl font-bold text-t-primary">Tasdiqlash kodi</h1>
-          <p className="text-sm text-t-muted">
-            Telegram botda ko'rsatilgan 6 xonali kodni kiriting.
-          </p>
-          <p className="text-sm font-medium text-t-primary">{phoneNumber}</p>
-        </div>
+        ) : null}
 
-        <div className="space-y-4">
-          {mutation.isError ? (
-            <div className="rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
-              {getErrorMessage(mutation.error)}
-            </div>
-          ) : null}
+        <OtpInput
+          value={code}
+          onChange={(value) => {
+            if (mutation.isError) {
+              mutation.reset();
+            }
 
-          <OtpInput
-            value={code}
-            onChange={(value) => {
-              if (mutation.isError) {
-                mutation.reset();
-              }
+            setCode(value);
+          }}
+          onComplete={() => undefined}
+          maxLength={TELEGRAM_LOGIN_CODE_LENGTH}
+          disabled={mutation.isPending}
+          error={mutation.isError}
+          className="gap-3"
+          slotClassName="h-[5rem] w-[3.8rem] rounded-[1.25rem] border border-white/28 bg-white/12 text-[2rem] font-bold text-white"
+          activeSlotClassName="border-[#f6c768] bg-white/16 ring-0"
+          errorSlotClassName="border-red-400/70"
+        />
 
-              setCode(value);
-            }}
-            onComplete={(value) => mutation.mutate(value)}
-            maxLength={TELEGRAM_LOGIN_CODE_LENGTH}
-            disabled={mutation.isPending}
-            error={mutation.isError}
-          />
+        <AuthPrimaryButton
+          type="button"
+          loading={mutation.isPending}
+          onClick={() => {
+            if (code.length === TELEGRAM_LOGIN_CODE_LENGTH) {
+              mutation.reset();
+              mutation.mutate(code);
+            }
+          }}
+          disabled={code.length !== TELEGRAM_LOGIN_CODE_LENGTH}
+        >
+          {t("verify")}
+        </AuthPrimaryButton>
 
-          <Button
-            fullWidth
+        {botUrl ? (
+          <button
             type="button"
-            loading={mutation.isPending}
-            onClick={() => {
-              if (code.length === TELEGRAM_LOGIN_CODE_LENGTH) {
-                mutation.reset();
-                mutation.mutate(code);
-              }
-            }}
-            disabled={code.length !== TELEGRAM_LOGIN_CODE_LENGTH}
+            className="w-full text-center text-[1rem] font-semibold text-white/76 transition-colors hover:text-white"
+            onClick={() => openTelegramLink(botUrl)}
           >
-            Tasdiqlash
-          </Button>
-
-          {botUrl ? (
-            <Button fullWidth variant="outline" type="button" onClick={() => openTelegramLink(botUrl)}>
-              Telegram botni qayta ochish
-            </Button>
-          ) : null}
-        </div>
+            {t("telegramOpenAgain")}
+          </button>
+        ) : null}
       </div>
     </div>
   );

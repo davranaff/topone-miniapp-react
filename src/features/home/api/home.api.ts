@@ -6,6 +6,8 @@ import { buildQueryString } from "@/shared/lib/url";
 import { challengesApi } from "@/features/challenges/api/challenges.api";
 import { coursesApi } from "@/features/courses/api/courses.api";
 import type { HomeAnnouncement, HomeFeed } from "@/features/home/types/home.types";
+import type { Course } from "@/entities/course/types";
+import type { Challenge } from "@/entities/challenge/types";
 
 const mapAnnouncement = (raw: Record<string, unknown>): HomeAnnouncement => ({
   id: String(raw.id ?? ""),
@@ -31,6 +33,34 @@ const getAnnouncements = async () => {
   return items.map(mapAnnouncement).sort((left, right) => left.orderIndex - right.orderIndex);
 };
 
+const sortHomeCourses = (courses: Course[]) => {
+  return [...courses].sort((left, right) => {
+    if (left.isLocked !== right.isLocked) {
+      return Number(left.isLocked) - Number(right.isLocked);
+    }
+
+    const progressDiff = (right.progress ?? 0) - (left.progress ?? 0);
+    if (progressDiff !== 0) {
+      return progressDiff;
+    }
+
+    return left.title.localeCompare(right.title);
+  });
+};
+
+const sortHomeChallenges = (challenges: Challenge[]) => {
+  return [...challenges].sort((left, right) => {
+    const leftWeight = left.isCompleted ? 2 : left.isStarted ? 0 : 1;
+    const rightWeight = right.isCompleted ? 2 : right.isStarted ? 0 : 1;
+
+    if (leftWeight !== rightWeight) {
+      return leftWeight - rightWeight;
+    }
+
+    return (right.progress ?? 0) - (left.progress ?? 0);
+  });
+};
+
 export const homeApi = {
   async getFeed(): Promise<HomeFeed> {
     const profile = await authApi.getProfile();
@@ -49,7 +79,7 @@ export const homeApi = {
     let courses = [] as HomeFeed["courses"];
 
     if (coursesResult.status === "fulfilled") {
-      courses = coursesResult.value.items;
+      courses = sortHomeCourses(coursesResult.value.items);
     } else if (
       coursesResult.reason instanceof ApiError &&
       coursesResult.reason.statusCode === 403
@@ -61,7 +91,7 @@ export const homeApi = {
     let challenges = [] as HomeFeed["challenges"];
 
     if (challengesResult.status === "fulfilled") {
-      challenges = challengesResult.value.items;
+      challenges = sortHomeChallenges(challengesResult.value.items);
     } else if (
       challengesResult.reason instanceof ApiError &&
       challengesResult.reason.statusCode === 403

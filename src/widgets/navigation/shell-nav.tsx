@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -237,6 +238,7 @@ const getBaseConfig = (pathname: string): Omit<ResolvedShellNav, "onBack" | "onC
     pathname === "/payment-methods" ||
     pathname === "/payment-waiting" ||
     pathname === "/payment-result" ||
+    pathname === "/payment-success" ||
     pathname === "/account" ||
     pathname === "/transactions" ||
     pathname === "/transactions/xp" ||
@@ -268,15 +270,21 @@ const getBaseConfig = (pathname: string): Omit<ResolvedShellNav, "onBack" | "onC
 };
 
 export const ShellNavProvider = ({ children }: PropsWithChildren) => {
-  const [override, setOverride] = useState<ShellNavOverride>(defaultOverride);
+  const [override, setOverrideState] = useState<ShellNavOverride>(defaultOverride);
+  const setOverride = useCallback((value: ShellNavOverride) => {
+    setOverrideState(value);
+  }, []);
+  const resetOverride = useCallback(() => {
+    setOverrideState(defaultOverride);
+  }, []);
 
   const value = useMemo(
     () => ({
       override,
       setOverride,
-      resetOverride: () => setOverride(defaultOverride),
+      resetOverride,
     }),
-    [override],
+    [override, resetOverride, setOverride],
   );
 
   return (

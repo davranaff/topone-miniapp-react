@@ -34,6 +34,7 @@ export type RegisterPayload = {
   phoneNumber: string;
   firstName: string;
   lastName: string;
+  referralCode?: string;
   timezone: string;
 };
 
@@ -71,4 +72,15 @@ export type SubscriptionStatus = {
   purchaseDate?: string;
   subscriptionEndDate?: string;
   lastPurchaseTime?: string;
+  amount?: number;
+  currency?: string;
+  currencySymbol?: string;
+  paymentMethod?: string;
+  autoRenew?: boolean;
+  hasNextSubscription?: boolean;
+  planId?: string;
+  planName?: string;
+  planIsTrial?: boolean;
+  planPrice?: number;
+  durationMonths?: number;
 };

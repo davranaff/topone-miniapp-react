@@ -1,5 +1,4 @@
-import { OTPInput, OTPInputContext } from "input-otp";
-import { useContext } from "react";
+import { OTPInput } from "input-otp";
 import { cn } from "@/shared/lib/cn";
 
 type OtpInputProps = {
@@ -10,6 +9,9 @@ type OtpInputProps = {
   disabled?: boolean;
   error?: boolean;
   className?: string;
+  slotClassName?: string;
+  activeSlotClassName?: string;
+  errorSlotClassName?: string;
 };
 
 export const OtpInput = ({
@@ -20,6 +22,9 @@ export const OtpInput = ({
   disabled = false,
   error = false,
   className,
+  slotClassName,
+  activeSlotClassName,
+  errorSlotClassName,
 }: OtpInputProps) => {
   return (
     <OTPInput
@@ -32,7 +37,14 @@ export const OtpInput = ({
       render={({ slots }) => (
         <>
           {slots.map((slot, idx) => (
-            <OtpSlot key={idx} {...slot} error={error} />
+            <OtpSlot
+              key={idx}
+              {...slot}
+              error={error}
+              slotClassName={slotClassName}
+              activeSlotClassName={activeSlotClassName}
+              errorSlotClassName={errorSlotClassName}
+            />
           ))}
         </>
       )}
@@ -45,18 +57,30 @@ type OtpSlotProps = {
   hasFakeCaret: boolean;
   isActive: boolean;
   error?: boolean;
+  slotClassName?: string;
+  activeSlotClassName?: string;
+  errorSlotClassName?: string;
 };
 
-const OtpSlot = ({ char, hasFakeCaret, isActive, error }: OtpSlotProps) => (
+const OtpSlot = ({
+  char,
+  hasFakeCaret,
+  isActive,
+  error,
+  slotClassName,
+  activeSlotClassName,
+  errorSlotClassName,
+}: OtpSlotProps) => (
   <div
     className={cn(
       "relative flex h-12 w-10 items-center justify-center rounded-lg border text-base font-semibold",
       "text-t-primary transition-all duration-200 bg-elevated",
       isActive
-        ? "border-gold/70 ring-2 ring-gold/30"
+        ? cn("border-gold/70 ring-2 ring-gold/30", activeSlotClassName)
         : error
-        ? "border-danger/60"
+        ? cn("border-danger/60", errorSlotClassName)
         : "border-border/60",
+      slotClassName,
     )}
   >
     {char}

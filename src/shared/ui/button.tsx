@@ -5,32 +5,33 @@ import { cn } from "@/shared/lib/cn";
 
 export const buttonVariants = cva(
   [
-    "inline-flex items-center justify-center gap-2 rounded-lg font-semibold",
-    "transition-all duration-200 select-none outline-none",
+    "inline-flex items-center justify-center gap-2 rounded-xl font-semibold",
+    "transition-all duration-300 ease-out select-none outline-none will-change-transform",
     "focus-visible:ring-2 focus-visible:ring-gold/60 focus-visible:ring-offset-2 focus-visible:ring-offset-base",
     "disabled:cursor-not-allowed disabled:opacity-40",
-    "active:scale-[0.97]",
+    "active:scale-[0.985]",
   ].join(" "),
   {
     variants: {
       variant: {
         /* Gold filled — primary CTA */
         primary: [
-          "bg-gold-135 text-t-inverse border border-gold/20",
-          "shadow-glow-sm hover:shadow-glow",
-          "hover:brightness-110",
+          "border border-[#ffe2a3]/35 text-[#17120a]",
+          "bg-[linear-gradient(135deg,#f7d27a_0%,#d7a43f_45%,#b67d19_100%)]",
+          "shadow-[0_18px_34px_rgba(212,160,23,0.2),inset_0_1px_0_rgba(255,255,255,0.38)]",
+          "hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_24px_42px_rgba(212,160,23,0.3),inset_0_1px_0_rgba(255,255,255,0.4)]",
         ].join(" "),
 
         /* Outlined gold */
         outline: [
-          "border border-gold/40 bg-transparent text-gold",
-          "hover:bg-gold/10 hover:border-gold/70",
+          "glass border border-gold/35 bg-[linear-gradient(180deg,rgba(255,226,163,0.08),rgba(18,18,18,0.58))] text-gold",
+          "hover:-translate-y-0.5 hover:border-gold/60 hover:bg-gold/10",
         ].join(" "),
 
         /* Subtle dark fill */
         secondary: [
-          "border border-border/60 bg-elevated text-t-primary",
-          "hover:border-gold/40 hover:bg-card",
+          "glass border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(18,18,18,0.54))] text-t-primary",
+          "hover:-translate-y-0.5 hover:border-white/20 hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.1),rgba(18,18,18,0.62))]",
         ].join(" "),
 
         /* Transparent ghost */
@@ -59,7 +60,7 @@ export const buttonVariants = cva(
         sm: "h-9 px-4 text-sm",
         md: "h-11 px-5 text-sm",
         lg: "h-12 px-6 text-base",
-        xl: "h-14 px-8 text-base",
+        xl: "h-14 px-8 text-base rounded-2xl",
         icon: "h-10 w-10 p-0",
         "icon-sm": "h-8 w-8 p-0 rounded-md",
         "icon-lg": "h-12 w-12 p-0",

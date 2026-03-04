@@ -25,17 +25,18 @@ export const GlassCard = ({
 }: GlassCardProps) => (
   <div
     className={cn(
-      "glass-lg relative overflow-hidden",
-      "border border-white/10 bg-[linear-gradient(180deg,rgba(28,28,28,0.9),rgba(16,16,16,0.76))]",
+      "glass-premium shine-sweep relative overflow-hidden",
+      "border border-white/10 bg-[linear-gradient(180deg,rgba(34,28,18,0.58),rgba(18,18,18,0.76),rgba(10,10,10,0.84))]",
       "shadow-card before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-white/10",
+      "after:pointer-events-none after:absolute after:inset-x-5 after:bottom-0 after:h-px after:bg-white/6",
       radMap[radius],
       padMap[padding],
       glow && "shadow-glow",
       goldBorder && "border-gold/30",
       interactive && [
-        "cursor-pointer transition-all duration-200",
-        "hover:border-gold/40 hover:shadow-glow-sm hover:-translate-y-0.5",
-        "active:scale-[0.98] active:translate-y-0",
+        "cursor-pointer transition-all duration-300 ease-out will-change-transform",
+        "hover:-translate-y-1 hover:border-gold/35 hover:shadow-[0_20px_40px_rgba(0,0,0,0.34)]",
+        "active:scale-[0.985] active:translate-y-0",
       ],
       className,
     )}

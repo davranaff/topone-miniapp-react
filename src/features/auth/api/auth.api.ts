@@ -27,8 +27,11 @@ export const authApi = {
     return mapTokens(unwrap<Record<string, unknown>>(response.data));
   },
   async register(payload: RegisterPayload): Promise<UserProfile> {
+    const referralSuffix = payload.referralCode?.trim()
+      ? `?referral=${encodeURIComponent(payload.referralCode.trim())}`
+      : "";
     const response = await apiClient.post(
-      endpoints.auth.register,
+      `${endpoints.auth.register}${referralSuffix}`,
       {
         email: payload.email,
         username: payload.username,
@@ -101,6 +104,9 @@ export const authApi = {
   async getSubscriptionStatus(): Promise<SubscriptionStatus> {
     const response = await apiClient.get(endpoints.auth.subscriptionStatus);
     const data = unwrap<Record<string, unknown>>(response.data);
+    const plan = data.plan && typeof data.plan === "object"
+      ? (data.plan as Record<string, unknown>)
+      : undefined;
 
     return {
       subscribed: Boolean(data.subscribed),
@@ -113,6 +119,29 @@ export const authApi = {
       lastPurchaseTime: data.last_purchase_time
         ? String(data.last_purchase_time)
         : undefined,
+      amount: typeof data.amount === "number"
+        ? data.amount
+        : Number(data.amount ?? 0),
+      currency: data.currency ? String(data.currency) : undefined,
+      currencySymbol: data.currency_symbol ? String(data.currency_symbol) : undefined,
+      paymentMethod: data.payment_method ? String(data.payment_method) : undefined,
+      autoRenew: typeof data.auto_renew === "boolean" ? data.auto_renew : undefined,
+      hasNextSubscription: typeof data.has_next_subscription === "boolean"
+        ? data.has_next_subscription
+        : undefined,
+      durationMonths: typeof data.duration_months === "number"
+        ? data.duration_months
+        : Number(data.duration_months ?? 0),
+      planId: plan?.id ? String(plan.id) : undefined,
+      planName: plan?.name ? String(plan.name) : undefined,
+      planIsTrial: typeof plan?.is_trial === "boolean"
+        ? plan.is_trial
+        : typeof plan?.isTrial === "boolean"
+          ? plan.isTrial
+          : undefined,
+      planPrice: typeof plan?.price === "number"
+        ? plan.price
+        : Number(plan?.price ?? 0),
     };
   },
   async updateProfile(payload: Partial<UserProfile>): Promise<UserProfile> {

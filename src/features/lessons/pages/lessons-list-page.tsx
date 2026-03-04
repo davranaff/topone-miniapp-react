@@ -40,8 +40,8 @@ const CoursePickerCard = ({ course }: { course: Course }) => {
   const imageUrl = normalizeMediaUrl(course.coverUrl ?? course.image);
 
   return (
-    <Link to={`/courses/${course.id}/lessons`} className="block">
-      <div className="relative h-[220px] overflow-hidden rounded-[1.5rem] border border-white/10 shadow-card">
+    <Link to={`/courses/${course.id}/lessons`} className="group block">
+      <div className="relative h-[232px] overflow-hidden rounded-[1.8rem] border border-white/10 shadow-[0_22px_60px_rgba(0,0,0,0.4)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:border-gold/20">
         <div
           className="absolute inset-0"
           style={{
@@ -52,7 +52,9 @@ const CoursePickerCard = ({ course }: { course: Course }) => {
             backgroundSize: "cover",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.14),transparent_28%)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/35 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),transparent)]" />
         <div className="relative flex h-full flex-col justify-between p-5">
           <div className="flex items-start justify-between gap-3">
             <span
@@ -106,12 +108,12 @@ const LessonRow = ({
       <GlassCard
         interactive={!isBlocked && !isPending}
         goldBorder={Boolean(isCompleted)}
-        className={cn("rounded-[1.35rem]", isBlocked && "opacity-60")}
+        className={cn("rounded-[1.55rem]", isBlocked && "opacity-60")}
       >
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border",
+              "flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.15rem] border",
               isCompleted
                 ? "border-gold/30 bg-gold/10 text-gold"
                 : isBlocked
@@ -251,9 +253,11 @@ export const LessonsListPage = () => {
         {!coursesPicker.isLoading && !coursesPicker.isError && (
           coursesPicker.data?.items.length ? (
             <MobileScreenSection>
-              {coursesPicker.data.items.map((course) => (
+              {[...coursesPicker.data.items]
+                .sort((left, right) => Number(left.isLocked) - Number(right.isLocked))
+                .map((course) => (
                 <CoursePickerCard key={course.id} course={course} />
-              ))}
+                ))}
             </MobileScreenSection>
           ) : (
             <EmptyState

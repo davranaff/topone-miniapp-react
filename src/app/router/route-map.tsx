@@ -7,11 +7,13 @@ import { AppErrorPage } from "@/app/router/error-page";
 import { ProtectedRoute } from "@/app/router/protected-route";
 import { PublicRoute } from "@/app/router/public-route";
 import { Spinner } from "@/shared/ui/spinner";
+import { TopOneLogo } from "@/shared/ui/topone-logo";
 import type { AppRouteDefinition } from "@/app/router/route-types";
 import { flutterScreenRoutes } from "@/shared/config/flutter-screens";
 
 const SplashPage = lazy(() => import("@/features/splash/pages/splash-page").then((m) => ({ default: m.SplashPage })));
 const LoginPage = lazy(() => import("@/features/auth/pages/login-page").then((m) => ({ default: m.LoginPage })));
+const LoginFormPage = lazy(() => import("@/features/auth/pages/login-form-page").then((m) => ({ default: m.LoginFormPage })));
 const RegisterPage = lazy(() => import("@/features/auth/pages/register-page").then((m) => ({ default: m.RegisterPage })));
 const ForgotPasswordPage = lazy(() => import("@/features/auth/pages/forgot-password-page").then((m) => ({ default: m.ForgotPasswordPage })));
 const TelegramInitPage = lazy(() => import("@/features/auth/pages/telegram-init-page").then((m) => ({ default: m.TelegramInitPage })));
@@ -31,6 +33,10 @@ const LessonDetailPage = lazy(() => import("@/features/lessons/pages/lesson-deta
 const AchievementsPage = lazy(() => import("@/features/achievements/pages/achievements-page").then((m) => ({ default: m.AchievementsPage })));
 const LeaderboardPage = lazy(() => import("@/features/leaderboard/pages/leaderboard-page").then((m) => ({ default: m.LeaderboardPage })));
 const SubscriptionPage = lazy(() => import("@/features/payment/pages/subscription-page").then((m) => ({ default: m.SubscriptionPage })));
+const PaymentMethodsPage = lazy(() => import("@/features/payment/pages/payment-methods-page").then((m) => ({ default: m.PaymentMethodsPage })));
+const PaymentWaitingPage = lazy(() => import("@/features/payment/pages/payment-waiting-page").then((m) => ({ default: m.PaymentWaitingPage })));
+const PaymentResultPage = lazy(() => import("@/features/payment/pages/payment-result-page").then((m) => ({ default: m.PaymentResultPage })));
+const PaymentSuccessPage = lazy(() => import("@/features/payment/pages/payment-success-page").then((m) => ({ default: m.PaymentSuccessPage })));
 const ReferralsPage = lazy(() => import("@/features/referrals/pages/referrals-page").then((m) => ({ default: m.ReferralsPage })));
 const ResetPasswordPage = lazy(() => import("@/features/auth/pages/reset-password-page").then((m) => ({ default: m.ResetPasswordPage })));
 const SetPasswordPage = lazy(() => import("@/features/auth/pages/set-password-page").then((m) => ({ default: m.SetPasswordPage })));
@@ -44,8 +50,16 @@ const WebViewPage = lazy(() => import("@/features/webview/pages/webview-page").t
 const ChatChannelPage = lazy(() => import("@/features/chat/pages/chat-channel-page").then((m) => ({ default: m.ChatChannelPage })));
 
 const PageFallback = () => (
-  <div className="flex min-h-[50vh] items-center justify-center">
-    <Spinner size="lg" />
+  <div className="relative flex min-h-[50vh] items-center justify-center overflow-hidden px-6">
+    <div className="pointer-events-none absolute h-56 w-56 rounded-full bg-gold/12 blur-3xl" />
+    <div className="relative flex flex-col items-center gap-4 text-center">
+      <TopOneLogo size="md" />
+      <div className="space-y-1">
+        <p className="text-base font-semibold text-t-primary">TopOne</p>
+        <p className="text-xs uppercase tracking-[0.24em] text-white/45">loading</p>
+      </div>
+      <Spinner size="lg" />
+    </div>
   </div>
 );
 
@@ -61,7 +75,7 @@ const routesMeta: AppRouteDefinition[] = [
   { path: "/forgot-password", element: <ForgotPasswordPage />, meta: { requiresAuth: false, guestOnly: true, layout: "auth" } },
   { path: "/reset-password", element: <ResetPasswordPage />, meta: { requiresAuth: false, layout: "auth" } },
   { path: "/set-password", element: <SetPasswordPage />, meta: { requiresAuth: false, layout: "auth" } },
-  { path: "/login-form", element: <LoginPage />, meta: { requiresAuth: false, guestOnly: true, layout: "auth" } },
+  { path: "/login-form", element: <LoginFormPage />, meta: { requiresAuth: false, guestOnly: true, layout: "auth" } },
   { path: "/telegram-login", element: <TelegramLoginPage />, meta: { requiresAuth: false, guestOnly: true, layout: "auth" } },
   { path: "/telegram-code-verification", element: <TelegramCodeVerificationPage />, meta: { requiresAuth: false, guestOnly: true, layout: "auth" } },
   { path: "/telegram/init", element: <TelegramInitPage />, meta: { requiresAuth: false, layout: "telegram" } },
@@ -90,9 +104,10 @@ const routesMeta: AppRouteDefinition[] = [
   { path: "/transactions/coins", element: <TransactionsPage />, meta: { requiresAuth: true, layout: "app" } },
   { path: "/premium-subscription", element: <SubscriptionPage />, meta: { requiresAuth: true, layout: "app" } },
   { path: "/subscription-history", element: <SubscriptionPage />, meta: { requiresAuth: true, layout: "app" } },
-  { path: "/payment-methods", element: <SubscriptionPage />, meta: { requiresAuth: true, layout: "app" } },
-  { path: "/payment-waiting", element: <SubscriptionPage />, meta: { requiresAuth: true, layout: "app" } },
-  { path: "/payment-result", element: <SubscriptionPage />, meta: { requiresAuth: true, layout: "app" } },
+  { path: "/payment-methods", element: <PaymentMethodsPage />, meta: { requiresAuth: true, layout: "app" } },
+  { path: "/payment-waiting", element: <PaymentWaitingPage />, meta: { requiresAuth: true, layout: "app" } },
+  { path: "/payment-result", element: <PaymentResultPage />, meta: { requiresAuth: false, layout: "auth" } },
+  { path: "/payment-success", element: <PaymentSuccessPage />, meta: { requiresAuth: true, layout: "app" } },
   { path: "/feedback", element: <FeedbackPage />, meta: { requiresAuth: true, layout: "app" } },
   { path: "/webview", element: <WebViewPage />, meta: { requiresAuth: false, layout: "auth" } },
   { path: "/stream-chat-channel", element: <ChatChannelPage />, meta: { requiresAuth: true, layout: "app" } },

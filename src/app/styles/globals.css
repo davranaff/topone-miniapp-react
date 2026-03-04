@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+
 /* ===================================================
    TOPONE DESIGN SYSTEM — Dark / Gold Premium Tokens
    =================================================== */
@@ -16,8 +18,8 @@
   /* Glass layer */
   --glass-fill:    rgba(255, 255, 255, 0.04);
   --glass-stroke:  rgba(255, 255, 255, 0.08);
-  --glass-blur:    16px;
-  --glass-blur-lg: 32px;
+  --glass-blur:    8px;
+  --glass-blur-lg: 16px;
 
   /* Accent — gold */
   --accent-gold:       212 160 23;   /* #D4A017 */
@@ -101,8 +103,8 @@
 
   --glass-fill:    rgba(255, 255, 255, 0.75);
   --glass-stroke:  rgba(212, 160, 23, 0.18);
-  --glass-blur:    16px;
-  --glass-blur-lg: 32px;
+  --glass-blur:    8px;
+  --glass-blur-lg: 16px;
 
   --accent-gold:       212 160 23;
   --accent-gold-strong: 184 134 11;
@@ -204,6 +206,7 @@ body,
 body {
   margin: 0;
   font-family:
+    "Manrope",
     "Inter",
     "SF Pro Display",
     system-ui,
@@ -222,9 +225,11 @@ body {
 /* Gold radial glow backdrop — applied to app root */
 #root {
   background:
-    radial-gradient(circle at top, rgba(245, 200, 66, 0.16) 0%, transparent 32%),
-    radial-gradient(circle at 15% 35%, rgba(212, 160, 23, 0.08) 0%, transparent 26%),
-    radial-gradient(circle at 85% 72%, rgba(212, 160, 23, 0.08) 0%, transparent 24%),
+    radial-gradient(circle at top, rgba(245, 200, 66, 0.2) 0%, transparent 28%),
+    radial-gradient(circle at 16% 28%, rgba(255, 226, 163, 0.09) 0%, transparent 18%),
+    radial-gradient(circle at 14% 72%, rgba(212, 160, 23, 0.08) 0%, transparent 24%),
+    radial-gradient(circle at 84% 72%, rgba(212, 160, 23, 0.1) 0%, transparent 22%),
+    linear-gradient(180deg, rgba(255,255,255,0.02), transparent 18%),
     rgb(var(--bg-base));
 }
 [data-theme="light"] #root {
@@ -281,6 +286,11 @@ button, [role="button"] {
   -webkit-tap-highlight-color: transparent;
 }
 
+::selection {
+  background: rgba(245, 200, 66, 0.28);
+  color: rgb(var(--text-primary));
+}
+
 /* ===================================================
    ANIMATIONS
    =================================================== */
@@ -314,11 +324,29 @@ button, [role="button"] {
   50%       { box-shadow: 0 0 20px rgba(212, 160, 23, 0.6); }
 }
 
+@keyframes ambientFloat {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -12px, 0) scale(1.03); }
+}
+
+@keyframes softShine {
+  0% { transform: translateX(-120%) skewX(-22deg); opacity: 0; }
+  12% { opacity: 0.35; }
+  45%, 100% { transform: translateX(180%) skewX(-22deg); opacity: 0; }
+}
+
+@keyframes dockPulse {
+  0%, 100% { box-shadow: 0 18px 44px rgba(0, 0, 0, 0.38), 0 0 0 rgba(245, 200, 66, 0); }
+  50% { box-shadow: 0 22px 56px rgba(0, 0, 0, 0.42), 0 0 28px rgba(245, 200, 66, 0.12); }
+}
+
 .animate-fade-in-up  { animation: fadeInUp 0.35s ease both; }
 .animate-fade-in     { animation: fadeIn 0.25s ease both; }
 .animate-slide-up    { animation: slideUp 0.4s cubic-bezier(0.32, 0.72, 0, 1) both; }
 .animate-scale-in    { animation: scaleIn 0.25s ease both; }
 .animate-pulse-gold  { animation: pulse-gold 2s ease-in-out infinite; }
+.animate-ambient-float { animation: ambientFloat 7s ease-in-out infinite; }
+.animate-dock-pulse { animation: dockPulse 3.8s ease-in-out infinite; }
 
 /* Stagger utilities */
 .stagger-1 { animation-delay: 0.05s; }
@@ -342,6 +370,46 @@ button, [role="button"] {
   backdrop-filter: blur(var(--glass-blur-lg));
   -webkit-backdrop-filter: blur(var(--glass-blur-lg));
   border: 1px solid var(--glass-stroke);
+}
+
+.glass-premium {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 26%),
+    linear-gradient(180deg, rgba(255,226,163,0.08), rgba(214,163,67,0.04) 24%, rgba(10,10,10,0.78) 100%);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.glass-premium::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.12), transparent 28%);
+  pointer-events: none;
+}
+
+.shine-sweep {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-sweep::after {
+  content: "";
+  position: absolute;
+  inset: -20% auto -20% -25%;
+  width: 30%;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,0.22), transparent);
+  filter: blur(5px);
+  transform: translateX(-120%) skewX(-22deg);
+  animation: softShine 6.5s ease-in-out infinite;
+  pointer-events: none;
 }
 
 /* ===================================================
@@ -368,4 +436,3 @@ button, [role="button"] {
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
-
