@@ -34,6 +34,8 @@ const toTypeCode = (value?: string): ChallengeTypeCode => {
   if (
     normalized.includes("daily") ||
     normalized.includes("kundalik") ||
+    normalized.includes("kunlik") ||
+    normalized.includes("kun") ||
     normalized.includes("ежедн")
   ) {
     return "daily";
@@ -53,6 +55,18 @@ const toTypeCode = (value?: string): ChallengeTypeCode => {
     normalized.includes("ежемес")
   ) {
     return "monthly";
+  }
+
+  return "other";
+};
+
+const resolveTypeCode = (...candidates: Array<string | undefined>): ChallengeTypeCode => {
+  for (const candidate of candidates) {
+    const resolved = toTypeCode(candidate);
+
+    if (resolved !== "other") {
+      return resolved;
+    }
   }
 
   return "other";
@@ -219,7 +233,14 @@ const mapChallenge = (raw: Record<string, unknown>): Challenge => {
     bgGradient: raw.bg_gradient ? String(raw.bg_gradient) : undefined,
     typeId: type?.id ? String(type.id) : undefined,
     typeLabel: type?.title ? String(type.title) : undefined,
-    typeCode: toTypeCode(type?.title ? String(type.title) : undefined),
+    typeCode: resolveTypeCode(
+      type?.code ? String(type.code) : undefined,
+      type?.slug ? String(type.slug) : undefined,
+      type?.name ? String(type.name) : undefined,
+      type?.title ? String(type.title) : undefined,
+      raw.type_code ? String(raw.type_code) : undefined,
+      raw.type ? String(raw.type) : undefined,
+    ),
     statusLabel,
     statusCode,
     icon: raw.icon ? String(raw.icon) : undefined,
@@ -246,7 +267,14 @@ const mapCategory = (raw: Record<string, unknown>): ChallengeCategory => {
     title,
     count: Number(raw.challenges_count ?? raw.count ?? 0),
     activeDays: type.active_days != null ? Number(type.active_days) : undefined,
-    typeCode: toTypeCode(title),
+    typeCode: resolveTypeCode(
+      type.code ? String(type.code) : undefined,
+      type.slug ? String(type.slug) : undefined,
+      type.name ? String(type.name) : undefined,
+      title,
+      raw.type_code ? String(raw.type_code) : undefined,
+      raw.type ? String(raw.type) : undefined,
+    ),
   };
 };
 

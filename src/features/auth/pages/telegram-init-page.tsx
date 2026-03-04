@@ -11,6 +11,10 @@ import { getErrorMessage } from "@/shared/lib/error-map";
 import { getTelegramInitDataWithRetry } from "@/shared/lib/telegram-webapp";
 import { TopOneLogo } from "@/shared/ui/topone-logo";
 import { AuthGlassPanel, AuthPrimaryButton } from "@/features/auth/components/auth-ui";
+import {
+  disableTelegramAuthFallback,
+  enableTelegramAuthFallback,
+} from "@/features/auth/utils/telegram-fallback";
 
 const FALLBACK_LOGIN_PATH = "/login?fallback=telegram";
 
@@ -40,6 +44,7 @@ export const TelegramInitPage = () => {
       const runtimeDetected = await waitForTelegramRuntime();
 
       if (!runtimeDetected || isDisposed) {
+        enableTelegramAuthFallback();
         navigate(FALLBACK_LOGIN_PATH, { replace: true });
         return;
       }
@@ -50,6 +55,7 @@ export const TelegramInitPage = () => {
       try {
         telegram.ready();
         telegram.expand();
+        telegram.requestFullscreen?.();
         telegram.disableVerticalSwipes();
 
         const existingTokens = tokenStorage.getTokens();
@@ -64,6 +70,7 @@ export const TelegramInitPage = () => {
               return;
             }
 
+            disableTelegramAuthFallback();
             sessionStorage.setUser(user);
             useAuthStore.getState().setSession({ user, tokens: existingTokens });
             navigate("/splash", { replace: true });
@@ -79,6 +86,7 @@ export const TelegramInitPage = () => {
         const initData = await getTelegramInitDataWithRetry(telegram);
 
         if (!initData) {
+          enableTelegramAuthFallback();
           navigate(FALLBACK_LOGIN_PATH, { replace: true });
           return;
         }
@@ -95,6 +103,7 @@ export const TelegramInitPage = () => {
           return;
         }
 
+        disableTelegramAuthFallback();
         sessionStorage.setUser(user);
         useAuthStore.getState().setSession({ user, tokens });
         navigate("/splash", { replace: true });
@@ -153,7 +162,10 @@ export const TelegramInitPage = () => {
                 <AuthPrimaryButton
                   type="button"
                   variant="ghost"
-                  onClick={() => navigate(FALLBACK_LOGIN_PATH, { replace: true })}
+                  onClick={() => {
+                    enableTelegramAuthFallback();
+                    navigate(FALLBACK_LOGIN_PATH, { replace: true });
+                  }}
                 >
                   Oddiy kirishga qaytish
                 </AuthPrimaryButton>

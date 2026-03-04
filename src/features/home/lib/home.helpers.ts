@@ -32,17 +32,41 @@ export const parseDailyCutoffTime = (value?: string | null) => {
     return null;
   }
 
-  const parts = value.split(":");
+  const normalized = value.trim();
 
-  if (parts.length < 2) {
+  if (!normalized) {
     return null;
   }
 
-  const hour = Number(parts[0]);
-  const minute = Number(parts[1]);
-  const second = Number(parts[2] ?? 0);
+  const maybeDate = new Date(normalized);
+  const looksLikeDateTime =
+    normalized.includes("T") ||
+    normalized.endsWith("Z") ||
+    /[+-]\d{2}:?\d{2}$/.test(normalized);
+
+  if (looksLikeDateTime && !Number.isNaN(maybeDate.getTime())) {
+    return {
+      hour: maybeDate.getHours(),
+      minute: maybeDate.getMinutes(),
+      second: maybeDate.getSeconds(),
+    };
+  }
+
+  const matchedTime = normalized.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+
+  if (!matchedTime) {
+    return null;
+  }
+
+  const hour = Number(matchedTime[1]);
+  const minute = Number(matchedTime[2]);
+  const second = Number(matchedTime[3] ?? 0);
 
   if ([hour, minute, second].some((part) => Number.isNaN(part))) {
+    return null;
+  }
+
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59 || second < 0 || second > 59) {
     return null;
   }
 
@@ -71,9 +95,15 @@ export const getNextDailyCycle = (
 
     if (!Number.isNaN(purchaseDate.getTime())) {
       const next = new Date(purchaseDate);
+      const elapsedMs = now.getTime() - next.getTime();
 
-      while (next <= now) {
-        next.setDate(next.getDate() + 1);
+      if (elapsedMs >= 0) {
+        const elapsedDays = Math.floor(elapsedMs / 86_400_000);
+        next.setDate(next.getDate() + elapsedDays + 1);
+
+        if (next <= now) {
+          next.setDate(next.getDate() + 1);
+        }
       }
 
       return next;

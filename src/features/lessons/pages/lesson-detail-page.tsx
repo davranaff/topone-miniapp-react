@@ -11,7 +11,7 @@ import {
   HelpCircle,
   Lock,
   MessageCircle,
-  Sparkles,
+  Star,
 } from "lucide-react";
 import { lessonsApi } from "@/features/lessons/api/lessons.api";
 import { MobileScreen, MobileScreenSection } from "@/shared/ui/mobile-screen";
@@ -384,7 +384,7 @@ export const LessonDetailPage = () => {
                 {currentLesson.keyPoints.map((point, index) => (
                   <div key={`${point}-${index}`} className="flex items-start gap-3">
                     <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-gold/12 text-gold">
-                      <Sparkles className="h-3.5 w-3.5" />
+                      <Star className="h-3.5 w-3.5" />
                     </div>
                     <p className="text-sm leading-6 text-t-secondary">{point}</p>
                   </div>

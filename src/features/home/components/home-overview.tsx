@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronRight,
-  Sparkles,
+  Star,
   Clock3,
   Lock,
   Trophy,
@@ -118,7 +118,7 @@ const HomeMiniAppsRow = ({
       className="flex items-center gap-4 rounded-[1.55rem] border-white/10 px-4 py-4"
     >
       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.15rem] border border-white/10 bg-[rgba(255,255,255,0.05)] text-gold">
-        <Sparkles className="h-5 w-5" />
+        <Star className="h-5 w-5" />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-t-primary">{title}</p>
@@ -175,7 +175,7 @@ const FeaturedCourseCard = ({ course }: { course: Course }) => {
             </div>
 
             {progress > 0 && (
-              <div className="rounded-[1.35rem] border border-white/8 bg-[rgba(255,255,255,0.05)] p-3.5 backdrop-blur-xl">
+              <div className="rounded-[1.35rem] bg-[rgba(255,255,255,0.05)] p-3.5 backdrop-blur-xl">
                 <ProgressBar
                   value={progress}
                   max={100}
@@ -385,6 +385,7 @@ const ChallengeTimerCard = ({
   isActive: boolean;
   purchaseStatus?: SubscriptionStatus;
 }) => {
+  const { t } = useTranslation("home");
   const [remaining, setRemaining] = useState(() => getRemainingCountdown(new Date(), purchaseStatus));
 
   useEffect(() => {
@@ -411,18 +412,38 @@ const ChallengeTimerCard = ({
   const [hours, minutes, seconds] = formatCountdown(remaining);
 
   return (
-    <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-card px-5 py-4 shadow-card">
-      <div className="relative flex items-center justify-center gap-3">
-        <Clock3 className="h-6 w-6 shrink-0 text-t-primary" />
-        <div className="flex items-center text-[2.3rem] font-bold leading-none tracking-[0.18em] text-t-primary">
-          <span className="font-mono tabular-nums">{hours}</span>
-          <span className="px-1 tracking-normal">:</span>
-          <span className="font-mono tabular-nums">{minutes}</span>
-          <span className="px-1 tracking-normal">:</span>
-          <span className="font-mono tabular-nums">{seconds}</span>
+    <GlassCard className="rounded-[1.72rem] border-transparent bg-[linear-gradient(155deg,rgba(8,10,12,0.78),rgba(8,10,12,0.56))] px-4 py-4">
+      <div className="flex items-center gap-3">
+        <div className="liquid-glass-surface flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] text-gold">
+          <Clock3 className="h-5 w-5" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-t-primary">{t("challengeTimerTitle")}</p>
+          <p className="text-xs text-t-muted">{t("challengeTimerHint")}</p>
         </div>
       </div>
-    </div>
+
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className="liquid-glass-surface-muted rounded-[0.95rem] border border-gold/26 px-2.5 py-2.5 text-center">
+          <p className="text-[1.55rem] font-black leading-none tabular-nums text-gold">{hours}</p>
+          <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/58">
+            {t("challengeTimerHours")}
+          </p>
+        </div>
+        <div className="liquid-glass-surface-muted rounded-[0.95rem] border border-white/10 px-2.5 py-2.5 text-center">
+          <p className="text-[1.55rem] font-black leading-none tabular-nums text-t-primary">{minutes}</p>
+          <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/58">
+            {t("challengeTimerMinutes")}
+          </p>
+        </div>
+        <div className="liquid-glass-surface-muted rounded-[0.95rem] border border-white/10 px-2.5 py-2.5 text-center">
+          <p className="text-[1.55rem] font-black leading-none tabular-nums text-t-primary">{seconds}</p>
+          <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/58">
+            {t("challengeTimerSeconds")}
+          </p>
+        </div>
+      </div>
+    </GlassCard>
   );
 };
 
@@ -739,7 +760,7 @@ export const HomeOverview = () => {
         >
           <GlassCard className="flex items-center gap-3 border-gold/20 bg-card/95 px-4 py-3 shadow-glow backdrop-blur-xl">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gold/10 text-gold">
-              <Sparkles className="h-5 w-5" />
+              <Star className="h-5 w-5" />
             </div>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-t-primary">{t("miniApps")}</p>

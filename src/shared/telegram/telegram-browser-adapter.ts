@@ -11,6 +11,8 @@ export class TelegramBrowserAdapter implements TelegramAdapter {
 
   expand() {}
 
+  requestFullscreen() {}
+
   getInitData() {
     return null;
   }
@@ -19,7 +21,17 @@ export class TelegramBrowserAdapter implements TelegramAdapter {
     return zeroInsets;
   }
 
+  getViewportHeight() {
+    return null;
+  }
+
+  onViewportChanged() {
+    return () => undefined;
+  }
+
   disableVerticalSwipes() {}
 
-  enableClosingConfirmation(_: boolean) {}
+  enableClosingConfirmation(enabled: boolean) {
+    void enabled;
+  }
 }

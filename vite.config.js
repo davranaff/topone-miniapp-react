@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react-swc";
 import path from "node:path";
 export default defineConfig({
     plugins: [react()],
+    server: {
+        allowedHosts: ["cc24-213-230-86-70.ngrok-free.app", ".ngrok-free.app", "localhost", "127.0.0.1"],
+    },
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "./src"),

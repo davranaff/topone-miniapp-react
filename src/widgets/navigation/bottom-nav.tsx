@@ -30,6 +30,8 @@ const CircleDockButton = ({
       className={cn(
         variant === "chip" ? "liquid-glass-chip" : "liquid-glass-button-icon",
         "liquid-glass-surface-interactive pointer-events-auto flex items-center justify-center rounded-full",
+        "[backdrop-filter:blur(18px)_saturate(1.24)] [-webkit-backdrop-filter:blur(18px)_saturate(1.24)]",
+        "shadow-[0_14px_32px_rgba(0,0,0,0.35)]",
         DOCK_BUTTON_SIZE_CLASS,
         "transition-transform duration-300 active:scale-95",
       )}
@@ -153,39 +155,32 @@ export const BottomNav = () => {
           )}
 
           {config.action && (
-            <div
+            <button
+              type="button"
+              onClick={config.action.onClick}
+              disabled={config.action.disabled || config.action.loading}
               key={`${config.action.label}-${config.action.tone ?? "gold"}`}
               className={cn(
-                "liquid-glass-nav-shell pointer-events-auto flex h-[4.75rem] items-center overflow-hidden rounded-[70px] p-2.5",
+                "liquid-glass-nav-shell liquid-glass-surface-interactive pointer-events-auto flex h-[4.75rem] items-center justify-center gap-2 overflow-hidden rounded-[70px] px-4 text-sm font-semibold",
                 "animate-scale-in",
                 config.showBackButton ? "ml-[5.25rem]" : "ml-0",
                 config.showChatButton ? "mr-[5.25rem]" : "mr-0",
                 showTabs ? "absolute inset-x-[5.75rem] bottom-0" : "w-full",
                 actionToneClass(config.action.tone),
+                "disabled:cursor-not-allowed disabled:opacity-60",
+                config.action.tone === "gold" || !config.action.tone
+                  ? "liquid-glass-accent text-t-inverse"
+                  : "liquid-glass-chip text-t-primary",
               )}
             >
               <DockShellDecoration />
-              <button
-                type="button"
-                onClick={config.action.onClick}
-                disabled={config.action.disabled || config.action.loading}
-                className={cn(
-                  "liquid-glass-surface-interactive flex h-full w-full items-center justify-center gap-2 rounded-[1.4rem] px-4 text-sm font-semibold",
-                  "transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.985]",
-                  "disabled:cursor-not-allowed disabled:opacity-60",
-                  config.action.tone === "gold" || !config.action.tone
-                    ? "liquid-glass-accent text-t-inverse"
-                    : "liquid-glass-chip text-t-primary",
-                )}
-              >
-                {config.action.loading ? (
-                  <Spinner size="sm" className="border-white/20 border-t-white" />
-                ) : (
-                  config.action.icon
-                )}
-                <span>{config.action.label}</span>
-              </button>
-            </div>
+              {config.action.loading ? (
+                <Spinner size="sm" className="border-white/20 border-t-white" />
+              ) : (
+                config.action.icon
+              )}
+              <span>{config.action.label}</span>
+            </button>
           )}
 
           {config.showChatButton && (
