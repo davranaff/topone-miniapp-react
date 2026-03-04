@@ -222,12 +222,16 @@ body {
 /* Gold radial glow backdrop — applied to app root */
 #root {
   background:
-    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(212, 160, 23, 0.10) 0%, transparent 70%),
+    radial-gradient(circle at top, rgba(245, 200, 66, 0.16) 0%, transparent 32%),
+    radial-gradient(circle at 15% 35%, rgba(212, 160, 23, 0.08) 0%, transparent 26%),
+    radial-gradient(circle at 85% 72%, rgba(212, 160, 23, 0.08) 0%, transparent 24%),
     rgb(var(--bg-base));
 }
 [data-theme="light"] #root {
   background:
-    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212, 160, 23, 0.08) 0%, transparent 70%),
+    radial-gradient(circle at top, rgba(212, 160, 23, 0.12) 0%, transparent 34%),
+    radial-gradient(circle at 18% 35%, rgba(212, 160, 23, 0.06) 0%, transparent 24%),
+    radial-gradient(circle at 80% 75%, rgba(212, 160, 23, 0.06) 0%, transparent 22%),
     rgb(var(--bg-base));
 }
 
@@ -364,5 +368,4 @@ button, [role="button"] {
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
-
 

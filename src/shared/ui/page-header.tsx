@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/shared/lib/cn";
+import { useOptionalResolvedShellNav } from "@/widgets/navigation/shell-nav";
 
 type PageHeaderProps = {
   title: string;
@@ -25,6 +26,8 @@ export const PageHeader = ({
   titleSize = "md",
 }: PageHeaderProps) => {
   const navigate = useNavigate();
+  const shellNav = useOptionalResolvedShellNav();
+  const shouldRenderTopBackButton = backButton && !shellNav?.showBackButton;
 
   const handleBack = () => {
     if (onBack) onBack();
@@ -39,13 +42,13 @@ export const PageHeader = ({
         className,
       )}
     >
-      {backButton && (
+      {shouldRenderTopBackButton && (
         <button
           onClick={handleBack}
           aria-label="Go back"
           className={cn(
-            "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
-            "border border-border/60 bg-elevated text-t-secondary",
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+            "border border-white/10 bg-[linear-gradient(180deg,rgba(24,24,24,0.9),rgba(8,8,8,0.82))] text-t-secondary backdrop-blur-xl",
             "transition hover:border-gold/40 hover:text-t-primary active:scale-95",
           )}
         >

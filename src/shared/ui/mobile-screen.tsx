@@ -24,8 +24,8 @@ export const MobileScreen = ({
       fullHeight && "min-h-screen",
       scrollable && "overflow-y-auto",
       padded && "px-4",
-      !noPbDock && "pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))]",
-      "pt-2",
+      !noPbDock && "pb-[calc(7.25rem+env(safe-area-inset-bottom,0px))]",
+      "pt-3",
       className,
     )}
     {...props}

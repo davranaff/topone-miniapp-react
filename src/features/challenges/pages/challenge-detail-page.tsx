@@ -1,5 +1,6 @@
+import { useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Star, Lock, Clock, ChevronRight, PlayCircle } from "lucide-react";
+import { CheckCircle2, Star, Lock, Clock, ChevronRight, PlayCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useChallengeDetail } from "@/features/challenges/hooks/use-challenge-detail";
 import { challengesApi } from "@/features/challenges/api/challenges.api";
@@ -7,12 +8,12 @@ import { MobileScreen } from "@/shared/ui/mobile-screen";
 import { PageHeader } from "@/shared/ui/page-header";
 import { GlassCard } from "@/shared/ui/glass-card";
 import { Badge } from "@/shared/ui/badge";
-import { Button } from "@/shared/ui/button";
 import { ProgressBar } from "@/shared/ui/progress-bar";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { ErrorState } from "@/shared/ui/error-state";
 import { SubscriptionRequiredState } from "@/shared/ui/subscription-required-state";
 import { hasApiStatus } from "@/shared/api/error-helpers";
+import { useShellNav } from "@/widgets/navigation/shell-nav";
 import type { Challenge } from "@/entities/challenge/types";
 
 const difficultyVariant: Record<Challenge["difficulty"], "success" | "info" | "danger"> = {
@@ -32,6 +33,7 @@ export const ChallengeDetailPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const challenge = useChallengeDetail(challengeId);
+  const { setOverride, resetOverride } = useShellNav();
 
   const startMutation = useMutation({
     mutationFn: () => challengesApi.start(challengeId!),
@@ -39,6 +41,62 @@ export const ChallengeDetailPage = () => {
       void queryClient.invalidateQueries({ queryKey: ["challenges", "detail", challengeId] });
     },
   });
+  const isStartingChallenge = startMutation.isPending;
+  const startChallenge = startMutation.mutate;
+
+  useEffect(() => {
+    if (!challenge.data || challenge.isError) {
+      setOverride({});
+      return () => resetOverride();
+    }
+
+    if (challenge.data.isLocked) {
+      setOverride({
+        action: {
+          label: "Obuna olish",
+          icon: <ChevronRight className="h-4 w-4" />,
+          onClick: () => navigate("/subscription"),
+        },
+      });
+      return () => resetOverride();
+    }
+
+    if (challenge.data.isCompleted) {
+      setOverride({
+        action: {
+          label: "Bajarildi",
+          icon: <CheckCircle2 className="h-4 w-4" />,
+          onClick: () => undefined,
+          disabled: true,
+          tone: "success",
+        },
+      });
+      return () => resetOverride();
+    }
+
+    setOverride({
+        action: {
+          label: challenge.data.isStarted ? "Davom etish" : "Boshlash",
+          icon: <PlayCircle className="h-4 w-4" />,
+          onClick: () => {
+            if (!challenge.data?.isStarted) {
+              startChallenge();
+            }
+          },
+          loading: isStartingChallenge,
+        },
+      });
+
+    return () => resetOverride();
+  }, [
+    challenge.data,
+    challenge.isError,
+    isStartingChallenge,
+    navigate,
+    resetOverride,
+    setOverride,
+    startChallenge,
+  ]);
 
   if (challenge.isLoading) {
     return (
@@ -116,18 +174,6 @@ export const ChallengeDetailPage = () => {
         </GlassCard>
 
         {/* CTA */}
-        {!data.isLocked && !data.isCompleted && (
-          <Button
-            fullWidth
-            variant="primary"
-            loading={startMutation.isPending}
-            onClick={() => { if (!data.isStarted) void startMutation.mutate(); }}
-          >
-            <PlayCircle className="h-4 w-4" />
-            {data.isStarted ? "Davom etish" : "Boshlash"}
-          </Button>
-        )}
-
         {data.isCompleted && (
           <GlassCard goldBorder className="text-center">
             <p className="text-sm font-semibold text-gold">✓ Challenj bajarildi!</p>

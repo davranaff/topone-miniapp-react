@@ -88,5 +88,12 @@ export const endpoints = {
     byCourse: (courseId: string) => `/api/v1/lessons/by_course/${courseId}`,
     progressStats: (courseId: string) => `/api/v1/lessons/by_course/${courseId}/progress-stats`,
     detail: (lessonId: string) => `/api/v1/lessons/${lessonId}`,
+    progressByLesson: (lessonId: string) => `/api/v1/lessons/progress/by_lesson/${lessonId}`,
+    progressCreate: "/api/v1/lessons/progress",
+    progressUpdate: (lessonProgressId: string) => `/api/v1/lessons/progress/${lessonProgressId}`,
+    complete: (lessonId: string) => `/api/v1/lessons/progress/${lessonId}/complete`,
+  },
+  quiz: {
+    byLesson: (lessonId: string) => `/api/v1/quiz/quizzes/lesson/${lessonId}`,
   },
 } as const;

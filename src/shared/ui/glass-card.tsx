@@ -25,9 +25,9 @@ export const GlassCard = ({
 }: GlassCardProps) => (
   <div
     className={cn(
-      "relative overflow-hidden",
-      "bg-card border border-border/40",
-      "shadow-card",
+      "glass-lg relative overflow-hidden",
+      "border border-white/10 bg-[linear-gradient(180deg,rgba(28,28,28,0.9),rgba(16,16,16,0.76))]",
+      "shadow-card before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-white/10",
       radMap[radius],
       padMap[padding],
       glow && "shadow-glow",

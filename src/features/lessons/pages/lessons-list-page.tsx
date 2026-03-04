@@ -1,14 +1,15 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  BookOpen,
   CheckCircle2,
-  Lock,
-  PlayCircle,
+  Clock3,
   FileText,
   HelpCircle,
-  BookOpen,
-  Clock3,
+  Lock,
+  PlayCircle,
   TrendingUp,
 } from "lucide-react";
 import { coursesApi } from "@/features/courses/api/courses.api";
@@ -57,9 +58,7 @@ const CoursePickerCard = ({ course }: { course: Course }) => {
             <span
               className={cn(
                 "rounded-full px-3 py-1 text-xs font-semibold",
-                course.isLocked
-                  ? "bg-white/15 text-white"
-                  : "bg-gold/90 text-black",
+                course.isLocked ? "bg-white/15 text-white" : "bg-gold/90 text-black",
               )}
             >
               {course.isLocked ? t("lockedCourse") : t("openCourse")}
@@ -81,56 +80,94 @@ const CoursePickerCard = ({ course }: { course: Course }) => {
   );
 };
 
-const LessonRow = ({ lesson, courseId }: { lesson: Lesson; courseId: string }) => {
+const LessonRow = ({
+  lesson,
+  courseId,
+  isPending,
+  onOpen,
+}: {
+  lesson: Lesson;
+  courseId: string;
+  isPending: boolean;
+  onOpen: (lesson: Lesson) => void;
+}) => {
   const Icon = typeIcon[lesson.type];
+  const isBlocked = lesson.isLocked || !lesson.isOpen;
+  const progressValue = lesson.userProgress?.progressPercentage ?? 0;
+  const isCompleted = lesson.isCompleted || lesson.userProgress?.status === "COMPLETED";
 
-  const inner = (
-    <GlassCard
-      interactive={!lesson.isLocked}
-      goldBorder={lesson.isCompleted}
-      className={lesson.isLocked ? "opacity-60" : ""}
+  return (
+    <button
+      type="button"
+      disabled={isBlocked || isPending}
+      onClick={() => onOpen(lesson)}
+      className={cn("block w-full text-left", isBlocked && "cursor-default")}
     >
-      <div className="flex items-center gap-3">
-        <div
-          className={cn(
-            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border",
-            lesson.isCompleted
-              ? "border-gold/30 bg-gold/10 text-gold"
-              : lesson.isLocked
-                ? "border-border/40 bg-elevated text-t-muted"
-                : "border-border/60 bg-elevated text-t-secondary",
-          )}
-        >
-          {lesson.isLocked
-            ? <Lock className="h-4 w-4" />
-            : lesson.isCompleted
-              ? <CheckCircle2 className="h-4 w-4" />
-              : <Icon className="h-4 w-4" />}
+      <GlassCard
+        interactive={!isBlocked && !isPending}
+        goldBorder={Boolean(isCompleted)}
+        className={cn("rounded-[1.35rem]", isBlocked && "opacity-60")}
+      >
+        <div className="flex items-center gap-3">
+          <div
+            className={cn(
+              "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border",
+              isCompleted
+                ? "border-gold/30 bg-gold/10 text-gold"
+                : isBlocked
+                  ? "border-border/40 bg-elevated text-t-muted"
+                  : "border-white/10 bg-white/5 text-t-secondary",
+            )}
+          >
+            {isPending ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current/20 border-t-current" />
+            ) : isBlocked ? (
+              <Lock className="h-4 w-4" />
+            ) : isCompleted ? (
+              <CheckCircle2 className="h-4 w-4" />
+            ) : (
+              <Icon className="h-4 w-4" />
+            )}
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <p className="truncate text-sm font-semibold text-t-primary">
+                <span className="mr-1.5 text-xs text-t-muted">{lesson.order}.</span>
+                {lesson.title}
+              </p>
+              {isCompleted && <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gold">Done</span>}
+            </div>
+            <p className="mt-0.5 truncate text-xs text-t-muted">
+              {isBlocked
+                ? "Oldingi darslarni yakunlang"
+                : lesson.duration || "Darsni davom ettirish mumkin"}
+            </p>
+          </div>
         </div>
 
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-t-primary">
-            <span className="mr-1.5 text-xs text-t-muted">{lesson.order}.</span>
-            {lesson.title}
+        {!isBlocked && progressValue > 0 && !isCompleted && (
+          <div className="mt-4">
+            <ProgressBar value={progressValue} max={100} label="Progress" showLabel />
+          </div>
+        )}
+
+        {courseId && !isBlocked && lesson.userProgress?.currentTimeSeconds ? (
+          <p className="mt-3 text-[11px] text-t-muted">
+            Oxirgi nuqta: {Math.floor(lesson.userProgress.currentTimeSeconds / 60)} daqiqa
           </p>
-          {lesson.duration && (
-            <p className="mt-0.5 text-xs text-t-muted">{lesson.duration}</p>
-          )}
-        </div>
-      </div>
-    </GlassCard>
+        ) : null}
+      </GlassCard>
+    </button>
   );
-
-  if (lesson.isLocked) {
-    return inner;
-  }
-
-  return <Link to={`/courses/${courseId}/lessons/${lesson.id}`}>{inner}</Link>;
 };
 
 export const LessonsListPage = () => {
   const { t } = useTranslation("courses");
   const { courseId } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [pendingLessonId, setPendingLessonId] = useState<string | null>(null);
 
   const coursesPicker = useQuery({
     queryKey: ["lessons", "course-picker"],
@@ -151,6 +188,41 @@ export const LessonsListPage = () => {
     },
     enabled: Boolean(courseId),
   });
+
+  const openLessonMutation = useMutation({
+    mutationFn: async (lesson: Lesson) => {
+      if (!courseId || lesson.userProgress) {
+        return null;
+      }
+
+      return lessonsApi.createProgress({
+        lessonId: lesson.id,
+        courseId,
+      });
+    },
+    onSettled: () => {
+      setPendingLessonId(null);
+    },
+    onSuccess: async (_, lesson) => {
+      await queryClient.invalidateQueries({ queryKey: ["lessons", "course-content", courseId] });
+      navigate(`/courses/${courseId}/lessons/${lesson.id}`);
+    },
+  });
+
+  const handleOpenLesson = (lesson: Lesson) => {
+    if (!courseId || lesson.isLocked || !lesson.isOpen) {
+      return;
+    }
+
+    setPendingLessonId(lesson.id);
+
+    if (lesson.userProgress) {
+      navigate(`/courses/${courseId}/lessons/${lesson.id}`);
+      return;
+    }
+
+    void openLessonMutation.mutate(lesson);
+  };
 
   if (!courseId) {
     return (
@@ -236,14 +308,8 @@ export const LessonsListPage = () => {
   }
 
   const { course, lessons, progressStats } = courseContent.data;
-  const inProgressLessons = Math.max(
-    progressStats.lessonsWithProgress - progressStats.lessonsCompleted,
-    0,
-  );
-  const notStartedLessons = Math.max(
-    progressStats.totalLessons - progressStats.lessonsWithProgress,
-    0,
-  );
+  const inProgressLessons = Math.max(progressStats.lessonsWithProgress - progressStats.lessonsCompleted, 0);
+  const notStartedLessons = Math.max(progressStats.totalLessons - progressStats.lessonsWithProgress, 0);
 
   return (
     <MobileScreen className="space-y-4">
@@ -298,7 +364,13 @@ export const LessonsListPage = () => {
       ) : (
         <MobileScreenSection>
           {lessons.map((lesson) => (
-            <LessonRow key={lesson.id} lesson={lesson} courseId={courseId} />
+            <LessonRow
+              key={lesson.id}
+              lesson={lesson}
+              courseId={courseId}
+              isPending={pendingLessonId === lesson.id}
+              onOpen={handleOpenLesson}
+            />
           ))}
         </MobileScreenSection>
       )}
