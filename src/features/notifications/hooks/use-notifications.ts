@@ -26,6 +26,12 @@ export const notificationKeys = {
   unread: () => [...notificationKeys.all, "unread"] as const,
 };
 
+export const fetchUnreadCount = async () => {
+  const res = await apiClient.get(endpoints.notifications.unreadCount);
+  const data = res.data?.data ?? res.data;
+  return Number(data?.count ?? data?.unread_count ?? 0);
+};
+
 export const useNotifications = () => {
   return useQuery({
     queryKey: notificationKeys.list(),
@@ -42,11 +48,7 @@ export const useNotifications = () => {
 export const useUnreadCount = () => {
   return useQuery({
     queryKey: notificationKeys.unread(),
-    queryFn: async () => {
-      const res = await apiClient.get(endpoints.notifications.unreadCount);
-      const data = res.data?.data ?? res.data;
-      return Number(data?.count ?? data?.unread_count ?? 0);
-    },
+    queryFn: fetchUnreadCount,
     staleTime: 30_000,
     refetchInterval: 60_000,
   });

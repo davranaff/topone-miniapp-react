@@ -4,14 +4,17 @@ import { sessionStorage as authSessionStorage } from "@/shared/auth/session-stor
 
 const PAYMENT_LINK_PREFIX = "topone:payment-link:";
 
-export const buildPaymentReturnUrlTemplate = () => {
-  if (typeof window === "undefined") {
-    return "https://example.com/payment-result?plan_id={plan_id}&status={status}";
+export const buildPaymentSuccessReturnUrl = (invoiceId: string) => {
+  if (!invoiceId) {
+    return "https://example.com/payment-success";
   }
 
-  const url = new URL("/payment-result", window.location.origin);
-  url.searchParams.set("plan_id", "{plan_id}");
-  url.searchParams.set("status", "{status}");
+  if (typeof window === "undefined") {
+    return `https://example.com/payment-success?invoiceId=${encodeURIComponent(invoiceId)}`;
+  }
+
+  const url = new URL("/payment-success", window.location.origin);
+  url.searchParams.set("invoiceId", invoiceId);
   return url.toString();
 };
 

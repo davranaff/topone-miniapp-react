@@ -263,7 +263,18 @@ export const SubscriptionPage = () => {
     (currentStatus?.subscribed && isActiveStatus(currentStatus.status)) ||
     activeSubscriptionFromList,
   );
-  const currentPlanIsTrial = Boolean(currentStatus?.planIsTrial || (currentStatus?.amount ?? 0) <= 0);
+  const currentPlanIsTrial = Boolean(
+    currentStatus?.planIsTrial ||
+    activeSubscriptionFromList?.plan?.isTrial ||
+    (currentStatus?.subscribed && (currentStatus?.amount ?? 0) <= 0),
+  );
+  const visiblePlans = sortedPlans.filter((plan) => {
+    if (!hasActiveSubscription || currentPlanIsTrial) {
+      return true;
+    }
+
+    return !isTrialPlan(plan);
+  });
 
   const handlePlanAction = (plan: SubscriptionPlan) => {
     const isCurrentPlan = currentPlanId === plan.id && hasActiveSubscription;
@@ -355,7 +366,7 @@ export const SubscriptionPage = () => {
       </div>
 
       <MobileScreenSection className="mt-5">
-        {sortedPlans.map((plan) => {
+        {visiblePlans.map((plan) => {
           const isCurrentPlan = currentPlanId === plan.id && hasActiveSubscription;
           return (
             <PlanCard

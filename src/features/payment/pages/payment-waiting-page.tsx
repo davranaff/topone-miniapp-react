@@ -182,7 +182,7 @@ export const PaymentWaitingPage = () => {
     <MobileScreen fullHeight noPbDock>
       <PageHeader
         title="To'lov kutilmoqda"
-        subtitle="Flutter dagi waiting screen logikasi bilan polling qilinmoqda"
+        subtitle="Avval to'lov sahifasini oching, keyin holat avtomatik tekshiriladi"
         backButton
         onBack={() => navigate(-1)}
       />
@@ -271,16 +271,16 @@ export const PaymentWaitingPage = () => {
           <Button
             fullWidth
             size="xl"
-            variant="outline"
+            variant="primary"
             onClick={handleReopenPayment}
           >
             <ExternalLink className="h-4 w-4" />
-            To'lovni ochish
+            To'lovga o'tish
           </Button>
           <Button
             fullWidth
             size="xl"
-            variant="primary"
+            variant="outline"
             onClick={handleManualCheck}
             loading={isChecking}
           >

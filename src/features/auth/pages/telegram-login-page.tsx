@@ -16,6 +16,7 @@ import {
 import {
   AuthDivider,
   AuthField,
+  AuthGlassPanel,
   AuthPrimaryButton,
   AuthTitleBlock,
 } from "@/features/auth/components/auth-ui";
@@ -61,43 +62,45 @@ export const TelegramLoginPage = () => {
   const onSubmit = form.handleSubmit((values) => requestMutation.mutate(values));
 
   return (
-    <div className="mx-auto flex w-full max-w-[28rem] flex-col justify-center py-4 sm:min-h-[38rem]">
-      <form className="space-y-6" onSubmit={onSubmit}>
-        <AuthTitleBlock title={t("telegram")} subtitle={t("telegramSubtitle")} />
+    <div className="mx-auto flex w-full max-w-[30rem] flex-col justify-center py-4 sm:min-h-[38rem]">
+      <AuthGlassPanel>
+        <form className="space-y-6" onSubmit={onSubmit}>
+          <AuthTitleBlock title={t("telegram")} subtitle={t("telegramSubtitle")} />
 
-        {requestMutation.isError ? (
-          <div className="rounded-[1.2rem] border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-            {getErrorMessage(requestMutation.error)}
-          </div>
-        ) : null}
+          {requestMutation.isError ? (
+            <div className="rounded-[1.2rem] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              {getErrorMessage(requestMutation.error)}
+            </div>
+          ) : null}
 
-        <AuthField
-          label={t("phoneRequired")}
-          placeholder="+998"
-          icon={<Phone className="h-6 w-6" />}
-          inputMode="tel"
-          autoComplete="tel"
-          error={form.formState.errors.phone?.message}
-          {...form.register("phone")}
-        />
+          <AuthField
+            label={t("phoneRequired")}
+            placeholder="+998"
+            icon={<Phone className="h-6 w-6" />}
+            inputMode="tel"
+            autoComplete="tel"
+            error={form.formState.errors.phone?.message}
+            {...form.register("phone")}
+          />
 
-        <AuthPrimaryButton type="submit" icon={<Send className="h-6 w-6" />} loading={requestMutation.isPending}>
-          {t("telegram")}
-        </AuthPrimaryButton>
+          <AuthPrimaryButton type="submit" icon={<Send className="h-6 w-6" />} loading={requestMutation.isPending}>
+            {t("telegram")}
+          </AuthPrimaryButton>
 
-        <AuthDivider label={t("or")} />
+          <AuthDivider label={t("or")} />
 
-        <p className="text-center text-[1.02rem] text-white/62">
-          {t("haveAccount")}{" "}
-          <button
-            type="button"
-            className="font-bold text-white transition-colors hover:text-[#f6d489]"
-            onClick={() => navigate("/login-form")}
-          >
-            {t("login")}
-          </button>
-        </p>
-      </form>
+          <p className="text-center text-[1rem] text-white/56">
+            {t("haveAccount")}{" "}
+            <button
+              type="button"
+              className="font-bold text-white transition-colors hover:text-[#f6d489]"
+              onClick={() => navigate("/login-form")}
+            >
+              {t("login")}
+            </button>
+          </p>
+        </form>
+      </AuthGlassPanel>
     </div>
   );
 };

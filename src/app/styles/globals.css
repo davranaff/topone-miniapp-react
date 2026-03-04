@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Nunito:wght@600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap");
 
 /* ===================================================
    TOPONE DESIGN SYSTEM — Dark / Gold Premium Tokens
@@ -206,8 +206,8 @@ body,
 body {
   margin: 0;
   font-family:
-    "Manrope",
     "Inter",
+    "Plus Jakarta Sans",
     "SF Pro Display",
     system-ui,
     -apple-system,
@@ -225,10 +225,10 @@ body {
 /* Gold radial glow backdrop — applied to app root */
 #root {
   background:
-    radial-gradient(circle at top, rgba(245, 200, 66, 0.2) 0%, transparent 28%),
-    radial-gradient(circle at 16% 28%, rgba(255, 226, 163, 0.09) 0%, transparent 18%),
-    radial-gradient(circle at 14% 72%, rgba(212, 160, 23, 0.08) 0%, transparent 24%),
-    radial-gradient(circle at 84% 72%, rgba(212, 160, 23, 0.1) 0%, transparent 22%),
+    radial-gradient(circle at 9% 6%, rgba(245, 200, 66, 0.22) 0%, rgba(245, 200, 66, 0.06) 15%, transparent 30%),
+    radial-gradient(circle at 85% 88%, rgba(212, 160, 23, 0.2) 0%, rgba(212, 160, 23, 0.06) 16%, transparent 28%),
+    radial-gradient(circle at 22% 46%, rgba(255, 226, 163, 0.05) 0%, transparent 20%),
+    radial-gradient(circle at 72% 24%, rgba(255, 198, 87, 0.04) 0%, transparent 18%),
     linear-gradient(180deg, rgba(255,255,255,0.02), transparent 18%),
     rgb(var(--bg-base));
 }
@@ -257,6 +257,29 @@ video {
   max-width: 100%;
   height: auto;
   display: block;
+}
+
+.font-display {
+  font-family:
+    "Plus Jakarta Sans",
+    "Inter",
+    system-ui,
+    sans-serif;
+}
+
+.font-course {
+  font-family:
+    "Nunito",
+    "Inter",
+    system-ui,
+    sans-serif;
+}
+
+.font-ui {
+  font-family:
+    "Inter",
+    system-ui,
+    sans-serif;
 }
 
 /* ===================================================

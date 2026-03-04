@@ -11,6 +11,7 @@ import { getErrorMessage } from "@/shared/lib/error-map";
 import { TELEGRAM_LOGIN_CODE_LENGTH, openTelegramLink } from "@/shared/lib/telegram-webapp";
 import {
   AuthBackButton,
+  AuthGlassPanel,
   AuthPrimaryButton,
   AuthTitleBlock,
 } from "@/features/auth/components/auth-ui";
@@ -62,64 +63,66 @@ export const TelegramCodeVerificationPage = () => {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-[28rem] flex-col justify-center py-2 sm:min-h-[38rem]">
-      <div className="space-y-6">
-        <AuthBackButton onClick={() => navigate("/telegram-login")} className="-ml-2" />
+    <div className="mx-auto flex w-full max-w-[30rem] flex-col justify-center py-2 sm:min-h-[38rem]">
+      <AuthGlassPanel>
+        <div className="space-y-6">
+          <AuthBackButton onClick={() => navigate("/telegram-login")} className="-ml-2" />
 
-        <AuthTitleBlock
-          title={t("verifyCode")}
-          subtitle={`${t("verifySubtitle")} ${phoneNumber}`}
-        />
+          <AuthTitleBlock
+            title={t("verifyCode")}
+            subtitle={`${t("verifySubtitle")} ${phoneNumber}`}
+          />
 
-        {mutation.isError ? (
-          <div className="rounded-[1.2rem] border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-            {getErrorMessage(mutation.error)}
-          </div>
-        ) : null}
+          {mutation.isError ? (
+            <div className="rounded-[1.2rem] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              {getErrorMessage(mutation.error)}
+            </div>
+          ) : null}
 
-        <OtpInput
-          value={code}
-          onChange={(value) => {
-            if (mutation.isError) {
-              mutation.reset();
-            }
+          <OtpInput
+            value={code}
+            onChange={(value) => {
+              if (mutation.isError) {
+                mutation.reset();
+              }
 
-            setCode(value);
-          }}
-          onComplete={() => undefined}
-          maxLength={TELEGRAM_LOGIN_CODE_LENGTH}
-          disabled={mutation.isPending}
-          error={mutation.isError}
-          className="gap-3"
-          slotClassName="h-[5rem] w-[3.8rem] rounded-[1.25rem] border border-white/28 bg-white/12 text-[2rem] font-bold text-white"
-          activeSlotClassName="border-[#f6c768] bg-white/16 ring-0"
-          errorSlotClassName="border-red-400/70"
-        />
+              setCode(value);
+            }}
+            onComplete={() => undefined}
+            maxLength={TELEGRAM_LOGIN_CODE_LENGTH}
+            disabled={mutation.isPending}
+            error={mutation.isError}
+            className="gap-3"
+            slotClassName="h-[4.8rem] w-[3.65rem] rounded-[1.35rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] text-[1.95rem] font-bold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+            activeSlotClassName="bg-[linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0.04))] ring-0"
+            errorSlotClassName="ring-1 ring-red-400/70"
+          />
 
-        <AuthPrimaryButton
-          type="button"
-          loading={mutation.isPending}
-          onClick={() => {
-            if (code.length === TELEGRAM_LOGIN_CODE_LENGTH) {
-              mutation.reset();
-              mutation.mutate(code);
-            }
-          }}
-          disabled={code.length !== TELEGRAM_LOGIN_CODE_LENGTH}
-        >
-          {t("verify")}
-        </AuthPrimaryButton>
-
-        {botUrl ? (
-          <button
+          <AuthPrimaryButton
             type="button"
-            className="w-full text-center text-[1rem] font-semibold text-white/76 transition-colors hover:text-white"
-            onClick={() => openTelegramLink(botUrl)}
+            loading={mutation.isPending}
+            onClick={() => {
+              if (code.length === TELEGRAM_LOGIN_CODE_LENGTH) {
+                mutation.reset();
+                mutation.mutate(code);
+              }
+            }}
+            disabled={code.length !== TELEGRAM_LOGIN_CODE_LENGTH}
           >
-            {t("telegramOpenAgain")}
-          </button>
-        ) : null}
-      </div>
+            {t("verify")}
+          </AuthPrimaryButton>
+
+          {botUrl ? (
+            <button
+              type="button"
+              className="w-full text-center text-[0.98rem] font-semibold text-white/66 transition-colors hover:text-white"
+              onClick={() => openTelegramLink(botUrl)}
+            >
+              {t("telegramOpenAgain")}
+            </button>
+          ) : null}
+        </div>
+      </AuthGlassPanel>
     </div>
   );
 };

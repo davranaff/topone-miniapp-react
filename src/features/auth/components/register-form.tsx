@@ -19,6 +19,7 @@ import { registerSchema, type RegisterSchema } from "@/features/auth/schemas/reg
 import { getErrorMessage } from "@/shared/lib/error-map";
 import {
   AuthField,
+  AuthGlassPanel,
   AuthPrimaryButton,
   AuthTitleBlock,
 } from "@/features/auth/components/auth-ui";
@@ -60,113 +61,115 @@ export const RegisterForm = () => {
   });
 
   return (
-    <div className="mx-auto flex w-full max-w-[28rem] flex-col justify-center py-2">
-      <form className="space-y-5" onSubmit={onSubmit}>
-        <AuthTitleBlock title={t("createAccount")} subtitle={t("registerSubtitle")} />
+    <div className="mx-auto flex w-full max-w-[30rem] flex-col justify-center py-2">
+      <AuthGlassPanel>
+        <form className="space-y-5" onSubmit={onSubmit}>
+          <AuthTitleBlock title={t("createAccount")} subtitle={t("registerSubtitle")} />
 
-        <div className="space-y-4">
-          <AuthField
-            label={t("firstName")}
-            placeholder={t("firstName")}
-            icon={<User className="h-6 w-6" />}
-            error={form.formState.errors.firstName?.message}
-            {...form.register("firstName")}
-          />
-          <AuthField
-            label={t("lastName")}
-            placeholder={t("lastName")}
-            icon={<User className="h-6 w-6" />}
-            error={form.formState.errors.lastName?.message}
-            {...form.register("lastName")}
-          />
-          <AuthField
-            label={t("email")}
-            placeholder={t("email")}
-            icon={<Mail className="h-6 w-6" />}
-            autoComplete="email"
-            error={form.formState.errors.email?.message}
-            {...form.register("email")}
-          />
-          <AuthField
-            label={t("usernamePlaceholder")}
-            placeholder={t("usernamePlaceholder")}
-            icon={<AtSign className="h-6 w-6" />}
-            error={form.formState.errors.username?.message}
-            {...form.register("username")}
-          />
-          <AuthField
-            label={t("phone")}
-            placeholder="+998"
-            icon={<Phone className="h-6 w-6" />}
-            inputMode="tel"
-            autoComplete="tel"
-            error={form.formState.errors.phoneNumber?.message}
-            {...form.register("phoneNumber")}
-          />
-          <AuthField
-            label={t("password")}
-            placeholder={t("password")}
-            type={showPassword ? "text" : "password"}
-            autoComplete="new-password"
-            icon={<Lock className="h-6 w-6" />}
-            trailing={(
-              <button
-                type="button"
-                onClick={() => setShowPassword((value) => !value)}
-                className="transition-colors hover:text-white"
-                aria-label={showPassword ? t("hidePassword") : t("showPassword")}
-              >
-                {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
-              </button>
-            )}
-            error={form.formState.errors.password?.message}
-            {...form.register("password")}
-          />
-          <AuthField
-            label={t("confirmPassword")}
-            placeholder={t("confirmPassword")}
-            type={showConfirmPassword ? "text" : "password"}
-            autoComplete="new-password"
-            icon={<Lock className="h-6 w-6" />}
-            trailing={(
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword((value) => !value)}
-                className="transition-colors hover:text-white"
-                aria-label={showConfirmPassword ? t("hidePassword") : t("showPassword")}
-              >
-                {showConfirmPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
-              </button>
-            )}
-            error={form.formState.errors.confirmPassword?.message}
-            {...form.register("confirmPassword")}
-          />
-          <AuthField
-            label={t("referralCode")}
-            placeholder={t("referralCode")}
-            icon={<Gift className="h-6 w-6" />}
-            error={form.formState.errors.referralCode?.message}
-            {...form.register("referralCode")}
-          />
-        </div>
-
-        {mutation.error ? (
-          <div className="rounded-[1.2rem] border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-            {getErrorMessage(mutation.error)}
+          <div className="space-y-4">
+            <AuthField
+              label={t("firstName")}
+              placeholder={t("firstName")}
+              icon={<User className="h-6 w-6" />}
+              error={form.formState.errors.firstName?.message}
+              {...form.register("firstName")}
+            />
+            <AuthField
+              label={t("lastName")}
+              placeholder={t("lastName")}
+              icon={<User className="h-6 w-6" />}
+              error={form.formState.errors.lastName?.message}
+              {...form.register("lastName")}
+            />
+            <AuthField
+              label={t("email")}
+              placeholder={t("email")}
+              icon={<Mail className="h-6 w-6" />}
+              autoComplete="email"
+              error={form.formState.errors.email?.message}
+              {...form.register("email")}
+            />
+            <AuthField
+              label={t("usernamePlaceholder")}
+              placeholder={t("usernamePlaceholder")}
+              icon={<AtSign className="h-6 w-6" />}
+              error={form.formState.errors.username?.message}
+              {...form.register("username")}
+            />
+            <AuthField
+              label={t("phone")}
+              placeholder="+998"
+              icon={<Phone className="h-6 w-6" />}
+              inputMode="tel"
+              autoComplete="tel"
+              error={form.formState.errors.phoneNumber?.message}
+              {...form.register("phoneNumber")}
+            />
+            <AuthField
+              label={t("password")}
+              placeholder={t("password")}
+              type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              icon={<Lock className="h-6 w-6" />}
+              trailing={(
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((value) => !value)}
+                  className="transition-colors hover:text-white"
+                  aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+                >
+                  {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
+                </button>
+              )}
+              error={form.formState.errors.password?.message}
+              {...form.register("password")}
+            />
+            <AuthField
+              label={t("confirmPassword")}
+              placeholder={t("confirmPassword")}
+              type={showConfirmPassword ? "text" : "password"}
+              autoComplete="new-password"
+              icon={<Lock className="h-6 w-6" />}
+              trailing={(
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((value) => !value)}
+                  className="transition-colors hover:text-white"
+                  aria-label={showConfirmPassword ? t("hidePassword") : t("showPassword")}
+                >
+                  {showConfirmPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
+                </button>
+              )}
+              error={form.formState.errors.confirmPassword?.message}
+              {...form.register("confirmPassword")}
+            />
+            <AuthField
+              label={t("referralCode")}
+              placeholder={t("referralCode")}
+              icon={<Gift className="h-6 w-6" />}
+              error={form.formState.errors.referralCode?.message}
+              {...form.register("referralCode")}
+            />
           </div>
-        ) : null}
 
-        <AuthPrimaryButton type="submit" icon={<UserPlus className="h-6 w-6" />} loading={mutation.isPending}>
-          {t("register")}
-        </AuthPrimaryButton>
+          {mutation.error ? (
+            <div className="rounded-[1.2rem] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              {getErrorMessage(mutation.error)}
+            </div>
+          ) : null}
 
-        <p className="text-center text-[1.02rem] text-white/62">
-          {t("haveAccount")}{" "}
-          <Link className="font-bold text-white transition-colors hover:text-[#f6d489]" to="/login-form">
-            {t("login")}
-          </Link>
-        </p>
-      </form>
+          <AuthPrimaryButton type="submit" icon={<UserPlus className="h-6 w-6" />} loading={mutation.isPending}>
+            {t("register")}
+          </AuthPrimaryButton>
+
+          <p className="text-center text-[1rem] text-white/56">
+            {t("haveAccount")}{" "}
+            <Link className="font-bold text-white transition-colors hover:text-[#f6d489]" to="/login-form">
+              {t("login")}
+            </Link>
+          </p>
+        </form>
+      </AuthGlassPanel>
     </div>
   );
 };

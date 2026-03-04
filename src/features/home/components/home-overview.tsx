@@ -172,12 +172,12 @@ const FeaturedCourseCard = ({ course }: { course: Course }) => {
       to={`/courses/${course.id}/lessons`}
       className="group block w-[304px] shrink-0 snap-start"
     >
-      <div className="relative h-[352px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_26px_70px_rgba(0,0,0,0.46)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:border-gold/20 group-hover:shadow-[0_34px_86px_rgba(0,0,0,0.56)]">
+      <div className="relative h-[338px] overflow-hidden rounded-[2rem] shadow-[0_24px_60px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_32px_82px_rgba(0,0,0,0.5)]">
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: imageUrl
-              ? `url(${imageUrl})`
+              ? `linear-gradient(180deg, rgba(9,11,15,0.05) 0%, rgba(9,11,15,0.38) 100%), url(${imageUrl})`
               : "linear-gradient(135deg, rgba(212,160,23,0.32) 0%, rgba(15,23,42,0.92) 100%)",
             backgroundPosition: "center",
             backgroundSize: "cover",
@@ -200,17 +200,17 @@ const FeaturedCourseCard = ({ course }: { course: Course }) => {
           </div>
 
           <div className="space-y-3">
-            <div className="space-y-1.5">
-              <h3 className="line-clamp-2 text-[1.1rem] font-bold leading-tight text-white">
+            <div className="max-w-[85%] space-y-1.5">
+              <h3 className="font-course line-clamp-2 text-[1.25rem] font-extrabold leading-tight tracking-[-0.03em] text-white">
                 {course.title}
               </h3>
-              <p className="line-clamp-2 text-sm leading-5 text-white/80">
+              <p className="line-clamp-2 text-[0.95rem] leading-5 text-white/72">
                 {course.subtitle}
               </p>
             </div>
 
             {progress > 0 && (
-              <div className="rounded-[1.35rem] border border-white/10 bg-black/25 p-3.5 backdrop-blur-md">
+              <div className="rounded-[1.35rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
                 <ProgressBar
                   value={progress}
                   max={100}
@@ -382,7 +382,7 @@ const StaticSubscriptionCourseCard = ({ index }: { index: number }) => {
 
   return (
     <Link to="/subscription" className="block w-[304px] shrink-0 snap-start">
-      <div className="relative h-[352px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_26px_70px_rgba(0,0,0,0.46)]">
+      <div className="relative h-[338px] overflow-hidden rounded-[2rem] shadow-[0_24px_60px_rgba(0,0,0,0.42)]">
         <div
           className="absolute inset-0"
           style={{ backgroundImage: gradients[index % gradients.length] }}
@@ -406,7 +406,7 @@ const StaticSubscriptionCourseCard = ({ index }: { index: number }) => {
               <div className="h-4 w-1/2 rounded-full bg-white/10 backdrop-blur-sm" />
             </div>
 
-            <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-3.5 backdrop-blur-md">
+            <div className="rounded-[1.35rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.1),rgba(255,255,255,0.04))] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
               <div className="h-2.5 w-full rounded-full bg-white/10" />
               <div className="mt-3 flex items-center justify-between">
                 <div className="h-3 w-24 rounded-full bg-white/12" />

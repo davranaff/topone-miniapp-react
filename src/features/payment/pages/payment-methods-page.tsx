@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowRight, CheckCircle2, CreditCard, ShieldCheck } from "lucide-react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { paymentApi } from "@/features/payment/api/payment.api";
-import { buildPaymentReturnUrlTemplate, storePaymentLink } from "@/features/payment/lib/payment-session";
+import { buildPaymentSuccessReturnUrl, storePaymentLink } from "@/features/payment/lib/payment-session";
 import type { PaymentLink, SubscriptionPlan } from "@/entities/payment/types";
 import { usePaymentPlans } from "@/features/payment/hooks/use-payment-plans";
 import { cn } from "@/shared/lib/cn";
@@ -81,26 +81,18 @@ export const PaymentMethodsPage = () => {
       return;
     }
 
-    let paymentWindow: Window | null = null;
-
-    if (typeof window !== "undefined") {
-      paymentWindow = window.open("", "_blank", "noopener,noreferrer");
-    }
-
     setIsSubmitting(true);
     setErrorText(null);
 
     try {
-      const returnUrl = buildPaymentReturnUrlTemplate();
-      let invoiceResult = await paymentApi.createInvoiceWithLinks(plan.id, returnUrl);
+      const createdInvoice = await paymentApi.createInvoiceWithLinks(plan.id);
 
-      if (!invoiceResult.links.length && invoiceResult.invoiceId) {
-        invoiceResult = await paymentApi.getInvoiceLinks(invoiceResult.invoiceId, returnUrl);
-      }
-
-      if (!invoiceResult.invoiceId) {
+      if (!createdInvoice.invoiceId) {
         throw new Error("Invoice yaratilmagan.");
       }
+
+      const returnUrl = buildPaymentSuccessReturnUrl(createdInvoice.invoiceId);
+      const invoiceResult = await paymentApi.getInvoiceLinks(createdInvoice.invoiceId, returnUrl);
 
       const matchingLink = findMatchingLink(invoiceResult.links, selectedProvider);
 
@@ -123,25 +115,7 @@ export const PaymentMethodsPage = () => {
           },
         },
       );
-
-      window.setTimeout(() => {
-        try {
-          if (paymentWindow && !paymentWindow.closed) {
-            paymentWindow.location.href = matchingLink.url;
-          } else if (typeof window !== "undefined") {
-            window.open(matchingLink.url, "_blank", "noopener,noreferrer");
-          }
-        } catch {
-          if (typeof window !== "undefined") {
-            window.open(matchingLink.url, "_blank", "noopener,noreferrer");
-          }
-        }
-      }, 280);
     } catch (error) {
-      if (paymentWindow && !paymentWindow.closed) {
-        paymentWindow.close();
-      }
-
       setErrorText(error instanceof Error ? error.message : "To'lov sahifasini ochib bo'lmadi.");
     } finally {
       setIsSubmitting(false);

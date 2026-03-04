@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { BookOpen, CheckCircle2, Clock3, PlayCircle } from "lucide-react";
-import { coursesApi } from "@/features/courses/api/courses.api";
 import { normalizeMediaUrl } from "@/features/home/lib/home.helpers";
 import { MobileScreen, MobileScreenSection } from "@/shared/ui/mobile-screen";
 import { PageHeader } from "@/shared/ui/page-header";
@@ -17,19 +16,11 @@ import { Badge } from "@/shared/ui/badge";
 import { SubscriptionRequiredState } from "@/shared/ui/subscription-required-state";
 import { hasApiStatus } from "@/shared/api/error-helpers";
 import type { Course } from "@/entities/course/types";
-
-type CoursesCatalog = {
-  categories: Awaited<ReturnType<typeof coursesApi.categories>>;
-  courses: Course[];
-  overview: {
-    completed: number;
-    inProgress: number;
-    notStarted: number;
-    progress: number;
-  };
-};
-
-const catalogQueryKey = ["courses", "catalog"] as const;
+import {
+  coursesCatalogQueryKey,
+  getCoursesCatalog,
+  type CoursesCatalog,
+} from "@/features/courses/lib/catalog-query";
 
 const CourseGridCard = ({
   course,
@@ -45,20 +36,20 @@ const CourseGridCard = ({
 
   return (
     <Link to={`/courses/${course.id}/lessons`} className="group block">
-      <div className="relative h-[352px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_26px_70px_rgba(0,0,0,0.46)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:border-gold/20 group-hover:shadow-[0_34px_86px_rgba(0,0,0,0.56)]">
+      <div className="relative aspect-[5/6] overflow-hidden rounded-[2rem] shadow-[0_24px_60px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_32px_82px_rgba(0,0,0,0.5)]">
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: imageUrl
-              ? `url(${imageUrl})`
-              : "linear-gradient(135deg, rgba(212,160,23,0.32) 0%, rgba(15,23,42,0.92) 100%)",
+              ? `linear-gradient(180deg, rgba(9,11,15,0.04) 0%, rgba(9,11,15,0.38) 100%), url(${imageUrl})`
+              : "linear-gradient(135deg, rgba(212,160,23,0.28) 0%, rgba(15,23,42,0.9) 100%)",
             backgroundPosition: "center",
             backgroundSize: "cover",
           }}
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.16),transparent_28%)]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
-        <div className="absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.15),transparent_30%)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/94 via-black/34 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.12),transparent)]" />
 
         <div className="relative flex h-full flex-col justify-between p-5">
           <div className="flex items-start justify-between gap-3">
@@ -73,16 +64,16 @@ const CourseGridCard = ({
           </div>
 
           <div className="space-y-3">
-            <div className="space-y-1.5">
-              <h3 className="line-clamp-2 text-[1.1rem] font-bold leading-tight text-white">
+            <div className="max-w-[85%] space-y-1.5">
+              <h3 className="font-course line-clamp-2 text-[1.28rem] font-extrabold leading-tight tracking-[-0.03em] text-white">
                 {course.title}
               </h3>
-              <p className="line-clamp-2 text-sm leading-5 text-white/80">
+              <p className="line-clamp-2 text-[0.95rem] leading-5 text-white/72">
                 {course.subtitle}
               </p>
             </div>
 
-            <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-3.5 backdrop-blur-md">
+            <div className="rounded-[1.35rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.11),rgba(255,255,255,0.04))] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
               <ProgressBar
                 value={progress}
                 max={100}
@@ -104,70 +95,8 @@ export const CoursesPage = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
 
   const catalog = useQuery<CoursesCatalog>({
-    queryKey: catalogQueryKey,
-    queryFn: async () => {
-      const [categories, coursesPage] = await Promise.all([
-        coursesApi.categories(),
-        coursesApi.list({ page: 1, size: 100 }),
-      ]);
-
-      const statsResults = await Promise.allSettled(
-        coursesPage.items.map((course) => coursesApi.stats(course.id)),
-      );
-
-      const courses = coursesPage.items.map((course, index) => {
-        const stats = statsResults[index];
-
-        if (stats?.status !== "fulfilled") {
-          return {
-            ...course,
-            progress: course.progress ?? 0,
-          };
-        }
-
-        return {
-          ...course,
-          progress: stats.value.overallProgressPercentage,
-          lessonsCount: stats.value.totalLessons,
-        };
-      });
-
-      const overview = statsResults.reduce(
-        (acc, result) => {
-          if (result.status !== "fulfilled") {
-            return acc;
-          }
-
-          acc.completed += result.value.completedLessons;
-          acc.inProgress += result.value.inProgressLessons;
-          acc.notStarted += result.value.notStartedLessons;
-          acc.progress.push(result.value.overallProgressPercentage);
-          return acc;
-        },
-        {
-          completed: 0,
-          inProgress: 0,
-          notStarted: 0,
-          progress: [] as number[],
-        },
-      );
-
-      return {
-        categories,
-        courses,
-        overview: {
-          completed: overview.completed,
-          inProgress: overview.inProgress,
-          notStarted: overview.notStarted,
-          progress:
-            overview.progress.length > 0
-              ? Math.round(
-                  overview.progress.reduce((sum, item) => sum + item, 0) / overview.progress.length,
-                )
-              : 0,
-        },
-      };
-    },
+    queryKey: coursesCatalogQueryKey,
+    queryFn: getCoursesCatalog,
   });
 
   const activeCategoryId = selectedCategoryId || catalog.data?.categories[0]?.id || "";
@@ -214,7 +143,7 @@ export const CoursesPage = () => {
           </div>
           <div className="grid gap-4">
             {Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton key={index} className="h-[336px] rounded-[1.75rem]" />
+              <Skeleton key={index} className="aspect-[5/6] rounded-[1.75rem]" />
             ))}
           </div>
         </>
@@ -285,10 +214,10 @@ export const CoursesPage = () => {
                       type="button"
                       onClick={() => setSelectedCategoryId(category.id)}
                       className={[
-                        "rounded-full border px-4 py-2 text-sm font-semibold transition-all",
+                        "font-display rounded-full px-4 py-2 text-sm font-bold tracking-[-0.02em] transition-all",
                         active
-                          ? "border-gold/40 bg-gold/10 text-gold"
-                          : "border-border/50 bg-elevated text-t-secondary",
+                          ? "bg-[linear-gradient(135deg,rgba(255,255,255,0.15),rgba(236,192,89,0.16))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] ring-1 ring-white/10"
+                          : "bg-white/5 text-white/56 ring-1 ring-white/8 hover:bg-white/8 hover:text-white/78",
                       ].join(" ")}
                     >
                       {category.title}

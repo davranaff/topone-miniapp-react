@@ -76,26 +76,30 @@ const EMPTY_STATS: UserStats = {
   streak: 0,
 };
 
+export const userStatsQueryKey = ["user-stats"] as const;
+
+export const fetchUserStats = async () => {
+  try {
+    const res = await apiClient.get(endpoints.leaderboard.myStats);
+    const data = (res.data?.data ?? res.data) as Record<string, unknown>;
+    return mapStats(data);
+  } catch (error) {
+    if (error instanceof ApiError && error.statusCode === 403) {
+      return EMPTY_STATS;
+    }
+
+    throw error;
+  }
+};
+
 export const useUserStats = () => {
   const status = useAuthStore((state) => state.status);
   const isBootstrapped = useAuthStore((state) => state.isBootstrapped);
 
   return useQuery({
-    queryKey: ["user-stats"],
+    queryKey: userStatsQueryKey,
     enabled: isBootstrapped && status === "authenticated",
-    queryFn: async () => {
-      try {
-        const res = await apiClient.get(endpoints.leaderboard.myStats);
-        const data = (res.data?.data ?? res.data) as Record<string, unknown>;
-        return mapStats(data);
-      } catch (error) {
-        if (error instanceof ApiError && error.statusCode === 403) {
-          return EMPTY_STATS;
-        }
-
-        throw error;
-      }
-    },
+    queryFn: fetchUserStats,
     staleTime: 60_000,
     refetchInterval: 120_000,
     retry: 1,
