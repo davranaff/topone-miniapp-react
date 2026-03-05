@@ -52,7 +52,7 @@ export const ResetPasswordPage = () => {
   const onSubmit = form.handleSubmit((data) => mutation.mutate(data));
 
   return (
-    <div className="mx-auto flex w-full max-w-[28rem] flex-col justify-center py-6 sm:min-h-[38rem]">
+    <div className="mx-auto flex w-full max-w-[34rem] flex-col justify-center py-6 sm:min-h-[40rem]">
       <AuthGlassPanel>
         {success ? (
           <div className="space-y-5 text-center">

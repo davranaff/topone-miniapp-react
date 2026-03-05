@@ -61,7 +61,7 @@ export const RegisterForm = () => {
   });
 
   return (
-    <div className="mx-auto flex w-full max-w-[30rem] flex-col justify-center py-2">
+    <div className="mx-auto flex w-full max-w-[34rem] flex-col justify-center py-3 lg:py-6">
       <AuthGlassPanel>
         <form className="space-y-5" onSubmit={onSubmit}>
           <AuthTitleBlock title={t("createAccount")} subtitle={t("registerSubtitle")} />

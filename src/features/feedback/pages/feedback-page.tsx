@@ -74,10 +74,10 @@ export const FeedbackPage = () => {
   });
 
   return (
-    <MobileScreen>
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader title="Fikr-mulohaza" subtitle="Banner bo'yicha xabaringizni yuboring" backButton />
 
-      <div className="mt-4">
+      <div className="mt-4 xl:mx-auto xl:w-full xl:max-w-[52rem]">
         {!announcementId ? (
           <GlassCard className="space-y-3 text-center">
             <Info className="mx-auto h-8 w-8 text-gold" />

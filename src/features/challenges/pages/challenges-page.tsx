@@ -197,7 +197,7 @@ export const ChallengesPage = () => {
     !hasApiStatus(categoriesQuery.error, 403);
 
   return (
-    <MobileScreen className="space-y-4">
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader title="Challenjlar" subtitle="Daily, weekly va monthly challenge oqimi" />
 
       <StatCardsRow
@@ -236,7 +236,7 @@ export const ChallengesPage = () => {
 
       {categories.length > 0 ? (
         <GlassCard className="rounded-[1.55rem] border-transparent bg-[linear-gradient(160deg,rgba(8,10,12,0.78),rgba(8,10,12,0.56))]">
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="desktop-chip-row flex gap-2 pb-1 lg:flex-wrap lg:pb-0">
             {categories.map((category) => (
               <button
                 key={category.typeId}
@@ -290,26 +290,30 @@ export const ChallengesPage = () => {
           />
         ) : null}
 
-        {permissionDenied && !!activePlaceholders.length
-          ? activePlaceholders.map((challenge) => (
+        {permissionDenied && !!activePlaceholders.length ? (
+          <div className="desktop-cards-grid">
+            {activePlaceholders.map((challenge) => (
               <ChallengeShowcaseCard
                 key={challenge.id}
                 challenge={challenge}
                 placeholder
                 onClick={() => navigate("/subscription")}
               />
-            ))
-          : null}
+            ))}
+          </div>
+        ) : null}
 
-        {!permissionDenied && !!challenges.data?.items.length
-          ? challenges.data.items.map((challenge) => (
+        {!permissionDenied && !!challenges.data?.items.length ? (
+          <div className="desktop-cards-grid">
+            {challenges.data.items.map((challenge) => (
               <ChallengeShowcaseCard
                 key={challenge.id}
                 challenge={challenge}
                 onClick={() => handleChallengeOpen(challenge)}
               />
-            ))
-          : null}
+            ))}
+          </div>
+        ) : null}
       </MobileScreenSection>
     </MobileScreen>
   );

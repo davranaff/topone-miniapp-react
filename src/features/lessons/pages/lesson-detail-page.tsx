@@ -202,7 +202,7 @@ export const LessonDetailPage = () => {
 
   if (lesson.isLoading) {
     return (
-      <MobileScreen className="space-y-4">
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <div className="h-8 w-1/2 rounded-xl bg-elevated animate-shimmer bg-shimmer bg-[length:200%_100%]" />
         <Skeleton className="aspect-video rounded-[1.4rem]" />
         <Skeleton className="h-16 rounded-[1.4rem]" />
@@ -213,7 +213,7 @@ export const LessonDetailPage = () => {
 
   if (lesson.isError && hasApiStatus(lesson.error, 403)) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <PageHeader title="Dars" backButton />
         <GlassCard className="mt-4">
           <p className="text-sm text-t-secondary">
@@ -232,7 +232,7 @@ export const LessonDetailPage = () => {
     (lesson.data && !lesson.data.isOpen)
   ) {
     return (
-      <MobileScreen className="space-y-4">
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <PageHeader title="Dars" backButton />
         <GlassCard className="mt-4 flex flex-col items-center gap-3 py-8 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/6">
@@ -249,7 +249,7 @@ export const LessonDetailPage = () => {
 
   if (lesson.isError || !lesson.data) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <ErrorState variant="network" onRetry={() => lesson.refetch()} />
       </MobileScreen>
     );
@@ -273,7 +273,7 @@ export const LessonDetailPage = () => {
   ] as const;
 
   return (
-    <MobileScreen className="space-y-4">
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader
         title={currentLesson.title}
         backButton
@@ -322,108 +322,112 @@ export const LessonDetailPage = () => {
     />
 
       {tab === "details" && (
-        <MobileScreenSection>
-          {currentLesson.type === "video" ? (
-            <LessonVideoPlayer
-              title={currentLesson.title}
-              muxPlaybackId={currentLesson.muxPlaybackId}
-              videoUrl={currentLesson.videoUrl}
-              initialPositionSeconds={activeProgress?.currentTimeSeconds ?? 0}
-              onProgressCheckpoint={(checkpoint) => {
-                if (!activeProgress?.id) return;
-                if (!checkpointCanSave(checkpoint, activeProgress)) return;
-                if (checkpoint.currentTimeSeconds === lastSavedRef.current) return;
-                if (saveProgressMutation.isPending) return;
+        <MobileScreenSection className="desktop-main-aside">
+          <div className="space-y-4">
+            {currentLesson.type === "video" ? (
+              <LessonVideoPlayer
+                title={currentLesson.title}
+                muxPlaybackId={currentLesson.muxPlaybackId}
+                videoUrl={currentLesson.videoUrl}
+                initialPositionSeconds={activeProgress?.currentTimeSeconds ?? 0}
+                onProgressCheckpoint={(checkpoint) => {
+                  if (!activeProgress?.id) return;
+                  if (!checkpointCanSave(checkpoint, activeProgress)) return;
+                  if (checkpoint.currentTimeSeconds === lastSavedRef.current) return;
+                  if (saveProgressMutation.isPending) return;
 
-                lastSavedRef.current = checkpoint.currentTimeSeconds;
-                void saveProgressMutation.mutate({
-                  lessonProgressId: activeProgress.id,
-                  currentTimeSeconds: checkpoint.currentTimeSeconds,
-                  watchTimeSeconds: checkpoint.watchTimeSeconds,
-                });
-              }}
-              onEnded={() => {
-                if (!isCompleted) {
-                  completeLessonRef.current();
-                }
-              }}
-            />
-          ) : currentLesson.type === "text" ? (
-            <GlassCard className="rounded-[1.5rem]">
-              <div className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-gold" />
-                <p className="text-sm font-semibold text-t-primary">Matnli dars</p>
-              </div>
-              <p className="mt-4 text-sm leading-7 text-t-secondary">
-                {currentLesson.description ?? "Bu dars uchun matn mavjud emas."}
-              </p>
-            </GlassCard>
-          ) : (
-            <GlassCard className="rounded-[1.5rem]">
-              <div className="flex items-center gap-2">
-                <HelpCircle className="h-5 w-5 text-gold" />
-                <p className="text-sm font-semibold text-t-primary">Quiz darsi</p>
-              </div>
-              <p className="mt-4 text-sm leading-7 text-t-secondary">
-                Bu dars uchun asosiy material quiz orqali beriladi.
-              </p>
-            </GlassCard>
-          )}
-
-          <GlassCard className="rounded-[1.5rem]">
-            <p className="text-lg font-semibold text-t-primary">Tavsif</p>
-            <p className="mt-3 text-sm leading-7 text-t-secondary">
-              {currentLesson.description ?? "Bu dars uchun tavsif kiritilmagan."}
-            </p>
-          </GlassCard>
-
-          {currentLesson.keyPoints.length > 0 && (
-            <GlassCard className="rounded-[1.5rem]">
-              <p className="text-lg font-semibold text-t-primary">Nimani o'rganasiz</p>
-              <div className="mt-4 space-y-3">
-                {currentLesson.keyPoints.map((point, index) => (
-                  <div key={`${point}-${index}`} className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-gold/12 text-gold">
-                      <Star className="h-3.5 w-3.5" />
-                    </div>
-                    <p className="text-sm leading-6 text-t-secondary">{point}</p>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
-          )}
-
-          <GlassCard className="rounded-[1.5rem]">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gold/12 text-gold">
-                <MessageCircle className="h-5 w-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-t-primary">Mentor bilan aloqa</p>
-                <p className="text-xs text-t-muted">
-                  {currentLesson.authorName
-                    ? `${currentLesson.authorName} bilan dars bo'yicha yozishishingiz mumkin`
-                    : "Mentor chat keyinroq faol bo'ladi"}
+                  lastSavedRef.current = checkpoint.currentTimeSeconds;
+                  void saveProgressMutation.mutate({
+                    lessonProgressId: activeProgress.id,
+                    currentTimeSeconds: checkpoint.currentTimeSeconds,
+                    watchTimeSeconds: checkpoint.watchTimeSeconds,
+                  });
+                }}
+                onEnded={() => {
+                  if (!isCompleted) {
+                    completeLessonRef.current();
+                  }
+                }}
+              />
+            ) : currentLesson.type === "text" ? (
+              <GlassCard className="rounded-[1.5rem]">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-gold" />
+                  <p className="text-sm font-semibold text-t-primary">Matnli dars</p>
+                </div>
+                <p className="mt-4 text-sm leading-7 text-t-secondary">
+                  {currentLesson.description ?? "Bu dars uchun matn mavjud emas."}
                 </p>
+              </GlassCard>
+            ) : (
+              <GlassCard className="rounded-[1.5rem]">
+                <div className="flex items-center gap-2">
+                  <HelpCircle className="h-5 w-5 text-gold" />
+                  <p className="text-sm font-semibold text-t-primary">Quiz darsi</p>
+                </div>
+                <p className="mt-4 text-sm leading-7 text-t-secondary">
+                  Bu dars uchun asosiy material quiz orqali beriladi.
+                </p>
+              </GlassCard>
+            )}
+
+            <GlassCard className="rounded-[1.5rem]">
+              <p className="text-lg font-semibold text-t-primary">Tavsif</p>
+              <p className="mt-3 text-sm leading-7 text-t-secondary">
+                {currentLesson.description ?? "Bu dars uchun tavsif kiritilmagan."}
+              </p>
+            </GlassCard>
+          </div>
+
+          <div className="space-y-4">
+            {currentLesson.keyPoints.length > 0 && (
+              <GlassCard className="rounded-[1.5rem]">
+                <p className="text-lg font-semibold text-t-primary">Nimani o'rganasiz</p>
+                <div className="mt-4 space-y-3">
+                  {currentLesson.keyPoints.map((point, index) => (
+                    <div key={`${point}-${index}`} className="flex items-start gap-3">
+                      <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-gold/12 text-gold">
+                        <Star className="h-3.5 w-3.5" />
+                      </div>
+                      <p className="text-sm leading-6 text-t-secondary">{point}</p>
+                    </div>
+                  ))}
+                </div>
+              </GlassCard>
+            )}
+
+            <GlassCard className="rounded-[1.5rem]">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gold/12 text-gold">
+                  <MessageCircle className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-t-primary">Mentor bilan aloqa</p>
+                  <p className="text-xs text-t-muted">
+                    {currentLesson.authorName
+                      ? `${currentLesson.authorName} bilan dars bo'yicha yozishishingiz mumkin`
+                      : "Mentor chat keyinroq faol bo'ladi"}
+                  </p>
+                </div>
               </div>
-            </div>
-            <Button
-              className="mt-4"
-              fullWidth
-              variant="secondary"
-              disabled={!currentLesson.authorId}
-              onClick={() => navigate("/stream-chat-channel")}
-            >
-              <MessageCircle className="h-4 w-4" />
-              {currentLesson.authorId ? "Mentorga yozish" : "Mentor mavjud emas"}
-            </Button>
-          </GlassCard>
+              <Button
+                className="mt-4"
+                fullWidth
+                variant="secondary"
+                disabled={!currentLesson.authorId}
+                onClick={() => navigate("/stream-chat-channel")}
+              >
+                <MessageCircle className="h-4 w-4" />
+                {currentLesson.authorId ? "Mentorga yozish" : "Mentor mavjud emas"}
+              </Button>
+            </GlassCard>
+          </div>
         </MobileScreenSection>
       )}
 
       {tab === "resources" && (
         currentLesson.resources.length > 0 ? (
-          <MobileScreenSection>
+          <MobileScreenSection className="desktop-cards-grid">
             {currentLesson.resources.map((resource) => (
               <GlassCard key={resource.id} className="rounded-[1.5rem]">
                 <div className="flex items-start gap-3">
@@ -472,7 +476,7 @@ export const LessonDetailPage = () => {
             ))}
           </MobileScreenSection>
         ) : quizzes.data?.length ? (
-          <MobileScreenSection>
+          <MobileScreenSection className="desktop-cards-grid">
             {quizzes.data.map((quiz) => (
               <GlassCard key={quiz.id} className="rounded-[1.5rem]">
                 <div className="flex items-start gap-3">

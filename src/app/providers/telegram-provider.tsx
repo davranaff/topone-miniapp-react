@@ -19,18 +19,23 @@ export const TelegramProvider = ({ children }: { children: ReactNode }) => {
       root.style.removeProperty("--tg-safe-bottom");
       root.style.removeProperty("--tg-safe-left");
       root.style.removeProperty("--tg-viewport-height");
+      root.style.removeProperty("--tg-top-controls-offset");
     };
 
     const applyTelegramViewport = () => {
       const insets = adapter.getSafeAreaInsets();
       const viewportHeight = adapter.getViewportHeight?.();
+      const topInset = Math.max(0, Math.round(insets.top));
+      const isMobileViewport = window.matchMedia("(max-width: 767px)").matches;
+      const topControlsOffset = isMobileViewport && topInset < 64 ? 8 : 0;
 
       root.setAttribute("data-telegram-runtime", "true");
-      root.style.setProperty("--tg-safe-top", `${Math.max(0, Math.round(insets.top))}px`);
+      root.style.setProperty("--tg-safe-top", `${topInset}px`);
       root.style.setProperty("--tg-safe-right", `${Math.max(0, Math.round(insets.right))}px`);
       root.style.setProperty("--tg-safe-bottom", `${Math.max(0, Math.round(insets.bottom))}px`);
       root.style.setProperty("--tg-safe-left", `${Math.max(0, Math.round(insets.left))}px`);
       root.style.setProperty("--tg-viewport-height", `${Math.max(0, Math.round(viewportHeight ?? window.innerHeight))}px`);
+      root.style.setProperty("--tg-top-controls-offset", `${topControlsOffset}px`);
     };
 
     if (!isTelegramRuntime) {

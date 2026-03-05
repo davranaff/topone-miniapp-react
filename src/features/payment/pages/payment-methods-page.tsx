@@ -124,7 +124,7 @@ export const PaymentMethodsPage = () => {
 
   if (isLoading) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <PageHeader title="To'lov usuli" subtitle="Tarif uchun usul tanlanmoqda" backButton />
         <div className="mt-4 space-y-4">
           <SkeletonCard />
@@ -137,7 +137,7 @@ export const PaymentMethodsPage = () => {
 
   if (isError || !plan) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <PageHeader title="To'lov usuli" subtitle="Tarifni qayta tanlang" backButton />
         <div className="mt-4">
           <ErrorState variant="network" onRetry={() => void refetch()} />
@@ -151,7 +151,7 @@ export const PaymentMethodsPage = () => {
     : "Bepul";
 
   return (
-    <MobileScreen>
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader
         title="To'lov usuli"
         subtitle={isExtend ? "Joriy tarifni uzaytirish" : "Tanlangan tarif uchun to'lov"}
@@ -199,7 +199,7 @@ export const PaymentMethodsPage = () => {
         </div>
       ) : null}
 
-      <div className="mt-5 space-y-3">
+      <div className="mt-5 grid grid-cols-1 gap-3 xl:grid-cols-2">
         {PAYMENT_METHODS.map((method) => {
           const selected = selectedProvider === method.provider;
 
@@ -247,7 +247,7 @@ export const PaymentMethodsPage = () => {
         })}
       </div>
 
-      <div className="mt-5">
+      <div className="mt-5 xl:max-w-[44rem]">
         <GlassCard className="rounded-[1.6rem] p-4">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-gold/20 bg-gold/10 text-gold">
@@ -265,7 +265,7 @@ export const PaymentMethodsPage = () => {
         </GlassCard>
       </div>
 
-      <div className="mt-5">
+      <div className="mt-5 xl:max-w-[30rem]">
         <Button
           fullWidth
           size="xl"

@@ -300,7 +300,7 @@ export const SubscriptionPage = () => {
 
   if (plans.isLoading && !plans.data) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <div className="h-8 w-1/3 rounded-xl bg-elevated animate-shimmer bg-shimmer bg-[length:200%_100%]" />
         <MobileScreenSection className="mt-4">
           {Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}
@@ -311,7 +311,7 @@ export const SubscriptionPage = () => {
 
   if (pageError && !plans.data?.length) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <ErrorState variant="network" onRetry={() => {
           void Promise.allSettled([
             plans.refetch(),
@@ -324,7 +324,7 @@ export const SubscriptionPage = () => {
   }
 
   return (
-    <MobileScreen>
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader
         title="Premium obuna"
         subtitle="Flutter flow kabi joriy tarif, trial va uzaytirish holatlari bilan"
@@ -338,7 +338,7 @@ export const SubscriptionPage = () => {
       ) : null}
 
       {(currentStatus?.subscribed && (currentStatus.planName || activeSubscriptionFromList?.plan?.name)) ? (
-        <div className="mt-4">
+        <div className="mt-4 xl:max-w-[46rem]">
           <CurrentSubscriptionCard
             planName={currentStatus.planName ?? activeSubscriptionFromList?.plan?.name ?? "Premium"}
             endDate={currentStatus.subscriptionEndDate ?? activeSubscriptionFromList?.subscriptionEndDate}
@@ -365,7 +365,7 @@ export const SubscriptionPage = () => {
         </div>
       </div>
 
-      <MobileScreenSection className="mt-5">
+      <MobileScreenSection className="mt-5 grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
         {visiblePlans.map((plan) => {
           const isCurrentPlan = currentPlanId === plan.id && hasActiveSubscription;
           return (
@@ -384,7 +384,7 @@ export const SubscriptionPage = () => {
         })}
       </MobileScreenSection>
 
-      <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-4 text-sm text-t-muted">
+      <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-4 text-sm text-t-muted xl:max-w-[54rem]">
         <div className="flex items-center gap-2 font-semibold text-t-primary">
           <ArrowRight className="h-4 w-4 text-gold" />
           To'lov oqimi

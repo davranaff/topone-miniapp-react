@@ -55,7 +55,7 @@ export const ProfilePage = () => {
   const achievementsPreview = (achievements.data ?? []).slice(0, 4);
 
   return (
-    <MobileScreen className="space-y-4">
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader
         title="Profil"
         subtitle={membershipTier}
@@ -68,11 +68,11 @@ export const ProfilePage = () => {
         }
       />
 
-      <div className="flex items-center gap-4 px-1">
+      <div className="flex items-center gap-4 px-1 xl:gap-6">
         <Avatar src={data.avatarUrl} fallback={fullName} size="xl" gold={data.hasActiveSubscription} />
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[2rem] font-black tracking-[-0.03em] text-t-primary">{fullName}</p>
+          <p className="truncate text-[2rem] font-black tracking-[-0.03em] text-t-primary xl:text-[2.4rem]">{fullName}</p>
           <div className="mt-2 flex flex-wrap gap-2">
             <button
               type="button"
@@ -120,7 +120,7 @@ export const ProfilePage = () => {
         ]}
       />
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <button
           type="button"
           onClick={() => navigate("/leaderboard?type=xp")}
@@ -142,7 +142,7 @@ export const ProfilePage = () => {
       <button
         type="button"
         onClick={() => navigate("/subscription")}
-        className="liquid-glass-surface-interactive flex w-full items-center gap-3 rounded-[1.35rem] border border-gold/35 bg-gold/10 px-4 py-4 text-left transition-all active:scale-99"
+        className="liquid-glass-surface-interactive flex w-full items-center gap-3 rounded-[1.35rem] border border-gold/35 bg-gold/10 px-4 py-4 text-left transition-all active:scale-99 xl:max-w-[32rem]"
       >
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[0.95rem] border border-gold/35 bg-gold/15 text-gold">
           <Trophy className="h-5 w-5" />
@@ -170,23 +170,40 @@ export const ProfilePage = () => {
             <p className="text-xl text-t-muted">Hali yutuqlar yo'q</p>
           </GlassCard>
         ) : (
-          <div className="-mx-1 overflow-x-auto px-1 [scrollbar-width:none]">
-            <div className="flex gap-2 pb-1">
+          <>
+            <div className="-mx-1 overflow-x-auto px-1 [scrollbar-width:none] xl:hidden">
+              <div className="flex gap-2 pb-1">
+                {achievementsPreview.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => navigate("/achievements")}
+                    className="liquid-glass-surface-interactive flex h-24 w-[5.1rem] shrink-0 flex-col items-center justify-center rounded-[1rem] border border-border/45 px-2 text-center transition-all active:scale-95"
+                  >
+                    <span className="text-lg">{item.iconKey ?? "🏆"}</span>
+                    <span className="mt-1 line-clamp-2 text-2xs font-semibold text-t-secondary">
+                      {item.title}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="hidden xl:grid xl:grid-cols-4 xl:gap-3">
               {achievementsPreview.map((item) => (
                 <button
-                  key={item.id}
+                  key={`desktop-${item.id}`}
                   type="button"
                   onClick={() => navigate("/achievements")}
-                  className="liquid-glass-surface-interactive flex h-24 w-[5.1rem] shrink-0 flex-col items-center justify-center rounded-[1rem] border border-border/45 px-2 text-center transition-all active:scale-95"
+                  className="liquid-glass-surface-interactive flex h-28 flex-col items-center justify-center rounded-[1rem] border border-border/45 px-3 text-center transition-all active:scale-95"
                 >
-                  <span className="text-lg">{item.iconKey ?? "🏆"}</span>
-                  <span className="mt-1 line-clamp-2 text-2xs font-semibold text-t-secondary">
+                  <span className="text-xl">{item.iconKey ?? "🏆"}</span>
+                  <span className="mt-2 line-clamp-2 text-xs font-semibold text-t-secondary">
                     {item.title}
                   </span>
                 </button>
               ))}
             </div>
-          </div>
+          </>
         )}
       </section>
     </MobileScreen>

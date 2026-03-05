@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   BookMarked,
   BookOpen,
@@ -28,15 +28,25 @@ const getCategoryTitle = (category?: string) => {
   return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 };
 
-const getCategoryIcon = (value?: string) => {
+type ResourceIconKey = "tool" | "video" | "news" | "book" | "default";
+
+const getCategoryIconKey = (value?: string): ResourceIconKey => {
   const normalized = value?.toLowerCase() ?? "";
 
-  if (normalized.includes("tool") || normalized.includes("app")) return Wrench;
-  if (normalized.includes("video") || normalized.includes("podcast") || normalized.includes("audio")) return PlayCircle;
-  if (normalized.includes("news")) return Newspaper;
-  if (normalized.includes("book") || normalized.includes("guide") || normalized.includes("tutorial")) return BookOpen;
+  if (normalized.includes("tool") || normalized.includes("app")) return "tool";
+  if (normalized.includes("video") || normalized.includes("podcast") || normalized.includes("audio")) return "video";
+  if (normalized.includes("news")) return "news";
+  if (normalized.includes("book") || normalized.includes("guide") || normalized.includes("tutorial")) return "book";
 
-  return BookMarked;
+  return "default";
+};
+
+const renderCategoryIcon = (iconKey: ResourceIconKey) => {
+  if (iconKey === "tool") return <Wrench className="h-5 w-5" />;
+  if (iconKey === "video") return <PlayCircle className="h-5 w-5" />;
+  if (iconKey === "news") return <Newspaper className="h-5 w-5" />;
+  if (iconKey === "book") return <BookOpen className="h-5 w-5" />;
+  return <BookMarked className="h-5 w-5" />;
 };
 
 const buildFallbackCategories = (items: ResourceItem[]): ResourceCategory[] => {
@@ -57,7 +67,7 @@ const buildFallbackCategories = (items: ResourceItem[]): ResourceCategory[] => {
 };
 
 const ResourceCard = ({ resource }: { resource: ResourceItem }) => {
-  const CategoryIcon = getCategoryIcon(resource.type ?? resource.category);
+  const categoryIconKey = getCategoryIconKey(resource.type ?? resource.category);
 
   return (
     <GlassCard className={cn("rounded-[1.7rem]", resource.isLocked && "opacity-65")}>
@@ -68,7 +78,7 @@ const ResourceCard = ({ resource }: { resource: ResourceItem }) => {
             ? "border-border/40 bg-elevated text-t-muted"
             : "border-gold/20 bg-gold/10 text-gold",
         )}>
-          {resource.isLocked ? <Lock className="h-5 w-5" /> : <CategoryIcon className="h-5 w-5" />}
+          {resource.isLocked ? <Lock className="h-5 w-5" /> : renderCategoryIcon(categoryIconKey)}
         </div>
 
         <div className="min-w-0 flex-1">
@@ -134,13 +144,8 @@ const ResourceCard = ({ resource }: { resource: ResourceItem }) => {
 export const ResourcesPage = () => {
   const categories = useResourceCategories();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
-  const resources = useResources(selectedCategoryId);
-
-  useEffect(() => {
-    if (!selectedCategoryId && categories.data?.length) {
-      setSelectedCategoryId(categories.data[0].id);
-    }
-  }, [categories.data, selectedCategoryId]);
+  const effectiveCategoryId = selectedCategoryId ?? categories.data?.[0]?.id;
+  const resources = useResources(effectiveCategoryId);
 
   const fallbackCategories = useMemo(
     () => buildFallbackCategories(resources.data ?? []),
@@ -149,16 +154,16 @@ export const ResourcesPage = () => {
 
   const visibleCategories = categories.data?.length ? categories.data : fallbackCategories;
   const activeCategory =
-    visibleCategories.find((item) => item.id === selectedCategoryId) ??
+    visibleCategories.find((item) => item.id === effectiveCategoryId) ??
     visibleCategories[0];
   const featuredResource = (resources.data ?? []).find((item) => item.isFeatured) ?? resources.data?.[0];
 
   if (categories.isLoading && resources.isLoading) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <div className="h-8 w-1/3 rounded-xl bg-elevated animate-shimmer bg-shimmer bg-[length:200%_100%]" />
         <SkeletonCard />
-        <MobileScreenSection className="mt-4">
+        <MobileScreenSection className="mt-4 desktop-cards-grid">
           {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
         </MobileScreenSection>
       </MobileScreen>
@@ -167,7 +172,7 @@ export const ResourcesPage = () => {
 
   if (categories.isError && resources.isError) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <ErrorState variant="network" onRetry={() => {
           void categories.refetch();
           void resources.refetch();
@@ -179,7 +184,7 @@ export const ResourcesPage = () => {
   const items = resources.data ?? [];
 
   return (
-    <MobileScreen className="space-y-4">
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader title="Resurslar" subtitle="Kategoriya bo'yicha qo'shimcha materiallar" />
 
       <GlassCard padding="none" className="relative overflow-hidden rounded-[2rem]">
@@ -222,8 +227,8 @@ export const ResourcesPage = () => {
       </GlassCard>
 
       {!!visibleCategories.length && (
-        <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none]">
-          <div className="flex gap-2 pb-1">
+        <div className="desktop-chip-row">
+          <div className="flex gap-2 pb-1 lg:flex-wrap lg:pb-0">
             {visibleCategories.map((category) => (
               <button
                 key={category.id}
@@ -245,7 +250,7 @@ export const ResourcesPage = () => {
       )}
 
       {resources.isLoading ? (
-        <MobileScreenSection>
+        <MobileScreenSection className="desktop-cards-grid">
           {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
         </MobileScreenSection>
       ) : resources.isError ? (
@@ -259,7 +264,7 @@ export const ResourcesPage = () => {
           />
         </div>
       ) : (
-        <MobileScreenSection>
+        <MobileScreenSection className="desktop-cards-grid">
           {items.map((resource) => (
             <ResourceCard key={resource.id} resource={resource} />
           ))}

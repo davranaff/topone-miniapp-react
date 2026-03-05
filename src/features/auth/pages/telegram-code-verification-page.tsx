@@ -63,7 +63,7 @@ export const TelegramCodeVerificationPage = () => {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-[30rem] flex-col justify-center py-2 sm:min-h-[38rem]">
+    <div className="mx-auto flex w-full max-w-[34rem] flex-col justify-center py-3 lg:py-6 sm:min-h-[40rem]">
       <AuthGlassPanel>
         <div className="space-y-6">
           <AuthBackButton onClick={() => navigate("/telegram-login")} className="-ml-2" />

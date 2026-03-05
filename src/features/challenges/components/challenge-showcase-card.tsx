@@ -11,22 +11,22 @@ import {
 
 const getStatusTone = (challenge: Challenge, placeholder: boolean) => {
   if (placeholder) {
-    return "liquid-glass-chip text-white";
+    return "bg-white/15 text-white backdrop-blur-sm";
   }
 
   if (challenge.isCompleted) {
-    return "liquid-glass-state-success text-white";
+    return "bg-success/85 text-white";
   }
 
   if (challenge.isStarted) {
-    return "liquid-glass-button-chip-active text-black";
+    return "bg-gold/85 text-black";
   }
 
   if (challenge.isLocked) {
-    return "liquid-glass-chip text-white";
+    return "bg-white/15 text-white backdrop-blur-sm";
   }
 
-  return "liquid-glass-chip text-white";
+  return "bg-white/15 text-white backdrop-blur-sm";
 };
 
 type ChallengeShowcaseCardProps = {
@@ -67,27 +67,27 @@ export const ChallengeShowcaseCard = ({
       onClick={onClick}
       className="group block w-full rounded-[2rem] text-left transition-transform duration-300 active:scale-[0.992]"
     >
-      <div className="relative min-h-[220px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_28px_72px_rgba(0,0,0,0.44)] transition-all duration-300 group-hover:-translate-y-0.5">
+      <div className="relative h-[188px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_18px_42px_rgba(0,0,0,0.42)] transition-all duration-300 group-hover:-translate-y-0.5">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: getChallengeCardBackground(challenge, { placeholder }) }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/44 to-black/14" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
 
         {placeholder && (
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,9,13,0.24),rgba(7,9,13,0.62))] backdrop-blur-[1.5px]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,9,13,0.24),rgba(7,9,13,0.62))] backdrop-blur-[2px]" />
         )}
 
-        <div className="relative flex min-h-[220px] flex-col justify-between p-5">
+        <div className="relative flex h-full flex-col justify-between p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <Badge variant="outline" size="sm" className="liquid-glass-chip uppercase tracking-[0.14em] text-white">
+              <Badge variant="solid" size="sm" className="bg-white/15 text-white backdrop-blur-sm">
                 {typeLabel}
               </Badge>
               <Badge
-                variant="outline"
+                variant="solid"
                 size="sm"
-                className={`${getStatusTone(challenge, placeholder)} uppercase tracking-[0.14em]`}
+                className={getStatusTone(challenge, placeholder)}
               >
                 {statusLabel}
               </Badge>
@@ -95,12 +95,12 @@ export const ChallengeShowcaseCard = ({
 
             <div className="flex items-center gap-2">
               {placeholder ? (
-                <div className="liquid-glass-state-gold inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-gold">
+                <div className="inline-flex items-center gap-1 rounded-full border border-transparent bg-gold px-3 py-1 text-[11px] font-semibold text-black">
                   <Lock className="h-3.5 w-3.5" />
                   PRO
                 </div>
               ) : (
-                <div className="liquid-glass-chip rounded-full px-3 py-1 text-[11px] font-semibold text-white/90">
+                <div className="rounded-full border border-white/15 bg-black/20 px-3 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-sm">
                   {getChallengeRewardLabel(challenge)}
                 </div>
               )}
@@ -109,16 +109,16 @@ export const ChallengeShowcaseCard = ({
 
           <div className="space-y-3">
             <div className="space-y-1.5">
-              <h3 className="line-clamp-2 max-w-[92%] text-[1.23rem] font-extrabold leading-tight tracking-[-0.03em] text-white">
+              <h3 className="line-clamp-2 text-lg font-bold leading-tight text-white">
                 {challenge.title}
               </h3>
-              <p className="line-clamp-2 max-w-[95%] text-sm leading-6 text-white/80">
+              <p className="line-clamp-2 text-sm leading-5 text-white/80">
                 {challenge.description}
               </p>
             </div>
 
             {!placeholder && progress > 0 ? (
-              <div className="liquid-glass-surface rounded-[1.35rem] p-3.5 text-white">
+              <div className="rounded-[1.35rem] border border-white/10 bg-black/25 p-3.5 backdrop-blur-md">
                 <div className="mb-2 flex flex-wrap items-center gap-3 text-[11px] font-medium text-white/74">
                   {challenge.durationDays ? (
                     <span className="inline-flex items-center gap-1.5">
@@ -141,7 +141,7 @@ export const ChallengeShowcaseCard = ({
                 />
               </div>
             ) : (
-              <div className="liquid-glass-surface flex items-center justify-between rounded-[1.35rem] px-4 py-3 text-sm font-semibold text-white/90">
+              <div className="flex items-center justify-between rounded-[1.35rem] border border-white/10 bg-black/20 px-4 py-3 text-sm font-semibold text-white/90 backdrop-blur-md">
                 <div className="flex flex-wrap items-center gap-3 text-[11px] font-medium text-white/72">
                   {challenge.durationDays ? (
                     <span className="inline-flex items-center gap-1.5">
@@ -155,7 +155,7 @@ export const ChallengeShowcaseCard = ({
                   </span>
                 </div>
                 <div className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.12em] text-white/78">
-                  Batafsil
+                  {placeholder ? "Obuna" : "Batafsil"}
                   <ChevronRight className="h-4 w-4" />
                 </div>
               </div>

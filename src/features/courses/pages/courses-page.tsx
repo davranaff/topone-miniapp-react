@@ -36,18 +36,18 @@ const CourseGridCard = ({
 
   return (
     <Link to={`/courses/${course.id}/lessons`} className="group block">
-      <div className="relative aspect-[5/6] overflow-hidden rounded-[2rem] shadow-[0_24px_60px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_32px_82px_rgba(0,0,0,0.5)]">
+      <div className="relative h-[338px] overflow-hidden rounded-[2rem] shadow-[0_18px_42px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_24px_58px_rgba(0,0,0,0.5)] xl:h-[18.5rem] 2xl:h-[17.2rem]">
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: imageUrl
-              ? `linear-gradient(180deg, rgba(9,11,15,0.04) 0%, rgba(9,11,15,0.38) 100%), url(${imageUrl})`
-              : "linear-gradient(135deg, rgba(212,160,23,0.28) 0%, rgba(15,23,42,0.9) 100%)",
+              ? `linear-gradient(180deg, rgba(9,11,15,0.05) 0%, rgba(9,11,15,0.38) 100%), url(${imageUrl})`
+              : "linear-gradient(135deg, rgba(212,160,23,0.32) 0%, rgba(15,23,42,0.92) 100%)",
             backgroundPosition: "center",
             backgroundSize: "cover",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/94 via-black/34 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
 
         <div className="relative flex h-full flex-col justify-between p-5">
           <div className="flex items-start justify-between gap-3">
@@ -63,7 +63,7 @@ const CourseGridCard = ({
 
           <div className="space-y-3">
             <div className="max-w-[85%] space-y-1.5">
-              <h3 className="font-course line-clamp-2 text-[1.28rem] font-extrabold leading-tight tracking-[-0.03em] text-white">
+              <h3 className="font-course line-clamp-2 text-[1.25rem] font-extrabold leading-tight tracking-[-0.03em] text-white">
                 {course.title}
               </h3>
               <p className="line-clamp-2 text-[0.95rem] leading-5 text-white/72">
@@ -71,16 +71,18 @@ const CourseGridCard = ({
               </p>
             </div>
 
-            <div className="rounded-[1.35rem] bg-[rgba(255,255,255,0.05)] p-3.5 backdrop-blur-xl">
-              <ProgressBar
-                value={progress}
-                max={100}
-                size="xs"
-                showLabel
-                label="Progress"
-                trackClassName="bg-white/15"
-              />
-            </div>
+            {progress > 0 ? (
+              <div className="rounded-[1.35rem] bg-[rgba(255,255,255,0.05)] p-3.5 backdrop-blur-xl">
+                <ProgressBar
+                  value={progress}
+                  max={100}
+                  size="xs"
+                  showLabel
+                  label="Progress"
+                  trackClassName="bg-white/15"
+                />
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
@@ -120,7 +122,7 @@ export const CoursesPage = () => {
   }, [activeCategoryId, catalog.data]);
 
   return (
-    <MobileScreen className="space-y-4">
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
       {catalog.isLoading && (
@@ -139,9 +141,9 @@ export const CoursesPage = () => {
               <Skeleton key={index} className="h-10 w-24 rounded-full" />
             ))}
           </div>
-          <div className="grid gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             {Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton key={index} className="aspect-[5/6] rounded-[1.75rem]" />
+              <Skeleton key={index} className="h-[338px] rounded-[1.75rem] xl:h-[18.5rem] 2xl:h-[17.2rem]" />
             ))}
           </div>
         </>
@@ -160,49 +162,51 @@ export const CoursesPage = () => {
 
       {!catalog.isLoading && !catalog.isError && catalog.data && (
         <>
-          <StatCardsRow
-            stats={[
-              {
-                label: t("completed"),
-                value: catalog.data.overview.completed,
-                icon: <CheckCircle2 className="h-4 w-4" />,
-              },
-              {
-                label: t("inProgress"),
-                value: catalog.data.overview.inProgress,
-                icon: <PlayCircle className="h-4 w-4" />,
-              },
-              {
-                label: t("notStarted"),
-                value: catalog.data.overview.notStarted,
-                icon: <Clock3 className="h-4 w-4" />,
-              },
-            ]}
-            columns={3}
-          />
-
-          <GlassCard className="space-y-3 rounded-[1.7rem] border-transparent">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] bg-[linear-gradient(180deg,rgba(255,226,163,0.14),rgba(255,255,255,0.03))] text-gold">
-                <BookOpen className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-t-primary">{t("overallProgress")}</p>
-                <p className="text-xs text-t-muted">{t("continuePath")}</p>
-              </div>
-            </div>
-
-            <ProgressBar
-              value={catalog.data.overview.progress}
-              max={100}
-              showLabel
-              label={t("overallProgress")}
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+            <StatCardsRow
+              stats={[
+                {
+                  label: t("completed"),
+                  value: catalog.data.overview.completed,
+                  icon: <CheckCircle2 className="h-4 w-4" />,
+                },
+                {
+                  label: t("inProgress"),
+                  value: catalog.data.overview.inProgress,
+                  icon: <PlayCircle className="h-4 w-4" />,
+                },
+                {
+                  label: t("notStarted"),
+                  value: catalog.data.overview.notStarted,
+                  icon: <Clock3 className="h-4 w-4" />,
+                },
+              ]}
+              columns={3}
             />
-          </GlassCard>
+
+            <GlassCard className="space-y-3 rounded-[1.7rem] border-transparent">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] bg-[linear-gradient(180deg,rgba(255,226,163,0.14),rgba(255,255,255,0.03))] text-gold">
+                  <BookOpen className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-t-primary">{t("overallProgress")}</p>
+                  <p className="text-xs text-t-muted">{t("continuePath")}</p>
+                </div>
+              </div>
+
+              <ProgressBar
+                value={catalog.data.overview.progress}
+                max={100}
+                showLabel
+                label={t("overallProgress")}
+              />
+            </GlassCard>
+          </div>
 
           {catalog.data.categories.length > 0 && (
-            <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none]">
-              <div className="flex gap-2 pb-1">
+            <div className="desktop-scroll-row lg:overflow-visible">
+              <div className="flex gap-2 pb-1 lg:flex-wrap">
                 {catalog.data.categories.map((category) => {
                   const active = category.id === activeCategoryId;
 
@@ -233,7 +237,7 @@ export const CoursesPage = () => {
               description={t("emptyDescription")}
             />
           ) : (
-            <MobileScreenSection className="grid gap-4">
+            <MobileScreenSection className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
               {visibleCourses.map((course) => (
                 <CourseGridCard
                   key={course.id}

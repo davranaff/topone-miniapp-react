@@ -75,7 +75,7 @@ const HomeAnnouncementCard = ({
       className="group block w-full rounded-[2rem] text-left"
       aria-label={announcement.title}
     >
-      <div className="relative min-h-[190px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_26px_70px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_32px_84px_rgba(0,0,0,0.52)]">
+      <div className="relative min-h-[190px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_18px_42px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_24px_58px_rgba(0,0,0,0.52)]">
         <div
           className="absolute inset-0"
           style={{
@@ -137,9 +137,9 @@ const FeaturedCourseCard = ({ course }: { course: Course }) => {
   return (
     <Link
       to={`/courses/${course.id}/lessons`}
-      className="group block w-[304px] shrink-0 snap-start"
+      className="group block w-[304px] shrink-0 snap-start xl:w-full"
     >
-      <div className="relative h-[338px] overflow-hidden rounded-[2rem] shadow-[0_24px_60px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_32px_82px_rgba(0,0,0,0.5)]">
+      <div className="relative h-[338px] overflow-hidden rounded-[2rem] shadow-[0_18px_42px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_24px_58px_rgba(0,0,0,0.5)] xl:h-[18.5rem] 2xl:h-[17.2rem]">
         <div
           className="absolute inset-0"
           style={{
@@ -211,9 +211,9 @@ const HomeChallengeCard = ({
   return (
     <Link
       to={`/challenges/${challenge.id}`}
-      className="block w-[304px] shrink-0 snap-start"
+      className="block w-[304px] shrink-0 snap-start xl:w-full"
     >
-      <div className="relative h-[188px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_26px_70px_rgba(0,0,0,0.42)]">
+      <div className="relative h-[188px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_18px_42px_rgba(0,0,0,0.42)]">
         <div
           className="absolute inset-0"
           style={{
@@ -287,8 +287,8 @@ const StaticSubscriptionChallengeCard = ({
   const { t } = useTranslation("home");
 
   return (
-    <Link to="/subscription" className="block w-[296px] shrink-0 snap-start">
-      <div className="relative h-[188px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_26px_70px_rgba(0,0,0,0.42)]">
+    <Link to="/subscription" className="block w-[296px] shrink-0 snap-start xl:w-full">
+      <div className="relative h-[188px] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_18px_42px_rgba(0,0,0,0.42)]">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(100,116,139,0.96)_0%,rgba(63,63,70,0.96)_100%)]" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
         <div className="absolute inset-0 backdrop-blur-[2px]" />
@@ -340,8 +340,8 @@ const StaticSubscriptionCourseCard = ({ index }: { index: number }) => {
   ];
 
   return (
-    <Link to="/subscription" className="block w-[304px] shrink-0 snap-start">
-      <div className="relative h-[338px] overflow-hidden rounded-[2rem] shadow-[0_24px_60px_rgba(0,0,0,0.42)]">
+    <Link to="/subscription" className="block w-[304px] shrink-0 snap-start xl:w-full">
+      <div className="relative h-[338px] overflow-hidden rounded-[2rem] shadow-[0_18px_42px_rgba(0,0,0,0.42)] xl:h-[18.5rem] 2xl:h-[17.2rem]">
         <div
           className="absolute inset-0"
           style={{ backgroundImage: gradients[index % gradients.length] }}
@@ -460,7 +460,7 @@ const HomeLoadingState = ({
   xp?: number;
   unread?: number;
 }) => (
-  <MobileScreen className="space-y-4">
+  <MobileScreen className="space-y-4 lg:space-y-5">
     <PageHeader
       title={title}
       subtitle={subtitle}
@@ -596,7 +596,7 @@ export const HomeOverview = () => {
   const { announcements, courses, courseAccess, challenges, challengeAccess, subscriptionStatus } = feed.data;
 
   return (
-    <MobileScreen className="space-y-4">
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader
         title={t("title")}
         subtitle={t("subtitle")}
@@ -663,21 +663,35 @@ export const HomeOverview = () => {
         />
 
         {courseAccess === "denied" ? (
-          <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none]">
-            <div className="flex snap-x gap-3.5 pb-1">
+          <>
+            <div className="desktop-scroll-row xl:hidden">
+              <div className="flex snap-x gap-3.5 pb-1">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <StaticSubscriptionCourseCard key={`static-course-${index}`} index={index} />
+                ))}
+              </div>
+            </div>
+            <div className="hidden xl:grid xl:grid-cols-4 xl:gap-4 2xl:grid-cols-5">
               {Array.from({ length: 3 }).map((_, index) => (
-                <StaticSubscriptionCourseCard key={`static-course-${index}`} index={index} />
+                <StaticSubscriptionCourseCard key={`static-grid-course-${index}`} index={index} />
               ))}
             </div>
-          </div>
+          </>
         ) : courses.length > 0 ? (
-          <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none]">
-            <div className="flex snap-x gap-3.5 pb-1">
+          <>
+            <div className="desktop-scroll-row xl:hidden">
+              <div className="flex snap-x gap-3.5 pb-1">
+                {courses.map((course) => (
+                  <FeaturedCourseCard key={course.id} course={course} />
+                ))}
+              </div>
+            </div>
+            <div className="hidden xl:grid xl:grid-cols-4 xl:gap-4 2xl:grid-cols-5">
               {courses.map((course) => (
-                <FeaturedCourseCard key={course.id} course={course} />
+                <FeaturedCourseCard key={`grid-${course.id}`} course={course} />
               ))}
             </div>
-          </div>
+          </>
         ) : (
           <EmptyState
             icon={<BookOpen className="h-7 w-7" />}
@@ -711,19 +725,47 @@ export const HomeOverview = () => {
         )}
 
         {challengeAccess === "denied" ? (
-          <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none]">
-            <div className="flex snap-x gap-3.5 pb-1">
+          <>
+            <div className="desktop-scroll-row xl:hidden">
+              <div className="flex snap-x gap-3.5 pb-1">
+                {staticChallenges.map((challenge) => (
+                  <StaticSubscriptionChallengeCard key={challenge.id} challenge={challenge} />
+                ))}
+              </div>
+            </div>
+            <div className="hidden xl:grid xl:grid-cols-2 xl:gap-4 2xl:grid-cols-3">
               {staticChallenges.map((challenge) => (
-                <StaticSubscriptionChallengeCard key={challenge.id} challenge={challenge} />
+                <StaticSubscriptionChallengeCard key={`grid-${challenge.id}`} challenge={challenge} />
               ))}
             </div>
-          </div>
+          </>
         ) : challenges.length > 0 ? (
-          <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none]">
-            <div className="flex snap-x gap-3.5 pb-1">
+          <>
+            <div className="desktop-scroll-row xl:hidden">
+              <div className="flex snap-x gap-3.5 pb-1">
+                {challenges.map((challenge) => (
+                  <HomeChallengeCard
+                    key={challenge.id}
+                    challenge={challenge}
+                    typeLabel={getChallengeTypeLabel(challenge, {
+                      daily: t("challengeTypeDaily"),
+                      weekly: t("challengeTypeWeekly"),
+                      monthly: t("challengeTypeMonthly"),
+                      other: t("challengeTypeOther"),
+                    })}
+                    statusLabel={getChallengeStatusLabel(challenge, {
+                      active: t("challengeStatusActive"),
+                      pending: t("challengeStatusPending"),
+                      completed: t("challengeStatusActive"),
+                    })}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="hidden xl:grid xl:grid-cols-2 xl:gap-4 2xl:grid-cols-3">
               {challenges.map((challenge) => (
                 <HomeChallengeCard
-                  key={challenge.id}
+                  key={`grid-${challenge.id}`}
                   challenge={challenge}
                   typeLabel={getChallengeTypeLabel(challenge, {
                     daily: t("challengeTypeDaily"),
@@ -739,7 +781,7 @@ export const HomeOverview = () => {
                 />
               ))}
             </div>
-          </div>
+          </>
         ) : (
           <EmptyState
             icon={<Trophy className="h-7 w-7" />}
@@ -756,7 +798,7 @@ export const HomeOverview = () => {
       {showMiniAppsToast && (
         <div
           aria-live="polite"
-          className="fixed inset-x-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] z-50"
+          className="fixed inset-x-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] z-50 lg:inset-x-auto lg:left-1/2 lg:w-[24rem] lg:-translate-x-1/2 lg:bottom-[calc(7.2rem+env(safe-area-inset-bottom,0px))]"
         >
           <GlassCard className="flex items-center gap-3 border-gold/20 bg-card/95 px-4 py-3 shadow-glow backdrop-blur-xl">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gold/10 text-gold">

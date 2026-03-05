@@ -27,7 +27,7 @@ const ClusterButton = ({
     onClick={onClick}
     aria-label={ariaLabel}
     className={cn(
-      "liquid-glass-button-icon liquid-glass-surface-interactive relative flex h-10 w-10 items-center justify-center rounded-[1.1rem] text-t-muted",
+      "liquid-glass-button-icon liquid-glass-surface-interactive relative flex h-10 w-10 items-center justify-center rounded-[1.1rem] text-t-muted lg:h-11 lg:w-11",
       "transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/30 hover:text-t-primary",
       "active:scale-90",
     )}
@@ -56,17 +56,17 @@ const StatsChip = ({
   <button
     onClick={onClick}
     className={cn(
-      "liquid-glass-button-chip liquid-glass-surface-interactive flex h-10 items-center gap-2 rounded-full px-3.5 text-t-primary transition-all duration-300",
+      "liquid-glass-button-chip liquid-glass-surface-interactive flex h-10 items-center gap-2 rounded-full px-3.5 text-t-primary transition-all duration-300 lg:h-11 lg:gap-2.5 lg:px-4",
       "hover:-translate-y-0.5 hover:border-gold/30 active:scale-95",
     )}
   >
-    <div className="flex items-center gap-1 text-[11px] font-bold tabular-nums text-t-primary">
-      <CircleDollarSign className="h-3.5 w-3.5 text-gold" />
+    <div className="flex items-center gap-1 text-[11px] font-bold tabular-nums text-t-primary lg:text-xs">
+      <CircleDollarSign className="h-3.5 w-3.5 text-gold lg:h-4 lg:w-4" />
       <span>{formatCompactNumber(coins ?? 0, locale)}</span>
     </div>
     <span className="h-3.5 w-px bg-border/60" />
-    <div className="flex items-center gap-1 text-[11px] font-bold tabular-nums text-t-primary">
-      <Star className="h-3.5 w-3.5 text-gold" />
+    <div className="flex items-center gap-1 text-[11px] font-bold tabular-nums text-t-primary lg:text-xs">
+      <Star className="h-3.5 w-3.5 text-gold lg:h-4 lg:w-4" />
       <span>{formatCompactNumber(stars ?? 0, locale)}</span>
     </div>
   </button>

@@ -25,7 +25,7 @@ export const LevelsPage = () => {
 
   if (levels.isLoading) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <PageHeader title="Darajalar" subtitle="Yutuqlar bo'yicha progression" backButton />
         <MobileScreenSection className="mt-4">
           {Array.from({ length: 5 }).map((_, index) => (
@@ -38,7 +38,7 @@ export const LevelsPage = () => {
 
   if (levels.isError) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <PageHeader title="Darajalar" subtitle="Yutuqlar bo'yicha progression" backButton />
         <MobileScreenSection className="mt-6">
           <ErrorState variant="network" onRetry={() => levels.refetch()} />
@@ -50,7 +50,7 @@ export const LevelsPage = () => {
   const list = levels.data ?? [];
   if (list.length === 0) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <PageHeader title="Darajalar" subtitle="Yutuqlar bo'yicha progression" backButton />
         <MobileScreenSection className="mt-8">
           <EmptyState
@@ -64,14 +64,14 @@ export const LevelsPage = () => {
   }
 
   return (
-    <MobileScreen>
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader
         title="Darajalar"
         subtitle={`Joriy daraja: ${currentLevel > 0 ? currentLevel : "—"}`}
         backButton
       />
 
-      <MobileScreenSection className="mt-4">
+      <MobileScreenSection className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-2">
         {list.map((item) => {
           const isCompleted = currentLevel > 0 && item.level < currentLevel;
           const isCurrent = currentLevel > 0 && item.level === currentLevel;

@@ -75,7 +75,7 @@ export const AccountPage = () => {
 
   if (profile.isLoading) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <SkeletonCard />
         <SkeletonCard />
       </MobileScreen>
@@ -83,10 +83,10 @@ export const AccountPage = () => {
   }
 
   return (
-    <MobileScreen>
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader title="Akkaunt" subtitle="Shaxsiy ma'lumotlar" backButton />
 
-      <MobileScreenSection className="mt-4">
+      <MobileScreenSection className="mt-4 desktop-two-col">
         {/* Profile info */}
         <GlassCard>
           <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-t-muted">
@@ -106,7 +106,7 @@ export const AccountPage = () => {
             className="space-y-3"
             onSubmit={profileForm.handleSubmit((d) => updateProfile.mutate(d))}
           >
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <FormField label="Ism" htmlFor="ac-first" error={profileForm.formState.errors.firstName?.message}>
                 <Input id="ac-first" {...profileForm.register("firstName")} error={!!profileForm.formState.errors.firstName} />
               </FormField>

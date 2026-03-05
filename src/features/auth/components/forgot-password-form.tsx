@@ -37,7 +37,7 @@ export const ForgotPasswordForm = () => {
 
   if (mutation.isSuccess) {
     return (
-      <div className="mx-auto flex w-full max-w-[28rem] flex-col justify-center py-6 text-center sm:min-h-[38rem]">
+      <div className="mx-auto flex w-full max-w-[34rem] flex-col justify-center py-6 text-center sm:min-h-[40rem]">
         <AuthGlassPanel>
           <div className="space-y-5">
             <div className="liquid-glass-state-success mx-auto flex h-20 w-20 items-center justify-center rounded-full text-emerald-100">
@@ -59,7 +59,7 @@ export const ForgotPasswordForm = () => {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-[28rem] flex-col justify-center py-6 sm:min-h-[38rem]">
+    <div className="mx-auto flex w-full max-w-[34rem] flex-col justify-center py-6 sm:min-h-[40rem]">
       <AuthGlassPanel>
         <form className="space-y-6" onSubmit={onSubmit}>
           <AuthTitleBlock

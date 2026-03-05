@@ -4,7 +4,7 @@ import { PageHeader } from "@/shared/ui/page-header";
 import { EmptyState } from "@/shared/ui/empty-state";
 
 export const ChatChannelPage = () => (
-  <MobileScreen>
+  <MobileScreen className="space-y-4 lg:space-y-5">
     <PageHeader title="Chat" backButton />
     <div className="mt-10">
       <EmptyState

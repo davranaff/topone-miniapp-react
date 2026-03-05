@@ -172,10 +172,10 @@ export const LeaderboardPage = () => {
   const HeaderIcon = headerIcon;
 
   return (
-    <MobileScreen>
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader title="Reyting" subtitle={getTitleByType(type)} backButton />
 
-      <div className="mt-2 flex gap-2">
+      <div className="desktop-chip-row mt-2 flex gap-2 lg:pb-0">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -197,7 +197,7 @@ export const LeaderboardPage = () => {
         })}
       </div>
 
-      <GlassCard className="mt-3" radius="2xl">
+      <GlassCard className="mt-3 xl:max-w-[36rem]" radius="2xl">
         <div className="flex items-center gap-3">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-gold/35 bg-gold/15 text-gold">
             <HeaderIcon className="h-5 w-5" />
@@ -287,7 +287,7 @@ export const LeaderboardPage = () => {
           )}
 
           {rest.length > 0 && (
-            <MobileScreenSection className="mt-4">
+            <MobileScreenSection className="mt-4 desktop-cards-grid">
               {rest.map((entry) => (
                 <LeaderboardRow key={`${entry.userId}-${entry.rank}`} entry={entry} type={type} />
               ))}
