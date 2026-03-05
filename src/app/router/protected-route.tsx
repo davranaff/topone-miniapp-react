@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { Spinner } from "@/shared/ui/spinner";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { useShallow } from "zustand/react/shallow";
+import { AppLoadingScreen } from "@/shared/ui/app-loading-screen";
 
 export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
@@ -15,11 +15,7 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   );
 
   if (!isBootstrapped || status === "loading") {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <Spinner />
-      </div>
-    );
+    return <AppLoadingScreen fullScreen={false} compact status="Sessiya yuklanmoqda..." />;
   }
 
   if (status !== "authenticated") {

@@ -35,8 +35,8 @@ const CourseGridCard = ({
   const progress = course.progress ?? 0;
 
   return (
-    <Link to={`/courses/${course.id}/lessons`} className="group block">
-      <div className="relative h-[338px] overflow-hidden rounded-[2rem] shadow-[0_18px_42px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_24px_58px_rgba(0,0,0,0.5)] xl:h-[18.5rem] 2xl:h-[17.2rem]">
+    <Link to={`/courses/${course.id}/lessons`} className="group block h-full">
+      <div className="relative h-full min-h-[320px] overflow-hidden rounded-[2rem] shadow-[0_18px_42px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_24px_58px_rgba(0,0,0,0.5)]">
         <div
           className="absolute inset-0"
           style={{
@@ -71,18 +71,16 @@ const CourseGridCard = ({
               </p>
             </div>
 
-            {progress > 0 ? (
-              <div className="rounded-[1.35rem] bg-[rgba(255,255,255,0.05)] p-3.5 backdrop-blur-xl">
-                <ProgressBar
-                  value={progress}
-                  max={100}
-                  size="xs"
-                  showLabel
-                  label="Progress"
-                  trackClassName="bg-white/15"
-                />
-              </div>
-            ) : null}
+            <div className="rounded-[1.35rem] bg-[rgba(255,255,255,0.05)] p-3.5 backdrop-blur-xl">
+              <ProgressBar
+                value={progress}
+                max={100}
+                size="xs"
+                showLabel
+                label="Progress"
+                trackClassName="bg-white/15"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -141,9 +139,9 @@ export const CoursesPage = () => {
               <Skeleton key={index} className="h-10 w-24 rounded-full" />
             ))}
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          <div className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             {Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton key={index} className="h-[338px] rounded-[1.75rem] xl:h-[18.5rem] 2xl:h-[17.2rem]" />
+              <Skeleton key={index} className="h-[320px] rounded-[1.75rem]" />
             ))}
           </div>
         </>
@@ -237,7 +235,7 @@ export const CoursesPage = () => {
               description={t("emptyDescription")}
             />
           ) : (
-            <MobileScreenSection className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+            <MobileScreenSection className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
               {visibleCourses.map((course) => (
                 <CourseGridCard
                   key={course.id}

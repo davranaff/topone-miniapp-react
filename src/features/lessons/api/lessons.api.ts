@@ -1,6 +1,8 @@
 import { AxiosError } from "axios";
 import { apiClient } from "@/shared/api/client";
 import { endpoints } from "@/shared/api/endpoints";
+import { buildQueryString } from "@/shared/lib/url";
+import type { Paginated } from "@/shared/types/pagination";
 import type {
   Lesson,
   LessonProgress,
@@ -146,6 +148,40 @@ const extractListPayload = (payload: unknown) => {
   return [];
 };
 
+const mapPaginatedLessons = (payload: unknown): Paginated<Lesson> => {
+  const root =
+    payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
+
+  const nestedData =
+    root.data && typeof root.data === "object" && !Array.isArray(root.data)
+      ? (root.data as Record<string, unknown>)
+      : null;
+
+  const source = extractListPayload(payload);
+  const items = source.map((item) => mapLesson(item as Record<string, unknown>));
+
+  const pagination =
+    (nestedData?.pagination && typeof nestedData.pagination === "object"
+      ? (nestedData.pagination as Record<string, unknown>)
+      : null) ??
+    (root.pagination && typeof root.pagination === "object"
+      ? (root.pagination as Record<string, unknown>)
+      : null);
+
+  const page = Number(pagination?.page ?? root.page ?? 1);
+  const pages = Number(pagination?.pages ?? root.pages ?? 1);
+  const size = Number(pagination?.size ?? root.size ?? (items.length || 1));
+  const total = Number(pagination?.total ?? root.total ?? items.length);
+
+  return {
+    items,
+    page: Number.isFinite(page) && page > 0 ? page : 1,
+    pages: Number.isFinite(pages) && pages > 0 ? pages : 1,
+    size: Number.isFinite(size) && size > 0 ? size : Math.max(1, items.length),
+    total: Number.isFinite(total) && total >= 0 ? total : items.length,
+  };
+};
+
 const isAlreadyExistsError = (error: unknown) => {
   if (!(error instanceof AxiosError)) {
     return false;
@@ -167,6 +203,22 @@ export type LessonProgressStats = {
 export const lessonsApi = {
   mapLesson,
   mapLessonProgress,
+
+  async listByCourse(
+    courseId: string,
+    params: {
+      page?: number;
+      size?: number;
+    } = {},
+  ): Promise<Paginated<Lesson>> {
+    const response = await apiClient.get(
+      `${endpoints.lessons.byCourse(courseId)}${buildQueryString({
+        page: params.page ?? 1,
+        size: params.size ?? 20,
+      })}`,
+    );
+    return mapPaginatedLessons(response.data);
+  },
 
   async byCourse(courseId: string): Promise<Lesson[]> {
     const response = await apiClient.get(endpoints.lessons.byCourse(courseId));

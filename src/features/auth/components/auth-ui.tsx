@@ -53,7 +53,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
     return (
       <label className={cn("block space-y-2", wrapperClassName)}>
         <div className="relative">
-          <span className="absolute left-4 top-0 z-10 -translate-y-1/2 rounded-full bg-white/12 px-2.5 py-0.5 text-[0.76rem] font-semibold tracking-[0.01em] text-t-secondary backdrop-blur-md">
+          <span className="auth-field-label absolute left-4 top-0 z-10 -translate-y-1/2 rounded-full px-2.5 py-0.5 text-[0.76rem] font-semibold tracking-[0.01em] text-t-secondary backdrop-blur-md">
             {label}
           </span>
           <div
@@ -136,11 +136,11 @@ export const AuthPrimaryButton = ({
 export const AuthDivider = ({ label }: { label: string }) => {
   return (
     <div className="flex items-center gap-6">
-      <div className="h-px flex-1 bg-white/15" />
+      <div className="h-px flex-1 bg-border/60" />
       <span className="text-[0.78rem] font-bold uppercase tracking-[0.18em] text-t-muted">
         {label}
       </span>
-      <div className="h-px flex-1 bg-white/15" />
+      <div className="h-px flex-1 bg-border/60" />
     </div>
   );
 };
@@ -171,9 +171,7 @@ export const AuthGlassPanel = ({ children, className }: { children: ReactNode; c
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-[2rem] p-5 backdrop-blur-[26px] sm:p-6",
-        "bg-[linear-gradient(145deg,rgba(7,7,7,0.9)_0%,rgba(12,10,7,0.88)_44%,rgba(24,16,5,0.85)_100%)]",
-        "shadow-[inset_0_2px_12px_rgba(255,229,169,0.18),inset_0_-8px_20px_rgba(0,0,0,0.5),0_34px_100px_rgba(0,0,0,0.58),0_0_54px_rgba(212,160,23,0.14)]",
+        "auth-glass-panel relative overflow-hidden rounded-[2rem] p-5 backdrop-blur-[26px] sm:p-6",
         className,
       )}
     >

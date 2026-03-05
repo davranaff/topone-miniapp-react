@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Crown, Star, Trophy, Users, type LucideIcon } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { MobileScreen, MobileScreenSection } from "@/shared/ui/mobile-screen";
@@ -7,12 +8,15 @@ import { Avatar } from "@/shared/ui/avatar";
 import { SkeletonCard } from "@/shared/ui/skeleton";
 import { ErrorState } from "@/shared/ui/error-state";
 import { EmptyState } from "@/shared/ui/empty-state";
+import { InfiniteScrollLoader } from "@/shared/ui/infinite-scroll-loader";
+import { useInfiniteScrollTrigger } from "@/shared/hooks/use-infinite-scroll-trigger";
 import {
   useLeaderboard,
   useMyLeaderboardPosition,
 } from "@/features/leaderboard/hooks/use-leaderboard";
 import type {
   LeaderboardEntry,
+  LeaderboardPage as LeaderboardPagePayload,
   LeaderboardType,
 } from "@/entities/leaderboard/types";
 import { cn } from "@/shared/lib/cn";
@@ -138,6 +142,19 @@ export const LeaderboardPage = () => {
   const type = parseLeaderboardType(searchParams.get("type"), searchParams.get("tab"));
   const leaderboard = useLeaderboard(type);
   const myPosition = useMyLeaderboardPosition(type);
+  const {
+    data: leaderboardData,
+    isLoading: isLeaderboardLoading,
+    isError: isLeaderboardError,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    refetch: refetchLeaderboard,
+  } = leaderboard;
+  const leaderboardPages = useMemo(
+    () => (leaderboardData as { pages?: LeaderboardPagePayload[] } | undefined)?.pages ?? [],
+    [leaderboardData],
+  );
 
   const updateType = (nextType: LeaderboardType) => {
     const nextParams = new URLSearchParams(searchParams);
@@ -150,12 +167,25 @@ export const LeaderboardPage = () => {
     setSearchParams(nextParams, { replace: true });
   };
 
-  const sortedItems = [...(leaderboard.data ?? [])].sort((left, right) => {
-    if (left.rank !== right.rank) {
-      return left.rank - right.rank;
-    }
-    return right.value - left.value;
-  });
+  const sortedItems = useMemo(() => {
+    const rawItems = leaderboardPages.flatMap((page) => page.items);
+    const byUser = new Map<string, LeaderboardEntry>();
+
+    rawItems.forEach((entry) => {
+      const key = entry.userId || `${entry.rank}`;
+
+      if (!byUser.has(key)) {
+        byUser.set(key, entry);
+      }
+    });
+
+    return Array.from(byUser.values()).sort((left, right) => {
+      if (left.rank !== right.rank) {
+        return left.rank - right.rank;
+      }
+      return right.value - left.value;
+    });
+  }, [leaderboardPages]);
   const myRank = myPosition.data?.rank ?? null;
   const items = sortedItems.map((entry) => ({
     ...entry,
@@ -164,12 +194,17 @@ export const LeaderboardPage = () => {
   const topThree = items.slice(0, 3);
   const rest = items.slice(3);
   const myRow = items.find((entry) => entry.isCurrentUser);
-  const showLoading = leaderboard.isLoading && !leaderboard.data;
+  const showLoading = isLeaderboardLoading && leaderboardPages.length === 0;
   const headerRank = myPosition.data?.rank ?? myRow?.rank ?? null;
   const headerValue = myPosition.data?.value ?? myRow?.value ?? 0;
-  const headerTotalUsers = myPosition.data?.totalUsers ?? 0;
+  const headerTotalUsers = myPosition.data?.totalUsers ?? leaderboardPages[0]?.total ?? 0;
   const headerIcon = type === "xp" ? Trophy : Users;
   const HeaderIcon = headerIcon;
+  const loadMoreRef = useInfiniteScrollTrigger({
+    hasNextPage,
+    isFetchingNextPage,
+    onLoadMore: () => fetchNextPage(),
+  });
 
   return (
     <MobileScreen className="space-y-4 lg:space-y-5">
@@ -236,17 +271,17 @@ export const LeaderboardPage = () => {
         </>
       )}
 
-      {!showLoading && leaderboard.isError && (
+      {!showLoading && isLeaderboardError && items.length === 0 && (
         <ErrorState
           variant="network"
           onRetry={() => {
-            void leaderboard.refetch();
+            void refetchLeaderboard();
             void myPosition.refetch();
           }}
         />
       )}
 
-      {!showLoading && !leaderboard.isError && items.length === 0 && (
+      {!showLoading && !isLeaderboardError && items.length === 0 && (
         <div className="mt-10">
           <EmptyState
             icon={<Trophy className="h-8 w-8" />}
@@ -256,7 +291,7 @@ export const LeaderboardPage = () => {
         </div>
       )}
 
-      {!showLoading && !leaderboard.isError && items.length > 0 && (
+      {!showLoading && items.length > 0 && (
         <>
           {topThree.length > 0 && (
             <div className="mt-6 flex items-end justify-center gap-2 pb-3">
@@ -292,6 +327,28 @@ export const LeaderboardPage = () => {
                 <LeaderboardRow key={`${entry.userId}-${entry.rank}`} entry={entry} type={type} />
               ))}
             </MobileScreenSection>
+          )}
+
+          <InfiniteScrollLoader
+            sentinelRef={loadMoreRef}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            className="mt-4 flex justify-center py-2"
+          />
+
+          {isLeaderboardError && (
+            <GlassCard className="mt-3" radius="xl">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs text-t-muted">Yangi yozuvlarni yuklab bo'lmadi.</p>
+                <button
+                  type="button"
+                  onClick={() => void fetchNextPage()}
+                  className="liquid-glass-button-chip rounded-full px-3 py-1 text-xs font-semibold"
+                >
+                  Qayta urinish
+                </button>
+              </div>
+            </GlassCard>
           )}
         </>
       )}

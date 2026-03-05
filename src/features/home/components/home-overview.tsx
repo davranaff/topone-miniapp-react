@@ -2,12 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  ChevronRight,
-  Star,
-  Clock3,
-  Lock,
-  Trophy,
+  AppWindow,
   BookOpen,
+  CheckSquare,
+  ChevronRight,
+  Clock3,
+  Gamepad2,
+  HeartPulse,
+  LucideIcon,
+  Lock,
+  Users,
+  Trophy,
+  Wrench,
 } from "lucide-react";
 import { useHomeFeed } from "@/features/home/hooks/use-home-feed";
 import { useUserStats } from "@/features/home/hooks/use-user-stats";
@@ -49,6 +55,19 @@ type StaticChallengeCard = {
   typeLabel: string;
   statusLabel: string;
 };
+
+type MiniAppQuick = {
+  id: string;
+  name: string;
+  category: string;
+};
+
+const MINI_APPS_COMING_SOON: MiniAppQuick[] = [
+  { id: "mini-calorie", name: "Calorie", category: "health" },
+  { id: "mini-habit", name: "Habit", category: "productivity" },
+  { id: "mini-pomodoro", name: "Pomodoro", category: "productivity" },
+  { id: "mini-bridge", name: "Bridge", category: "tools" },
+];
 
 const ANNOUNCEMENT_GRADIENTS = [
   "linear-gradient(135deg, rgba(99,102,241,0.92) 0%, rgba(168,85,247,0.88) 100%)",
@@ -105,41 +124,83 @@ const HomeAnnouncementCard = ({
 
 const HomeMiniAppsRow = ({
   title,
-  subtitle,
-  onTap,
+  apps,
 }: {
   title: string;
-  subtitle: string;
-  onTap: () => void;
-}) => (
-  <button type="button" className="group block w-full rounded-[1.55rem] text-left" onClick={onTap}>
-    <GlassCard
-      interactive
-      className="flex items-center gap-4 rounded-[1.55rem] border-white/10 px-4 py-4"
-    >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.15rem] border border-white/10 bg-[rgba(255,255,255,0.05)] text-gold">
-        <Star className="h-5 w-5" />
+  apps: MiniAppQuick[];
+}) => {
+  const categoryIcon = (category: string): LucideIcon => {
+    switch (category.toLowerCase()) {
+      case "tools":
+        return Wrench;
+      case "health":
+        return HeartPulse;
+      case "productivity":
+        return CheckSquare;
+      case "social":
+        return Users;
+      case "games":
+        return Gamepad2;
+      case "education":
+        return BookOpen;
+      default:
+        return AppWindow;
+    }
+  };
+
+  const goldTileBackground = `
+    radial-gradient(circle at 22% 14%, rgba(255, 238, 197, 0.52), rgba(255, 238, 197, 0) 46%),
+    linear-gradient(145deg, rgba(255, 223, 149, 0.36) 0%, rgba(203, 146, 24, 0.38) 45%, rgba(74, 45, 8, 0.68) 100%)
+  `;
+
+  return (
+    <div className="space-y-2.5">
+      <div className="min-w-0">
+        <p className="text-sm font-semibold tracking-[0.01em] text-t-primary">{title}</p>
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-t-primary">{title}</p>
-        <p className="mt-0.5 truncate text-xs text-white/54">{subtitle}</p>
+      <div className="desktop-scroll-row">
+        <div className="flex gap-3.5 pb-1 lg:flex-wrap lg:pb-0">
+          {apps.map((app) => {
+            const Icon = categoryIcon(app.category);
+            return (
+              <div
+                key={app.id}
+                className="group relative flex w-[4.65rem] shrink-0 flex-col items-center gap-1.5"
+                title={app.name}
+                aria-label={app.name}
+              >
+                <span
+                  className="relative flex h-[3.45rem] w-[3.45rem] items-center justify-center overflow-hidden rounded-[1rem] border border-[rgba(255,229,168,0.42)] text-[rgba(255,240,207,0.96)] shadow-[inset_0_1px_5px_rgba(255,237,194,0.26),inset_0_-2px_6px_rgba(56,35,9,0.34),0_12px_26px_rgba(0,0,0,0.34),0_0_24px_rgba(212,160,23,0.2)] blur-[0.45px]"
+                  style={{ backgroundImage: goldTileBackground }}
+                >
+                  <span className="pointer-events-none absolute inset-x-2 top-0.5 h-[1px] rounded-full bg-[linear-gradient(90deg,transparent,rgba(255,244,215,0.62),transparent)]" />
+                  <Icon className="h-4.5 w-4.5" />
+                </span>
+                <span className="line-clamp-1 text-center text-[11px] font-semibold tracking-[0.01em] text-white/72 blur-[0.32px]">
+                  {app.name}
+                </span>
+                <span className="absolute left-1/2 top-[1.02rem] z-10 -translate-x-1/2 rounded-full border border-[rgba(255,211,126,0.38)] bg-[linear-gradient(135deg,rgba(48,33,11,0.8),rgba(27,19,7,0.84))] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[rgba(245,200,66,0.98)] shadow-[0_4px_12px_rgba(0,0,0,0.38)] backdrop-blur-md">
+                  Скоро
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
-      <ChevronRight className="h-4 w-4 shrink-0 text-t-muted transition-transform duration-300 group-hover:translate-x-0.5" />
-    </GlassCard>
-  </button>
-);
+    </div>
+  );
+};
 
 const FeaturedCourseCard = ({ course }: { course: Course }) => {
   const { t } = useTranslation("home");
   const imageUrl = normalizeMediaUrl(course.coverUrl ?? course.image);
-  const progress = course.progress ?? 0;
 
   return (
     <Link
       to={`/courses/${course.id}/lessons`}
-      className="group block w-[304px] shrink-0 snap-start xl:w-full"
+      className="group block h-full w-[304px] shrink-0 snap-start xl:w-full"
     >
-      <div className="relative h-[338px] overflow-hidden rounded-[2rem] shadow-[0_18px_42px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_24px_58px_rgba(0,0,0,0.5)] xl:h-[18.5rem] 2xl:h-[17.2rem]">
+      <div className="relative h-[338px] overflow-hidden rounded-[2rem] shadow-[0_18px_42px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_24px_58px_rgba(0,0,0,0.5)] xl:h-full xl:min-h-[17.2rem]">
         <div
           className="absolute inset-0"
           style={{
@@ -169,24 +230,7 @@ const FeaturedCourseCard = ({ course }: { course: Course }) => {
               <h3 className="font-course line-clamp-2 text-[1.25rem] font-extrabold leading-tight tracking-[-0.03em] text-white">
                 {course.title}
               </h3>
-              <p className="line-clamp-2 text-[0.95rem] leading-5 text-white/72">
-                {course.subtitle}
-              </p>
             </div>
-
-            {progress > 0 && (
-              <div className="rounded-[1.35rem] bg-[rgba(255,255,255,0.05)] p-3.5 backdrop-blur-xl">
-                <ProgressBar
-                  value={progress}
-                  max={100}
-                  size="xs"
-                  showLabel
-                  label={t("challengeProgress")}
-                  className="text-white"
-                  trackClassName="bg-white/15"
-                />
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -504,7 +548,6 @@ export const HomeOverview = () => {
   const feed = useHomeFeed();
   const stats = useUserStats();
   const unread = useUnreadCount();
-  const [showMiniAppsToast, setShowMiniAppsToast] = useState(false);
 
   const staticChallenges = useMemo<StaticChallengeCard[]>(
     () => [
@@ -560,15 +603,6 @@ export const HomeOverview = () => {
     [t],
   );
 
-  useEffect(() => {
-    if (!showMiniAppsToast) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => setShowMiniAppsToast(false), 2000);
-    return () => window.clearTimeout(timer);
-  }, [showMiniAppsToast]);
-
   if (feed.isLoading) {
     return (
       <HomeLoadingState
@@ -594,6 +628,8 @@ export const HomeOverview = () => {
   }
 
   const { announcements, courses, courseAccess, challenges, challengeAccess, subscriptionStatus } = feed.data;
+
+  const quickMiniApps = MINI_APPS_COMING_SOON;
 
   return (
     <MobileScreen className="space-y-4 lg:space-y-5">
@@ -646,8 +682,7 @@ export const HomeOverview = () => {
 
       <HomeMiniAppsRow
         title={t("miniApps")}
-        subtitle={t("miniAppsComingSoon")}
-        onTap={() => setShowMiniAppsToast(true)}
+        apps={quickMiniApps}
       />
 
       <MobileScreenSection>
@@ -794,23 +829,6 @@ export const HomeOverview = () => {
           />
         )}
       </MobileScreenSection>
-
-      {showMiniAppsToast && (
-        <div
-          aria-live="polite"
-          className="fixed inset-x-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] z-50 lg:inset-x-auto lg:left-1/2 lg:w-[24rem] lg:-translate-x-1/2 lg:bottom-[calc(7.2rem+env(safe-area-inset-bottom,0px))]"
-        >
-          <GlassCard className="flex items-center gap-3 border-gold/20 bg-card/95 px-4 py-3 shadow-glow backdrop-blur-xl">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gold/10 text-gold">
-              <Star className="h-5 w-5" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-t-primary">{t("miniApps")}</p>
-              <p className="text-xs text-t-muted">{t("miniAppsComingSoonSnackbar")}</p>
-            </div>
-          </GlassCard>
-        </div>
-      )}
     </MobileScreen>
   );
 };

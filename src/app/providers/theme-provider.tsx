@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { STORAGE_KEYS } from "@/shared/config/constants";
 
 type ThemeMode = "light" | "dark";
@@ -30,14 +30,14 @@ const readThemePreferences = (): ThemePreferences => {
   }
 
   return {
-    theme: window.localStorage.getItem(STORAGE_KEYS.theme) === "light" ? "light" : "dark",
+    theme: "dark",
     economyMode: window.localStorage.getItem(STORAGE_KEYS.economyMode) === "1",
     glassEffectEnabled: window.localStorage.getItem(STORAGE_KEYS.glassEffect) !== "0",
   };
 };
 
 const applyThemePreferences = (root: HTMLElement, preferences: ThemePreferences) => {
-  root.dataset.theme = preferences.theme;
+  root.dataset.theme = "dark";
   root.dataset.glass = preferences.glassEffectEnabled ? "on" : "off";
   root.classList.toggle("economy-mode", preferences.economyMode);
   root.classList.toggle("glass-off", !preferences.glassEffectEnabled);
@@ -48,7 +48,7 @@ const persistThemePreferences = (preferences: ThemePreferences) => {
     return;
   }
 
-  window.localStorage.setItem(STORAGE_KEYS.theme, preferences.theme);
+  window.localStorage.setItem(STORAGE_KEYS.theme, "dark");
   window.localStorage.setItem(STORAGE_KEYS.economyMode, preferences.economyMode ? "1" : "0");
   window.localStorage.setItem(STORAGE_KEYS.glassEffect, preferences.glassEffectEnabled ? "1" : "0");
 };
@@ -64,15 +64,19 @@ const initialThemePreferences = (() => {
 })();
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<ThemeMode>(initialThemePreferences.theme);
+  const theme: ThemeMode = "dark";
+  const setTheme = useCallback((nextTheme: ThemeMode) => {
+    void nextTheme;
+    // Theme switching is temporarily disabled. App runs in dark mode only.
+  }, []);
   const [economyMode, setEconomyMode] = useState<boolean>(initialThemePreferences.economyMode);
   const [glassEffectEnabled, setGlassEffectEnabled] = useState<boolean>(initialThemePreferences.glassEffectEnabled);
 
   useEffect(() => {
-    const preferences = { theme, economyMode, glassEffectEnabled };
+    const preferences = { theme: "dark" as ThemeMode, economyMode, glassEffectEnabled };
     applyThemePreferences(document.documentElement, preferences);
     persistThemePreferences(preferences);
-  }, [theme, economyMode, glassEffectEnabled]);
+  }, [economyMode, glassEffectEnabled]);
 
   const value = useMemo(
     () => ({
@@ -83,7 +87,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       economyMode,
       setEconomyMode,
     }),
-    [theme, glassEffectEnabled, economyMode],
+    [theme, setTheme, glassEffectEnabled, economyMode],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

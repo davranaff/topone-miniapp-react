@@ -19,7 +19,7 @@ export const MiniAppCard = ({ app }: { app: MiniApp }) => {
           />
           <div className="min-w-0 flex-1">
             <h3 className="truncate text-sm font-semibold text-t-primary">{app.name}</h3>
-            <Badge variant="muted" size="sm" className="mt-0.5">{app.category}</Badge>
+            <Badge variant="muted" size="sm" className="mt-0.5 uppercase tracking-[0.08em]">{app.category}</Badge>
           </div>
           <ExternalLink className="h-3.5 w-3.5 shrink-0 text-t-muted" />
         </div>

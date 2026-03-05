@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TopOne Demo Mini App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0f0f0f;
+            --card: #1a1a1a;
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #e4e4e7;
+            --text-dim: #a1a1aa;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.25);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 24px 0 16px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-dim);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .card h3 {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--text-dim);
+        }
+
+        .info-value {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 12px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+
+        .log {
+            background: #111;
+            border-radius: 10px;
+            padding: 12px;
+            font-family: 'SF Mono', Menlo, monospace;
+            font-size: 12px;
+            color: #6ee7b7;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .log-entry {
+            padding: 3px 0;
+        }
+
+        .log-entry.error {
+            color: #f87171;
+        }
+
+        .theme-swatch {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            vertical-align: middle;
+            margin-left: 6px;
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>🚀 TopOne Demo</h1>
+        <p>Example Mini App — JS Bridge Demo</p>
+    </div>
+
+    <div class="status" id="status">Checking bridge availability…</div>
+
+    <div class="card">
+        <h3>👤 User Profile</h3>
+        <div id="profile-info">
+            <div class="info-row"><span class="info-label">Loading…</span></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>🔑 Auth Token</h3>
+        <div id="token-info">
+            <div class="info-row"><span class="info-label">Loading…</span></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>🎨 Theme</h3>
+        <div id="theme-info">
+            <div class="info-row"><span class="info-label">Loading…</span></div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="refreshAll()">🔄 Refresh All</button>
+    <button class="btn btn-danger" onclick="closeMiniApp()">✕ Close Mini App</button>
+
+    <div class="card">
+        <h3>📋 Bridge Log</h3>
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        const logEl = document.getElementById('log');
+        const statusEl = document.getElementById('status');
+
+        function log(msg, isError) {
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = 'log-entry' + (isError ? ' error' : '');
+            entry.textContent = `[${time}] ${msg}`;
+            logEl.prepend(entry);
+        }
+
+        function hasBridge() {
+            return typeof window.TopOne !== 'undefined';
+        }
+
+        async function loadProfile() {
+            const el = document.getElementById('profile-info');
+            if (!hasBridge()) {
+                el.innerHTML = '<div class="info-row"><span class="info-label">Bridge not available</span></div>';
+                return;
+            }
+            try {
+                const data = await TopOne.getUserProfile();
+                log('getUserProfile → ' + JSON.stringify(data));
+                el.innerHTML = `
+        <div class="info-row"><span class="info-label">ID</span><span class="info-value">${data.id || '—'}</span></div>
+        <div class="info-row"><span class="info-label">Username</span><span class="info-value">${data.username || '—'}</span></div>
+        <div class="info-row"><span class="info-label">Name</span><span class="info-value">${(data.firstName || '') + ' ' + (data.lastName || '') || '—'}</span></div>
+      `;
+            } catch (e) {
+                log('getUserProfile error: ' + e, true);
+                el.innerHTML = '<div class="info-row"><span class="info-label error">Error loading profile</span></div>';
+            }
+        }
+
+        async function loadToken() {
+            const el = document.getElementById('token-info');
+            if (!hasBridge()) {
+                el.innerHTML = '<div class="info-row"><span class="info-label">Bridge not available</span></div>';
+                return;
+            }
+            try {
+                const data = await TopOne.getAuthToken();
+                const token = data.token || '';
+                const display = token ? (token.substring(0, 20) + '…' + token.substring(token.length - 10)) : '—';
+                log('getAuthToken → token length: ' + token.length);
+                el.innerHTML = `
+        <div class="info-row"><span class="info-label">Token</span><span class="info-value" style="font-size:11px;word-break:break-all">${display}</span></div>
+        <div class="info-row"><span class="info-label">Length</span><span class="info-value">${token.length} chars</span></div>
+      `;
+            } catch (e) {
+                log('getAuthToken error: ' + e, true);
+            }
+        }
+
+        async function loadTheme() {
+            const el = document.getElementById('theme-info');
+            if (!hasBridge()) {
+                el.innerHTML = '<div class="info-row"><span class="info-label">Bridge not available</span></div>';
+                return;
+            }
+            try {
+                const data = await TopOne.getTheme();
+                log('getTheme → ' + JSON.stringify(data));
+                el.innerHTML = `
+        <div class="info-row"><span class="info-label">Mode</span><span class="info-value">${data.mode || '—'}</span></div>
+        <div class="info-row"><span class="info-label">Primary</span><span class="info-value">${data.primaryColor || '—'}<span class="theme-swatch" style="background:${data.primaryColor}"></span></span></div>
+      `;
+            } catch (e) {
+                log('getTheme error: ' + e, true);
+            }
+        }
+
+        function closeMiniApp() {
+            log('Closing mini app…');
+            if (hasBridge()) {
+                TopOne.close();
+            } else {
+                log('Bridge not available — cannot close', true);
+            }
+        }
+
+        async function refreshAll() {
+            log('Refreshing all data…');
+            await Promise.all([loadProfile(), loadToken(), loadTheme()]);
+            log('Refresh complete ✓');
+        }
+
+        // Init
+        setTimeout(async () => {
+            if (hasBridge()) {
+                statusEl.textContent = '✓ Bridge connected — TopOne API available';
+                statusEl.style.background = 'rgba(34,197,94,0.1)';
+                statusEl.style.borderColor = 'rgba(34,197,94,0.2)';
+                statusEl.style.color = '#4ade80';
+                log('Bridge detected ✓');
+                await refreshAll();
+            } else {
+                statusEl.textContent = '✕ Bridge not detected — running standalone';
+                statusEl.style.background = 'rgba(239,68,68,0.1)';
+                statusEl.style.borderColor = 'rgba(239,68,68,0.2)';
+                statusEl.style.color = '#f87171';
+                log('No bridge — running in standalone mode', true);
+            }
+        }, 500);
+    </script>
+
+</body>
+
+</html>

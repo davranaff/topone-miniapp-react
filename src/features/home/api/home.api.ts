@@ -67,7 +67,7 @@ export const homeApi = {
     const [announcementsResult, coursesResult, challengesResult, subscriptionStatusResult] =
       await Promise.allSettled([
         getAnnouncements(),
-        coursesApi.list({ page: 1, size: 8 }),
+        coursesApi.list({ page: 1, size: 10 }),
         challengesApi.list({ page: 1, size: 6 }),
         authApi.getSubscriptionStatus(),
       ]);

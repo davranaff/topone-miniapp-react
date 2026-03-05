@@ -1,6 +1,4 @@
 import {
-  Moon,
-  Sun,
   Zap,
   ZapOff,
   Globe,
@@ -24,7 +22,7 @@ import { useLocale } from "@/shared/hooks/use-locale";
 export const SettingsPage = () => {
   const navigate = useNavigate();
   const logout = useLogout();
-  const { theme, setTheme, glassEffectEnabled, setGlassEffectEnabled, economyMode, setEconomyMode } = useTheme();
+  const { glassEffectEnabled, setGlassEffectEnabled, economyMode, setEconomyMode } = useTheme();
   const { locale, setLocale } = useLocale();
 
   return (
@@ -37,21 +35,6 @@ export const SettingsPage = () => {
           <GlassCard>
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-t-muted">Ko'rinish</p>
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {theme === "dark" ? (
-                    <Moon className="h-4 w-4 text-gold" />
-                  ) : (
-                    <Sun className="h-4 w-4 text-gold" />
-                  )}
-                  <div>
-                    <p className="text-sm font-medium text-t-primary">Qora tema</p>
-                    <p className="text-xs text-t-muted">Dark va light tema bir xil glass tizimda ishlaydi</p>
-                  </div>
-                </div>
-                <Switch checked={theme === "dark"} onCheckedChange={(isDark) => setTheme(isDark ? "dark" : "light")} />
-              </div>
-
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {glassEffectEnabled ? (

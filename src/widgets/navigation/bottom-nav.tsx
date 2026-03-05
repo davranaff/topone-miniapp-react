@@ -262,14 +262,15 @@ export const BottomNav = () => {
                 key={`${config.action.label}-${config.action.tone ?? "gold"}`}
                 className={cn(
                   "liquid-glass-nav-shell liquid-glass-surface-interactive pointer-events-auto relative flex h-[4.4rem] min-w-0 items-center justify-center gap-2 overflow-hidden rounded-[70px] px-4 text-sm font-semibold",
+                  "[&::after]:hidden backdrop-blur-[22px] [-webkit-backdrop-filter:blur(22px)_saturate(1.14)]",
                   "animate-scale-in",
                   hasSideButtons ? "flex-1" : "w-full",
                   "lg:h-[3.95rem] lg:flex-none lg:w-auto lg:max-w-[34rem]",
                   actionToneClass(config.action.tone),
                   "disabled:cursor-not-allowed disabled:opacity-60",
                   config.action.tone === "gold" || !config.action.tone
-                    ? "liquid-glass-accent text-t-inverse"
-                    : "liquid-glass-chip text-t-primary",
+                    ? "liquid-glass-accent text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.65)]"
+                    : "liquid-glass-chip text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.65)]",
                 )}
               >
                 <DockShellDecoration />

@@ -40,6 +40,18 @@ const fallbackMiniApps: MiniApp[] = [
     isActive: true,
     sortOrder: 3,
   },
+  {
+    id: "bridge-demo",
+    slug: "bridge-demo",
+    name: "Bridge Demo",
+    description: "Test the TopOne JS bridge APIs",
+    iconUrl: "",
+    appUrl: "asset:assets/mini_apps/demo/index.html",
+    category: "tools",
+    permissions: [],
+    isActive: true,
+    sortOrder: 99,
+  },
 ];
 
 export const miniAppsApi = {

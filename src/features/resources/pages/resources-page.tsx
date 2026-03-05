@@ -11,13 +11,14 @@ import {
   Wrench,
 } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
-import { Button } from "@/shared/ui/button";
+import { InfiniteScrollLoader } from "@/shared/ui/infinite-scroll-loader";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { ErrorState } from "@/shared/ui/error-state";
 import { GlassCard } from "@/shared/ui/glass-card";
 import { MobileScreen, MobileScreenSection } from "@/shared/ui/mobile-screen";
 import { PageHeader } from "@/shared/ui/page-header";
 import { SkeletonCard } from "@/shared/ui/skeleton";
+import { useInfiniteScrollTrigger } from "@/shared/hooks/use-infinite-scroll-trigger";
 import { useResourceCategories, useResources } from "@/features/resources/hooks/use-resources";
 import type { ResourceCategory, ResourceItem } from "@/features/resources/types/resource.types";
 import { cn } from "@/shared/lib/cn";
@@ -68,77 +69,104 @@ const buildFallbackCategories = (items: ResourceItem[]): ResourceCategory[] => {
 
 const ResourceCard = ({ resource }: { resource: ResourceItem }) => {
   const categoryIconKey = getCategoryIconKey(resource.type ?? resource.category);
+  const card = (
+    <div
+      className={cn(
+        "relative h-full min-h-[320px] overflow-hidden rounded-[2rem] shadow-[0_18px_42px_rgba(0,0,0,0.42)] transition-all duration-500 ease-out",
+        !resource.isLocked && "group-hover:-translate-y-1 group-hover:shadow-[0_24px_58px_rgba(0,0,0,0.5)]",
+        resource.isLocked && "opacity-70",
+      )}
+    >
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(212,160,23,0.22)_0%,rgba(15,23,42,0.92)_70%)]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/36 to-transparent" />
 
-  return (
-    <GlassCard className={cn("rounded-[1.7rem]", resource.isLocked && "opacity-65")}>
-      <div className="flex items-start gap-3">
-        <div className={cn(
-          "flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.15rem] border",
-          resource.isLocked
-            ? "border-border/40 bg-elevated text-t-muted"
-            : "border-gold/20 bg-gold/10 text-gold",
-        )}>
-          {resource.isLocked ? <Lock className="h-5 w-5" /> : renderCategoryIcon(categoryIconKey)}
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                {resource.category && (
-                  <Badge variant="outline" size="sm" className="text-white/86">
-                    {getCategoryTitle(resource.category)}
-                  </Badge>
-                )}
-                {resource.type && (
-                  <Badge variant="muted" size="sm">
-                    {getCategoryTitle(resource.type)}
-                  </Badge>
-                )}
-                {resource.isFeatured && (
-                  <Badge variant="gold" size="sm">
-                    Featured
-                  </Badge>
-                )}
-              </div>
-
-              <p className="mt-2 text-sm font-semibold text-t-primary">{resource.title}</p>
-              {resource.description && (
-                <p className="mt-1 line-clamp-3 text-xs leading-5 text-t-muted">{resource.description}</p>
-              )}
-            </div>
-
-            {!resource.isLocked && resource.url && (
-              <Button asChild variant="ghost" size="icon-sm" className="shrink-0 rounded-full">
-                <a href={resource.url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${resource.title}`}>
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-              </Button>
+      <div className="relative flex h-full flex-col justify-between p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            {resource.category && (
+              <Badge variant="gold" size="sm">
+                {getCategoryTitle(resource.category)}
+              </Badge>
+            )}
+            {resource.type && (
+              <Badge variant="muted" size="sm" className="bg-white/14 text-white/86">
+                {getCategoryTitle(resource.type)}
+              </Badge>
+            )}
+            {resource.isFeatured && (
+              <Badge variant="solid" size="sm" className="bg-white/14 text-white">
+                Featured
+              </Badge>
             )}
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center gap-2">
+          <div
+            className={cn(
+              "flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border bg-black/30 backdrop-blur-sm",
+              resource.isLocked ? "border-white/12 text-t-muted" : "border-gold/25 text-gold",
+            )}
+          >
+            {resource.isLocked ? <Lock className="h-4.5 w-4.5" /> : renderCategoryIcon(categoryIconKey)}
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <h3 className="line-clamp-2 text-[1.25rem] font-extrabold leading-tight tracking-[-0.03em] text-white">
+              {resource.title}
+            </h3>
+            {resource.description && (
+              <p className="line-clamp-3 text-[0.95rem] leading-5 text-white/72">{resource.description}</p>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
             {resource.author && (
-              <span className="liquid-glass-chip rounded-full px-3 py-1 text-[11px] font-medium text-white/76">
+              <span className="liquid-glass-chip rounded-full px-3 py-1 text-[11px] font-medium text-white/86">
                 {resource.author}
               </span>
             )}
             {resource.language && (
-              <span className="liquid-glass-chip inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-medium text-white/76">
+              <span className="liquid-glass-chip inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-medium text-white/86">
                 <Globe className="h-3.5 w-3.5" />
                 {resource.language}
               </span>
             )}
             {resource.viewCount > 0 && (
-              <span className="liquid-glass-chip rounded-full px-3 py-1 text-[11px] font-medium text-white/76">
+              <span className="liquid-glass-chip rounded-full px-3 py-1 text-[11px] font-medium text-white/86">
                 {resource.viewCount} views
               </span>
             )}
           </div>
+
+          {!resource.isLocked && resource.url ? (
+            <div className="rounded-[1.2rem] bg-[rgba(255,255,255,0.05)] p-3 backdrop-blur-xl">
+              <div className="flex items-center justify-between text-sm font-semibold text-white">
+                <span>Manbani ochish</span>
+                <ExternalLink className="h-4 w-4 text-gold" />
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
-    </GlassCard>
+    </div>
   );
+
+  if (!resource.isLocked && resource.url) {
+    return (
+      <a
+        href={resource.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group block h-full"
+        aria-label={`Open ${resource.title}`}
+      >
+        {card}
+      </a>
+    );
+  }
+
+  return <div className="group block h-full">{card}</div>;
 };
 
 export const ResourcesPage = () => {
@@ -146,17 +174,22 @@ export const ResourcesPage = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
   const effectiveCategoryId = selectedCategoryId ?? categories.data?.[0]?.id;
   const resources = useResources(effectiveCategoryId);
+  const loadMoreRef = useInfiniteScrollTrigger({
+    hasNextPage: resources.hasNextPage,
+    isFetchingNextPage: resources.isFetchingNextPage,
+    onLoadMore: () => resources.fetchNextPage(),
+  });
 
   const fallbackCategories = useMemo(
-    () => buildFallbackCategories(resources.data ?? []),
-    [resources.data],
+    () => buildFallbackCategories(resources.items),
+    [resources.items],
   );
 
   const visibleCategories = categories.data?.length ? categories.data : fallbackCategories;
   const activeCategory =
     visibleCategories.find((item) => item.id === effectiveCategoryId) ??
     visibleCategories[0];
-  const featuredResource = (resources.data ?? []).find((item) => item.isFeatured) ?? resources.data?.[0];
+  const featuredResource = resources.items.find((item) => item.isFeatured) ?? resources.items[0];
 
   if (categories.isLoading && resources.isLoading) {
     return (
@@ -170,7 +203,7 @@ export const ResourcesPage = () => {
     );
   }
 
-  if (categories.isError && resources.isError) {
+  if (categories.isError && resources.isError && !resources.items.length) {
     return (
       <MobileScreen className="space-y-4 lg:space-y-5">
         <ErrorState variant="network" onRetry={() => {
@@ -181,7 +214,7 @@ export const ResourcesPage = () => {
     );
   }
 
-  const items = resources.data ?? [];
+  const items = resources.items;
 
   return (
     <MobileScreen className="space-y-4 lg:space-y-5">
@@ -250,10 +283,10 @@ export const ResourcesPage = () => {
       )}
 
       {resources.isLoading ? (
-        <MobileScreenSection className="desktop-cards-grid">
+        <MobileScreenSection className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
         </MobileScreenSection>
-      ) : resources.isError ? (
+      ) : resources.isError && !items.length ? (
         <ErrorState variant="network" onRetry={() => resources.refetch()} />
       ) : items.length === 0 ? (
         <div className="mt-10">
@@ -264,10 +297,20 @@ export const ResourcesPage = () => {
           />
         </div>
       ) : (
-        <MobileScreenSection className="desktop-cards-grid">
+        <MobileScreenSection className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {items.map((resource) => (
             <ResourceCard key={resource.id} resource={resource} />
           ))}
+
+          {resources.isError ? (
+            <ErrorState variant="network" onRetry={() => resources.refetch()} />
+          ) : null}
+
+          <InfiniteScrollLoader
+            sentinelRef={loadMoreRef}
+            hasNextPage={resources.hasNextPage}
+            isFetchingNextPage={resources.isFetchingNextPage}
+          />
         </MobileScreenSection>
       )}
     </MobileScreen>

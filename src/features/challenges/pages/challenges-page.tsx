@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Clock3, RefreshCcw, ShieldCheck, Trophy } from "lucide-react";
@@ -25,6 +25,8 @@ import { ErrorState } from "@/shared/ui/error-state";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/cn";
+import { InfiniteScrollLoader } from "@/shared/ui/infinite-scroll-loader";
+import { useInfiniteScrollTrigger } from "@/shared/hooks/use-infinite-scroll-trigger";
 
 const sortCategories = (categories: ChallengeCategory[]) => {
   return [...categories].sort((left, right) => {
@@ -144,9 +146,24 @@ export const ChallengesPage = () => {
     typeId: activeApiCategory?.typeId,
     enabled: !!activeApiCategory?.typeId,
   });
+  const {
+    hasNextPage: hasNextChallengesPage,
+    isFetchingNextPage: isFetchingNextChallengesPage,
+    fetchNextPage: fetchNextChallengesPage,
+  } = challenges;
+  const challengeItems = useMemo(() => (
+    (challenges.data?.pages ?? []).flatMap((page) => page.items)
+  ), [challenges.data]);
+  const challengeTotal = challenges.data?.pages?.[0]?.total ?? challengeItems.length;
 
   const permissionDenied =
     hasApiStatus(challenges.error, 403) || hasApiStatus(statsQuery.error, 403);
+  const loadMoreRef = useInfiniteScrollTrigger({
+    enabled: !permissionDenied,
+    hasNextPage: hasNextChallengesPage,
+    isFetchingNextPage: isFetchingNextChallengesPage,
+    onLoadMore: () => fetchNextChallengesPage(),
+  });
 
   const categories = permissionDenied ? challengePlaceholderCategories : apiCategories;
   const resolvedActiveCategoryId =
@@ -212,31 +229,13 @@ export const ChallengesPage = () => {
 
       <ChallengeCycleTimerCard category={activeCategory} disabled={permissionDenied} />
 
-      <GlassCard className="rounded-[1.68rem] border-transparent bg-[linear-gradient(150deg,rgba(9,10,12,0.74),rgba(9,10,12,0.5))]">
-        <div className="flex items-center gap-3">
-          <div className="liquid-glass-surface flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] text-gold">
-            <Trophy className="h-5 w-5" />
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-t-primary">
-              {permissionDenied ? "Premium challenjlar obuna bilan ochiladi" : "Challenjlar kategoriya bo'yicha ko'rsatiladi"}
-            </p>
-            <p className="mt-0.5 text-xs text-t-muted">
-              {permissionDenied
-                ? "Obunani faollashtirgandan keyin challenge ichida progress topshirish mumkin."
-                : "Boshlanmagan challenge ochilganda progress avtomatik yaratiladi."}
-            </p>
-          </div>
-        </div>
-      </GlassCard>
-
       {showCategoriesError ? (
         <ErrorState variant="network" onRetry={() => categoriesQuery.refetch()} />
       ) : null}
 
       {categories.length > 0 ? (
-        <GlassCard className="rounded-[1.55rem] border-transparent bg-[linear-gradient(160deg,rgba(8,10,12,0.78),rgba(8,10,12,0.56))]">
-          <div className="desktop-chip-row flex gap-2 pb-1 lg:flex-wrap lg:pb-0">
+        <div className="desktop-chip-row">
+          <div className="flex gap-2 pb-1 lg:flex-wrap lg:pb-0">
             {categories.map((category) => (
               <button
                 key={category.typeId}
@@ -252,13 +251,13 @@ export const ChallengesPage = () => {
               </button>
             ))}
           </div>
-        </GlassCard>
+        </div>
       ) : null}
 
       <MobileScreenSection className="space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-t-muted">
-            {permissionDenied ? "Premium kartalar" : `Topildi: ${challenges.data?.items.length ?? 0}`}
+            {permissionDenied ? "Premium kartalar" : `Topildi: ${challengeTotal}`}
           </p>
           {!permissionDenied ? (
             <Button
@@ -282,7 +281,7 @@ export const ChallengesPage = () => {
           <ErrorState variant="network" onRetry={() => challenges.refetch()} />
         ) : null}
 
-        {!permissionDenied && !challenges.isLoading && !challenges.isError && !challenges.data?.items.length ? (
+        {!permissionDenied && !challenges.isLoading && !challenges.isError && !challengeItems.length ? (
           <EmptyState
             icon={<Trophy className="h-8 w-8" />}
             title="Bu kategoriyada challengelar yo'q"
@@ -303,9 +302,9 @@ export const ChallengesPage = () => {
           </div>
         ) : null}
 
-        {!permissionDenied && !!challenges.data?.items.length ? (
+        {!permissionDenied && !!challengeItems.length ? (
           <div className="desktop-cards-grid">
-            {challenges.data.items.map((challenge) => (
+            {challengeItems.map((challenge) => (
               <ChallengeShowcaseCard
                 key={challenge.id}
                 challenge={challenge}
@@ -314,6 +313,12 @@ export const ChallengesPage = () => {
             ))}
           </div>
         ) : null}
+
+        <InfiniteScrollLoader
+          sentinelRef={loadMoreRef}
+          hasNextPage={!permissionDenied && hasNextChallengesPage}
+          isFetchingNextPage={!permissionDenied && isFetchingNextChallengesPage}
+        />
       </MobileScreenSection>
     </MobileScreen>
   );

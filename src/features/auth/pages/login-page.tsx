@@ -21,7 +21,7 @@ export const LoginPage = () => {
     <div className="mx-auto flex w-full max-w-[34rem] flex-col justify-center py-4 lg:py-6 sm:min-h-[40rem]">
       <AuthGlassPanel>
         <div className="space-y-8">
-          <AuthTitleBlock title={t("welcome")} subtitle={t("loginSubtitle")} />
+          <AuthTitleBlock title="Top 1% Secret" subtitle={t("loginSubtitle")} />
 
           <div className="space-y-4">
             <AuthPrimaryButton

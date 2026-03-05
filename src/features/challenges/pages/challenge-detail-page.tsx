@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CalendarClock,
   CheckCircle2,
@@ -34,6 +34,8 @@ import { SheetModal } from "@/shared/ui/sheet-modal";
 import { hasApiStatus } from "@/shared/api/error-helpers";
 import { cn } from "@/shared/lib/cn";
 import { useShellNav } from "@/widgets/navigation/shell-nav";
+import { useInfiniteScrollTrigger } from "@/shared/hooks/use-infinite-scroll-trigger";
+import { InfiniteScrollLoader } from "@/shared/ui/infinite-scroll-loader";
 import type { Challenge } from "@/entities/challenge/types";
 import {
   formatCountdownParts,
@@ -191,6 +193,7 @@ export const ChallengeDetailPage = () => {
   const [resultUrl, setResultUrl] = useState("");
   const [notes, setNotes] = useState("");
   const [now, setNow] = useState(() => new Date());
+  const startRef = useRef<(() => void) | null>(null);
   const submitRef = useRef<(() => void) | null>(null);
 
   const detailStats = useQuery({
@@ -207,11 +210,13 @@ export const ChallengeDetailPage = () => {
     retry: false,
   });
 
-  const subchallenges = useQuery({
+  const subchallenges = useInfiniteQuery({
     queryKey: ["challenges", "subchallenges", challengeId],
-    queryFn: () => challengesApi.subchallenges(challengeId!),
+    queryFn: ({ pageParam }) => challengesApi.subchallenges(challengeId!, { page: pageParam, size: 8 }),
     enabled: !!challengeId && !challenge.isError,
     retry: false,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => (lastPage.page < lastPage.pages ? lastPage.page + 1 : undefined),
   });
 
   const startMutation = useMutation({
@@ -260,16 +265,56 @@ export const ChallengeDetailPage = () => {
     xp: data?.xpReward ?? 0,
     coin: data?.coinReward ?? 0,
   };
+  const subchallengeItems = useMemo(() => {
+    const pages = subchallenges.data?.pages ?? [];
+    const all = pages.flatMap((page) => page.items);
+    const seen = new Set<string>();
+
+    return all.filter((item) => {
+      if (seen.has(item.id)) {
+        return false;
+      }
+      seen.add(item.id);
+      return true;
+    });
+  }, [subchallenges.data]);
+  const hasSubchallengeItems = subchallengeItems.length > 0;
+  const subchallengesLoadMoreRef = useInfiniteScrollTrigger({
+    hasNextPage: subchallenges.hasNextPage,
+    isFetchingNextPage: subchallenges.isFetchingNextPage,
+    onLoadMore: () => subchallenges.fetchNextPage(),
+    enabled: hasSubchallengeItems,
+  });
+
+  const handleOpenComplete = useCallback(() => {
+    setCompleteOpen(true);
+  }, []);
+
+  const triggerStart = useCallback(() => {
+    startRef.current?.();
+  }, []);
+
+  const triggerSubmit = useCallback(() => {
+    submitRef.current?.();
+  }, []);
 
   useEffect(() => {
+    startRef.current = () => {
+      startMutation.mutate();
+    };
+  }, [startMutation]);
+
+  useEffect(() => {
+    const submit = completeMutation.mutate;
+
     submitRef.current = () => {
       if (!resultUrl.trim()) {
         return;
       }
 
-      completeMutation.mutate();
+      submit();
     };
-  }, [completeMutation, notes, resultUrl]);
+  }, [completeMutation, resultUrl]);
 
   useEffect(() => {
     if (!data || data.isCompleted) {
@@ -296,7 +341,7 @@ export const ChallengeDetailPage = () => {
         action: {
           label: "Boshlash",
           icon: <Flag className="h-4 w-4" />,
-          onClick: () => startMutation.mutate(),
+          onClick: triggerStart,
           loading: startMutation.isPending,
         },
       });
@@ -309,7 +354,7 @@ export const ChallengeDetailPage = () => {
         action: {
           label: "Tugatish",
           icon: <Send className="h-4 w-4" />,
-          onClick: () => submitRef.current?.(),
+          onClick: triggerSubmit,
           loading: completeMutation.isPending,
         },
       });
@@ -321,7 +366,7 @@ export const ChallengeDetailPage = () => {
       action: {
         label: "Challengeni topshirish",
         icon: <Flag className="h-4 w-4" />,
-        onClick: () => setCompleteOpen(true),
+        onClick: handleOpenComplete,
       },
     });
 
@@ -334,9 +379,12 @@ export const ChallengeDetailPage = () => {
     isCompleted,
     isLocked,
     isWeeklyOrMonthly,
+    handleOpenComplete,
     resetOverride,
     setOverride,
-    startMutation,
+    startMutation.isPending,
+    triggerStart,
+    triggerSubmit,
   ]);
 
   if (challenge.isLoading) {
@@ -363,7 +411,7 @@ export const ChallengeDetailPage = () => {
           <div className="space-y-2">
             <p className="text-lg font-semibold text-t-primary">Bu challenge premium obuna bilan ochiladi</p>
             <p className="text-sm leading-6 text-t-secondary">
-              Flutter ilovadagi kabi premium challenge'lar subscription orqali ochiladi.
+              Premium challenge'lar faol obuna orqali ochiladi.
             </p>
           </div>
           <Button fullWidth onClick={() => navigate("/subscription")}>
@@ -494,7 +542,7 @@ export const ChallengeDetailPage = () => {
                 <p className="text-sm font-semibold text-t-primary">Challenge hozircha yopiq</p>
                 <p className="text-xs leading-5 text-t-muted">
                   {data.unlockDay
-                    ? `${data.unlockDay}-kundan keyin ochiladi. Flutter ilovadagi kabi bu holat subscription emas, unlock schedule bilan bog'liq.`
+                    ? `${data.unlockDay}-kundan keyin ochiladi. Bu holat unlock schedule bilan bog'liq.`
                     : "Avvalgi bosqichlarni yakunlagach challenge ochiladi."}
                 </p>
               </div>
@@ -532,10 +580,26 @@ export const ChallengeDetailPage = () => {
           </DetailSection>
         )}
 
-        {!!subchallenges.data?.items.length && (
+        {subchallenges.isLoading && (
           <DetailSection title="Subchallenge'lar">
             <div className="grid gap-3 xl:grid-cols-2">
-              {subchallenges.data.items.map((item) => (
+              {Array.from({ length: 2 }).map((_, index) => (
+                <SkeletonCard key={index} />
+              ))}
+            </div>
+          </DetailSection>
+        )}
+
+        {subchallenges.isError && !hasSubchallengeItems && (
+          <DetailSection title="Subchallenge'lar">
+            <ErrorState variant="network" onRetry={() => subchallenges.refetch()} />
+          </DetailSection>
+        )}
+
+        {hasSubchallengeItems && (
+          <DetailSection title="Subchallenge'lar">
+            <div className="grid gap-3 xl:grid-cols-2">
+              {subchallengeItems.map((item) => (
                 <button
                   key={item.id}
                   type="button"
@@ -554,6 +618,11 @@ export const ChallengeDetailPage = () => {
                 </button>
               ))}
             </div>
+            <InfiniteScrollLoader
+              sentinelRef={subchallengesLoadMoreRef}
+              hasNextPage={subchallenges.hasNextPage}
+              isFetchingNextPage={subchallenges.isFetchingNextPage}
+            />
           </DetailSection>
         )}
 
@@ -600,8 +669,21 @@ export const ChallengeDetailPage = () => {
         onOpenChange={setCompleteOpen}
         title="Challenge topshirish"
         description="Telegram link yoki username va qisqa izoh qoldiring."
+        className="left-1/2 top-1/2 right-auto bottom-auto w-[min(94vw,34rem)] -translate-x-1/2 -translate-y-1/2 rounded-[1.45rem] max-h-[86dvh] pb-0"
       >
-        <div className="space-y-4">
+        <div className="space-y-4 sm:space-y-5">
+          <div className="liquid-glass-surface-muted flex items-start gap-3 rounded-[1.1rem] border border-gold/20 px-3.5 py-3">
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold/15 text-gold">
+              <Send className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-t-primary">Natijani yuboring</p>
+              <p className="mt-1 text-xs leading-5 text-t-muted">
+                Havola va izoh moderator tekshiruvi uchun yuboriladi.
+              </p>
+            </div>
+          </div>
+
           <div className="space-y-2">
             <label className="text-xs font-semibold uppercase tracking-[0.16em] text-white/58">
               Telegram havola
@@ -610,6 +692,7 @@ export const ChallengeDetailPage = () => {
               value={resultUrl}
               onChange={(event) => setResultUrl(event.target.value)}
               placeholder="@username yoki t.me/username"
+              className="rounded-[1rem]"
             />
           </div>
 
@@ -622,23 +705,28 @@ export const ChallengeDetailPage = () => {
               onChange={(event) => setNotes(event.target.value)}
               placeholder="Qisqa natija yoki izoh yozing"
               className={cn(
-                "min-h-28 w-full resize-none rounded-[1rem] border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-t-primary outline-none transition focus:border-gold/45 focus:ring-2 focus:ring-gold/20",
+                "min-h-24 w-full resize-none rounded-[1rem] border border-white/10 bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-t-primary outline-none transition focus:border-gold/45 focus:ring-2 focus:ring-gold/20 sm:min-h-28",
               )}
             />
           </div>
 
-          <DetailSurface className="rounded-[1.3rem] text-xs leading-5 text-t-muted">
-            Flutter ilovadagi flow kabi submit paytida natija `result`, izoh esa `notes` sifatida progress update endpoint'iga yuboriladi.
-          </DetailSurface>
-
-          <Button
-            fullWidth
-            loading={completeMutation.isPending}
-            disabled={!resultUrl.trim()}
-            onClick={() => submitRef.current?.()}
-          >
-            Topshirish
-          </Button>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <Button
+              variant="secondary"
+              onClick={() => setCompleteOpen(false)}
+              disabled={completeMutation.isPending}
+            >
+              Bekor qilish
+            </Button>
+            <Button
+              fullWidth
+              loading={completeMutation.isPending}
+              disabled={!resultUrl.trim()}
+              onClick={() => submitRef.current?.()}
+            >
+              Topshirish
+            </Button>
+          </div>
         </div>
       </SheetModal>
     </MobileScreen>

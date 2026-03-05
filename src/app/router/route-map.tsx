@@ -6,8 +6,7 @@ import { TelegramShell } from "@/app/layouts/telegram-shell";
 import { AppErrorPage } from "@/app/router/error-page";
 import { ProtectedRoute } from "@/app/router/protected-route";
 import { PublicRoute } from "@/app/router/public-route";
-import { Spinner } from "@/shared/ui/spinner";
-import { TopOneLogo } from "@/shared/ui/topone-logo";
+import { AppLoadingScreen } from "@/shared/ui/app-loading-screen";
 import type { AppRouteDefinition } from "@/app/router/route-types";
 import { flutterScreenRoutes } from "@/shared/config/flutter-screens";
 
@@ -50,19 +49,7 @@ const FeedbackPage = lazy(() => import("@/features/feedback/pages/feedback-page"
 const WebViewPage = lazy(() => import("@/features/webview/pages/webview-page").then((m) => ({ default: m.WebViewPage })));
 const ChatChannelPage = lazy(() => import("@/features/chat/pages/chat-channel-page").then((m) => ({ default: m.ChatChannelPage })));
 
-const PageFallback = () => (
-  <div className="relative flex min-h-[50vh] items-center justify-center overflow-hidden px-6">
-    <div className="pointer-events-none absolute h-56 w-56 rounded-full bg-gold/12 blur-3xl" />
-    <div className="relative flex flex-col items-center gap-4 text-center">
-      <TopOneLogo size="md" />
-      <div className="space-y-1">
-        <p className="text-base font-semibold text-t-primary">TopOne</p>
-        <p className="text-xs uppercase tracking-[0.24em] text-white/45">loading</p>
-      </div>
-      <Spinner size="lg" />
-    </div>
-  </div>
-);
+const PageFallback = () => <AppLoadingScreen fullScreen={false} compact status="Yuklanmoqda..." />;
 
 const withSuspense = (element: ReactElement) => (
   <Suspense fallback={<PageFallback />}>{element}</Suspense>

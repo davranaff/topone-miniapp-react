@@ -6,11 +6,10 @@ import { useTelegram } from "@/shared/hooks/use-telegram";
 import { tokenStorage } from "@/shared/auth/token-storage";
 import { sessionStorage } from "@/shared/auth/session-storage";
 import { useAuthStore } from "@/features/auth/store/auth.store";
-import { Spinner } from "@/shared/ui/spinner";
 import { getErrorMessage } from "@/shared/lib/error-map";
 import { getTelegramInitDataWithRetry } from "@/shared/lib/telegram-webapp";
-import { TopOneLogo } from "@/shared/ui/topone-logo";
 import { AuthGlassPanel, AuthPrimaryButton } from "@/features/auth/components/auth-ui";
+import { AppLoadingScreen } from "@/shared/ui/app-loading-screen";
 import {
   disableTelegramAuthFallback,
   enableTelegramAuthFallback,
@@ -130,47 +129,40 @@ export const TelegramInitPage = () => {
     };
   }, [navigate, telegram]);
 
+  if (isLoading && !error) {
+    return <AppLoadingScreen status={statusMessage} />;
+  }
+
+  if (!isLoading && !error) {
+    return <AppLoadingScreen status="Yuklanmoqda..." />;
+  }
+
   return (
     <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-base px-4 lg:px-6">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_10%,rgba(245,200,66,0.2),transparent_34%),radial-gradient(circle_at_84%_84%,rgba(212,160,23,0.18),transparent_34%)]" />
+      <div className="pointer-events-none absolute inset-0 app-ambient-bg" />
       <div className="relative w-full max-w-[34rem] animate-fade-in-up">
         <AuthGlassPanel className="text-center">
           <div className="space-y-6">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full liquid-glass-surface">
-              <TopOneLogo size="md" framed={false} />
-            </div>
-
             <div className="space-y-2">
               <h1 className="text-2xl font-extrabold tracking-[-0.03em] text-t-primary">Telegram Auth</h1>
-              <p className="text-sm text-t-secondary">{statusMessage}</p>
+              <p className="text-sm text-t-secondary">{error}</p>
             </div>
 
-            {isLoading ? (
-              <div className="flex justify-center">
-                <Spinner size="lg" />
-              </div>
-            ) : null}
-
-            {error ? (
-              <div className="space-y-3">
-                <div className="liquid-glass-state-danger rounded-[1.2rem] px-4 py-3 text-sm text-red-100">
-                  {error}
-                </div>
-                <AuthPrimaryButton type="button" variant="soft" onClick={() => window.location.reload()}>
-                  Qayta urinish
-                </AuthPrimaryButton>
-                <AuthPrimaryButton
-                  type="button"
-                  variant="ghost"
-                  onClick={() => {
-                    enableTelegramAuthFallback();
-                    navigate(FALLBACK_LOGIN_PATH, { replace: true });
-                  }}
-                >
-                  Oddiy kirishga qaytish
-                </AuthPrimaryButton>
-              </div>
-            ) : null}
+            <div className="space-y-3">
+              <AuthPrimaryButton type="button" variant="soft" onClick={() => window.location.reload()}>
+                Qayta urinish
+              </AuthPrimaryButton>
+              <AuthPrimaryButton
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  enableTelegramAuthFallback();
+                  navigate(FALLBACK_LOGIN_PATH, { replace: true });
+                }}
+              >
+                Oddiy kirishga qaytish
+              </AuthPrimaryButton>
+            </div>
           </div>
         </AuthGlassPanel>
       </div>

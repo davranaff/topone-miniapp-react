@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calorie Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            --bg: var(--app-bg, #0a0a0a);
+            --surface: var(--app-surface, #141414);
+            --surface2: var(--app-surface2, #1e1e1e);
+            --border: var(--app-border, rgba(255, 255, 255, .08));
+            --text: var(--app-text, #e4e4e7);
+            --dim: var(--app-dim, #71717a);
+            --green: #22c55e;
+            --red: #ef4444;
+            --orange: #f59e0b;
+            --accent: var(--app-primary, #6366f1)
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 0 16px 100px;
+            -webkit-user-select: none;
+            user-select: none;
+            padding-top: var(--app-safe-top, 20px)
+        }
+
+        .header {
+            text-align: center;
+            padding: 44px 0 12px
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #22c55e, #06b6d4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent
+        }
+
+        .header p {
+            color: var(--dim);
+            font-size: 12px;
+            margin-top: 2px
+        }
+
+        .ring-container {
+            display: flex;
+            justify-content: center;
+            padding: 16px 0
+        }
+
+        .ring {
+            position: relative;
+            width: 160px;
+            height: 160px
+        }
+
+        .ring svg {
+            transform: rotate(-90deg)
+        }
+
+        .ring-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center
+        }
+
+        .ring-label .cal {
+            font-size: 28px;
+            font-weight: 700
+        }
+
+        .ring-label .sub {
+            font-size: 11px;
+            color: var(--dim)
+        }
+
+        .macros {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px
+        }
+
+        .macro {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 10px;
+            text-align: center
+        }
+
+        .macro .val {
+            font-size: 18px;
+            font-weight: 700
+        }
+
+        .macro .lbl {
+            font-size: 10px;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: .5px
+        }
+
+        .macro .bar {
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 6px;
+            background: var(--surface2);
+            overflow: hidden
+        }
+
+        .macro .bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width .4s
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px
+        }
+
+        .card h3 {
+            font-size: 13px;
+            color: var(--dim);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .entry {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .entry:last-child {
+            border-bottom: none
+        }
+
+        .entry-info .name {
+            font-size: 14px;
+            font-weight: 500
+        }
+
+        .entry-info .meta {
+            font-size: 11px;
+            color: var(--dim)
+        }
+
+        .entry-cal {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--green)
+        }
+
+        .entry-del {
+            background: none;
+            border: none;
+            color: var(--red);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+            opacity: .6
+        }
+
+        .entry-del:active {
+            opacity: 1
+        }
+
+        .fab {
+            position: fixed;
+            bottom: calc(20px + var(--app-safe-bottom, 0px));
+            right: 20px;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22c55e, #06b6d4);
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, .4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 90
+        }
+
+        .fab:active {
+            transform: scale(.9)
+        }
+
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .7);
+            z-index: 100;
+            display: none;
+            align-items: flex-end;
+            justify-content: center
+        }
+
+        .modal-bg.show {
+            display: flex
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: 20px 20px 0 0;
+            padding: 24px 20px calc(32px + var(--app-safe-bottom, 0px));
+            width: 100%;
+            max-width: 420px;
+            max-height: 80vh;
+            overflow-y: auto
+        }
+
+        .modal h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-align: center
+        }
+
+        .field {
+            margin-bottom: 12px
+        }
+
+        .field label {
+            display: block;
+            font-size: 12px;
+            color: var(--dim);
+            margin-bottom: 4px
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 12px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 15px;
+            outline: none
+        }
+
+        .field input:focus {
+            border-color: var(--accent)
+        }
+
+        .quick-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px
+        }
+
+        .quick-btn {
+            padding: 8px 12px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 12px;
+            cursor: pointer
+        }
+
+        .quick-btn:active {
+            background: var(--accent);
+            border-color: var(--accent)
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e, #06b6d4);
+            color: #fff
+        }
+
+        .btn-cancel {
+            background: var(--surface2);
+            color: var(--dim)
+        }
+
+        .empty {
+            text-align: center;
+            padding: 24px;
+            color: var(--dim);
+            font-size: 13px
+        }
+
+        .reward-toast {
+            position: fixed;
+            top: calc(var(--app-safe-top, 20px) + 50px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: linear-gradient(135deg, rgba(99, 102, 241, .95), rgba(139, 92, 246, .95));
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: .5px;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: all .4s cubic-bezier(.22, 1, .36, 1);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, .4)
+        }
+
+        .reward-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0)
+        }
+
+        .date-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 12px
+        }
+
+        .date-nav button {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            padding: 6px 10px;
+            font-size: 14px;
+            cursor: pointer
+        }
+
+        .date-nav span {
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 120px;
+            text-align: center
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>🔥 Calorie Tracker</h1>
+        <p>Track your daily nutrition</p>
+    </div>
+
+    <div class="date-nav">
+        <button onclick="changeDate(-1)">◀</button>
+        <span id="dateLabel">Today</span>
+        <button onclick="changeDate(1)">▶</button>
+    </div>
+
+    <div class="ring-container">
+        <div class="ring">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="70" fill="none" stroke="#1e1e1e" stroke-width="12" />
+                <circle id="ringCircle" cx="80" cy="80" r="70" fill="none" stroke="url(#grad)" stroke-width="12"
+                    stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="440" />
+                <defs>
+                    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#22c55e" />
+                        <stop offset="100%" stop-color="#06b6d4" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div class="ring-label">
+                <div class="cal" id="calCount">0</div>
+                <div class="sub">of <span id="calGoal">2000</span> kcal</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="macros">
+        <div class="macro">
+            <div class="val" id="protVal">0g</div>
+            <div class="lbl">Protein</div>
+            <div class="bar">
+                <div class="bar-fill" id="protBar" style="width:0%;background:#6366f1"></div>
+            </div>
+        </div>
+        <div class="macro">
+            <div class="val" id="carbVal">0g</div>
+            <div class="lbl">Carbs</div>
+            <div class="bar">
+                <div class="bar-fill" id="carbBar" style="width:0%;background:#f59e0b"></div>
+            </div>
+        </div>
+        <div class="macro">
+            <div class="val" id="fatVal">0g</div>
+            <div class="lbl">Fat</div>
+            <div class="bar">
+                <div class="bar-fill" id="fatBar" style="width:0%;background:#ef4444"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Today's Meals <span id="mealCount" style="font-size:12px;color:#22c55e"></span></h3>
+        <div id="mealList">
+            <div class="empty">Tap + to log your first meal</div>
+        </div>
+    </div>
+
+    <button class="fab" onclick="openModal()">+</button>
+    <div class="reward-toast" id="rewardToast"></div>
+
+    <div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h2>Add Food</h2>
+            <div class="quick-btns">
+                <div class="quick-btn" onclick="quickAdd('Chicken Breast',165,31,0,3.6)">🍗 Chicken</div>
+                <div class="quick-btn" onclick="quickAdd('Rice (1 cup)',206,4.3,45,0.4)">🍚 Rice</div>
+                <div class="quick-btn" onclick="quickAdd('Egg',78,6,0.6,5)">🥚 Egg</div>
+                <div class="quick-btn" onclick="quickAdd('Banana',105,1.3,27,0.4)">🍌 Banana</div>
+                <div class="quick-btn" onclick="quickAdd('Greek Yogurt',100,17,6,0.7)">🥛 Yogurt</div>
+                <div class="quick-btn" onclick="quickAdd('Oatmeal',150,5,27,2.5)">🥣 Oatmeal</div>
+                <div class="quick-btn" onclick="quickAdd('Salmon',208,20,0,13)">🐟 Salmon</div>
+                <div class="quick-btn" onclick="quickAdd('Apple',95,0.5,25,0.3)">🍎 Apple</div>
+                <div class="quick-btn" onclick="quickAdd('Bread (slice)',79,2.7,15,1)">🍞 Bread</div>
+                <div class="quick-btn" onclick="quickAdd('Coffee w/ Milk',50,2,6,2)">☕ Coffee</div>
+            </div>
+            <div class="field"><label>Food Name</label><input id="foodName" placeholder="e.g. Chicken Breast"></div>
+            <div class="field"><label>Calories</label><input id="foodCal" type="number" placeholder="kcal"></div>
+            <div class="field"><label>Protein (g)</label><input id="foodProt" type="number" placeholder="grams"></div>
+            <div class="field"><label>Carbs (g)</label><input id="foodCarb" type="number" placeholder="grams"></div>
+            <div class="field"><label>Fat (g)</label><input id="foodFat" type="number" placeholder="grams"></div>
+            <button class="btn btn-primary" onclick="addMeal()">Add Food</button>
+            <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        const GOAL = 2000;
+        const PROT_GOAL = 150, CARB_GOAL = 250, FAT_GOAL = 65;
+        let currentDate = new Date();
+
+        function dateKey(d) {
+            return d.toISOString().split('T')[0];
+        }
+
+        function getMeals() {
+            return JSON.parse(localStorage.getItem('cal_' + dateKey(currentDate)) || '[]');
+        }
+
+        function saveMeals(meals) {
+            localStorage.setItem('cal_' + dateKey(currentDate), JSON.stringify(meals));
+        }
+
+        function changeDate(delta) {
+            currentDate.setDate(currentDate.getDate() + delta);
+            render();
+        }
+
+        function render() {
+            const today = new Date();
+            const key = dateKey(currentDate);
+            const todayKey = dateKey(today);
+            if (key === todayKey) document.getElementById('dateLabel').textContent = 'Today';
+            else {
+                const opts = { month: 'short', day: 'numeric' };
+                document.getElementById('dateLabel').textContent = currentDate.toLocaleDateString('en', opts);
+            }
+
+            const meals = getMeals();
+            let totalCal = 0, totalProt = 0, totalCarb = 0, totalFat = 0;
+            meals.forEach(m => { totalCal += m.cal; totalProt += m.prot; totalCarb += m.carb; totalFat += m.fat; });
+
+            document.getElementById('calCount').textContent = Math.round(totalCal);
+            document.getElementById('calGoal').textContent = GOAL;
+            document.getElementById('mealCount').textContent = meals.length ? meals.length + ' items' : '';
+
+            const pct = Math.min(totalCal / GOAL, 1);
+            document.getElementById('ringCircle').style.strokeDashoffset = 440 - (440 * pct);
+            if (totalCal > GOAL) document.getElementById('calCount').style.color = '#ef4444';
+            else document.getElementById('calCount').style.color = '';
+
+            document.getElementById('protVal').textContent = Math.round(totalProt) + 'g';
+            document.getElementById('carbVal').textContent = Math.round(totalCarb) + 'g';
+            document.getElementById('fatVal').textContent = Math.round(totalFat) + 'g';
+            document.getElementById('protBar').style.width = Math.min(totalProt / PROT_GOAL * 100, 100) + '%';
+            document.getElementById('carbBar').style.width = Math.min(totalCarb / CARB_GOAL * 100, 100) + '%';
+            document.getElementById('fatBar').style.width = Math.min(totalFat / FAT_GOAL * 100, 100) + '%';
+
+            const list = document.getElementById('mealList');
+            if (!meals.length) { list.innerHTML = '<div class="empty">Tap + to log your first meal</div>'; return; }
+            list.innerHTML = meals.map((m, i) => `
+    <div class="entry">
+      <div class="entry-info"><div class="name">${m.name}</div><div class="meta">P:${Math.round(m.prot)}g · C:${Math.round(m.carb)}g · F:${Math.round(m.fat)}g</div></div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="entry-cal">${Math.round(m.cal)}</span>
+        <button class="entry-del" onclick="removeMeal(${i})">×</button>
+      </div>
+    </div>`).join('');
+        }
+
+        function openModal() { document.getElementById('modalBg').classList.add('show'); }
+        function closeModal(e) { if (!e || e.target === document.getElementById('modalBg')) { document.getElementById('modalBg').classList.remove('show'); clearForm(); } }
+
+        function clearForm() {
+            ['foodName', 'foodCal', 'foodProt', 'foodCarb', 'foodFat'].forEach(id => document.getElementById(id).value = '');
+        }
+
+        function quickAdd(name, cal, prot, carb, fat) {
+            document.getElementById('foodName').value = name;
+            document.getElementById('foodCal').value = cal;
+            document.getElementById('foodProt').value = prot;
+            document.getElementById('foodCarb').value = carb;
+            document.getElementById('foodFat').value = fat;
+        }
+
+        function addMeal() {
+            const name = document.getElementById('foodName').value.trim();
+            const cal = parseFloat(document.getElementById('foodCal').value) || 0;
+            const prot = parseFloat(document.getElementById('foodProt').value) || 0;
+            const carb = parseFloat(document.getElementById('foodCarb').value) || 0;
+            const fat = parseFloat(document.getElementById('foodFat').value) || 0;
+            if (!name || !cal) return;
+            const meals = getMeals();
+            meals.push({ name, cal, prot, carb, fat, time: Date.now() });
+            saveMeals(meals);
+            closeModal();
+            render();
+            showReward(5, 2, 'meal_logged');
+        }
+
+        function removeMeal(i) {
+            const meals = getMeals();
+            meals.splice(i, 1);
+            saveMeals(meals);
+            render();
+        }
+
+        function showReward(xp, coins, type) {
+            const toast = document.getElementById('rewardToast');
+            const parts = [];
+            if (xp > 0) parts.push('+' + xp + ' XP');
+            if (coins > 0) parts.push('+' + coins + ' 🪙');
+            toast.textContent = '🎉 ' + parts.join('  •  ');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+            if (window.TopOne && TopOne.trackActivity) {
+                TopOne.trackActivity({ type: type, xp: xp, coins: coins });
+            }
+        }
+
+        render();
+    </script>
+</body>
+
+</html>

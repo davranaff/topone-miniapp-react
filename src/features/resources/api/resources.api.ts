@@ -1,5 +1,6 @@
 import { apiClient } from "@/shared/api/client";
 import { endpoints } from "@/shared/api/endpoints";
+import type { Paginated } from "@/shared/types/pagination";
 import type { ResourceCategory, ResourceItem } from "@/features/resources/types/resource.types";
 
 const toOptionalString = (value: unknown) => {
@@ -65,15 +66,15 @@ export const resourcesApi = {
       });
   },
 
-  async list({
+  async listPaginated({
     category,
     page = 1,
-    size = 100,
+    size = 20,
   }: {
     category?: string;
     page?: number;
     size?: number;
-  } = {}): Promise<ResourceItem[]> {
+  } = {}): Promise<Paginated<ResourceItem>> {
     const res = await apiClient.get(endpoints.resources.list, {
       params: {
         page,
@@ -81,11 +82,37 @@ export const resourcesApi = {
         ...(category ? { category } : {}),
       },
     });
-    const payload = res.data?.data ?? res.data;
-    const items = Array.isArray(payload) ? payload : (payload?.items ?? payload?.results ?? []);
-
-    return (items as Array<Record<string, unknown>>)
+    const payload = (res.data?.data ?? res.data) as Record<string, unknown>;
+    const itemsRaw = Array.isArray(payload)
+      ? payload
+      : (payload?.items ?? payload?.results ?? payload?.data ?? []);
+    const items = (itemsRaw as Array<Record<string, unknown>>)
       .map(mapResource)
       .filter((item) => item.id && item.title);
+    const pagination =
+      payload?.pagination && typeof payload.pagination === "object"
+        ? (payload.pagination as Record<string, unknown>)
+        : null;
+    const currentPage = Number(pagination?.page ?? payload?.page ?? page);
+    const totalPages = Number(pagination?.pages ?? payload?.pages ?? 1);
+    const total = Number(pagination?.total ?? payload?.total ?? items.length);
+    const currentSize = Number(pagination?.size ?? payload?.size ?? size);
+
+    return {
+      items,
+      page: Number.isFinite(currentPage) && currentPage > 0 ? currentPage : 1,
+      pages: Number.isFinite(totalPages) && totalPages > 0 ? totalPages : 1,
+      total: Number.isFinite(total) && total >= 0 ? total : items.length,
+      size: Number.isFinite(currentSize) && currentSize > 0 ? currentSize : size,
+    };
+  },
+
+  async list(params: {
+    category?: string;
+    page?: number;
+    size?: number;
+  } = {}): Promise<ResourceItem[]> {
+    const result = await resourcesApi.listPaginated(params);
+    return result.items;
   },
 };

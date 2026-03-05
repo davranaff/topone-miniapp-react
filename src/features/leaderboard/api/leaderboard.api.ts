@@ -4,11 +4,11 @@ import { buildQueryString } from "@/shared/lib/url";
 import type {
   LeaderboardEntry,
   LeaderboardMyPosition,
+  LeaderboardPage,
   LeaderboardType,
 } from "@/entities/leaderboard/types";
 
-const PAGE_SIZE = 100;
-const MAX_PAGES = 1000;
+const PAGE_SIZE = 20;
 
 const toRecord = (value: unknown): Record<string, unknown> => {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
@@ -105,50 +105,44 @@ const MY_POSITION_ENDPOINT_MAP: Record<LeaderboardType, string> = {
 };
 
 export const leaderboardApi = {
-  async getLeaderboard(type: LeaderboardType): Promise<LeaderboardEntry[]> {
-    const allEntries: LeaderboardEntry[] = [];
-    let page = 1;
-    let pages = 1;
-    let safety = 0;
+  async getLeaderboardPage(
+    type: LeaderboardType,
+    page = 1,
+    size = PAGE_SIZE,
+  ): Promise<LeaderboardPage> {
+    const res = await apiClient.get(
+      `${ENDPOINT_MAP[type]}${buildQueryString({ page, size })}`,
+    );
 
-    while (page <= pages && safety < MAX_PAGES) {
-      const res = await apiClient.get(
-        `${ENDPOINT_MAP[type]}${buildQueryString({ page, size: PAGE_SIZE })}`,
-      );
+    const entries = extractItems(res.data)
+      .map((item) => mapEntry(type, item))
+      .filter((item) => item.rank > 0);
 
-      const pageEntries = extractItems(res.data)
-        .map((item) => mapEntry(type, item))
-        .filter((item) => item.rank > 0);
-      allEntries.push(...pageEntries);
+    const pagination = extractPagination(res.data);
+    const apiPage = Math.max(
+      1,
+      Math.trunc(toNumber(pagination.page ?? pagination.current_page ?? page)),
+    );
+    const apiSize = Math.max(
+      1,
+      Math.trunc(toNumber(pagination.size ?? pagination.per_page ?? size)),
+    );
+    const apiPages = Math.max(
+      1,
+      Math.trunc(toNumber(pagination.pages ?? pagination.total_pages ?? apiPage)),
+    );
+    const apiTotal = Math.max(
+      entries.length,
+      Math.trunc(toNumber(pagination.total ?? pagination.total_items ?? entries.length)),
+    );
 
-      const pagination = extractPagination(res.data);
-      const apiCurrentPage = Math.max(
-        1,
-        Math.trunc(toNumber(pagination.page ?? pagination.current_page ?? page)),
-      );
-      const apiPages = Math.max(
-        1,
-        Math.trunc(toNumber(pagination.pages ?? pagination.total_pages ?? apiCurrentPage)),
-      );
-
-      pages = apiPages;
-      if (apiCurrentPage >= apiPages || pageEntries.length === 0) {
-        break;
-      }
-
-      page = apiCurrentPage + 1;
-      safety += 1;
-    }
-
-    const byUser = new Map<string, LeaderboardEntry>();
-    allEntries.forEach((entry) => {
-      const key = entry.userId || `${entry.rank}`;
-      if (!byUser.has(key)) {
-        byUser.set(key, entry);
-      }
-    });
-
-    return Array.from(byUser.values()).sort((left, right) => left.rank - right.rank);
+    return {
+      items: entries,
+      page: apiPage,
+      size: apiSize,
+      pages: apiPages,
+      total: apiTotal,
+    };
   },
 
   async getMyPosition(type: LeaderboardType): Promise<LeaderboardMyPosition> {

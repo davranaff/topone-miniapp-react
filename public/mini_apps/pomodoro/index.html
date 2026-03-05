@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pomodoro Timer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            --bg: var(--app-bg, #0a0a0a);
+            --surface: var(--app-surface, #141414);
+            --surface2: var(--app-surface2, #1e1e1e);
+            --border: var(--app-border, rgba(255, 255, 255, .08));
+            --text: var(--app-text, #e4e4e7);
+            --dim: var(--app-dim, #71717a);
+            --red: #ef4444;
+            --green: #22c55e;
+            --blue: #3b82f6;
+            --orange: #f59e0b
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 0 16px 40px;
+            -webkit-user-select: none;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: var(--app-safe-top, 20px)
+        }
+
+        .header {
+            text-align: center;
+            padding: 44px 0 12px;
+            width: 100%
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ef4444, #f59e0b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent
+        }
+
+        .header p {
+            color: var(--dim);
+            font-size: 12px;
+            margin-top: 2px
+        }
+
+        .mode-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+            background: var(--surface);
+            border-radius: 14px;
+            padding: 4px;
+            width: 100%;
+            max-width: 360px
+        }
+
+        .mode-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--dim);
+            transition: all .3s
+        }
+
+        .mode-tab.active {
+            color: #fff
+        }
+
+        .mode-tab.focus.active {
+            background: var(--red);
+            box-shadow: 0 2px 12px rgba(239, 68, 68, .4)
+        }
+
+        .mode-tab.short.active {
+            background: var(--green);
+            box-shadow: 0 2px 12px rgba(34, 197, 94, .4)
+        }
+
+        .mode-tab.long.active {
+            background: var(--blue);
+            box-shadow: 0 2px 12px rgba(59, 130, 246, .4)
+        }
+
+        .timer-ring {
+            position: relative;
+            width: 240px;
+            height: 240px;
+            margin: 8px 0 24px
+        }
+
+        .timer-ring svg {
+            transform: rotate(-90deg)
+        }
+
+        .timer-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center
+        }
+
+        .timer-center .time {
+            font-size: 52px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 2px
+        }
+
+        .timer-center .label {
+            font-size: 12px;
+            color: var(--dim);
+            margin-top: 2px
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px
+        }
+
+        .ctrl-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            transition: all .2s
+        }
+
+        .ctrl-btn:active {
+            transform: scale(.9)
+        }
+
+        .ctrl-btn.play {
+            background: linear-gradient(135deg, var(--red), var(--orange));
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(239, 68, 68, .3);
+            width: 72px;
+            height: 72px;
+            font-size: 26px
+        }
+
+        .ctrl-btn.play.running {
+            background: linear-gradient(135deg, var(--orange), #eab308)
+        }
+
+        .ctrl-btn.secondary {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--dim)
+        }
+
+        .stats {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 360px;
+            margin-bottom: 16px
+        }
+
+        .stat {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center
+        }
+
+        .stat .num {
+            font-size: 22px;
+            font-weight: 700
+        }
+
+        .stat .lbl {
+            font-size: 10px;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-top: 2px
+        }
+
+        .sessions-card {
+            width: 100%;
+            max-width: 360px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+            padding-bottom: calc(14px + var(--app-safe-bottom, 0px))
+        }
+
+        .sessions-card h3 {
+            font-size: 13px;
+            color: var(--dim);
+            margin-bottom: 10px
+        }
+
+        .session-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px
+        }
+
+        .session-row:last-child {
+            border-bottom: none
+        }
+
+        .session-row .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            flex-shrink: 0
+        }
+
+        .session-row .info {
+            display: flex;
+            align-items: center;
+            flex: 1
+        }
+
+        .empty {
+            text-align: center;
+            padding: 16px;
+            color: var(--dim);
+            font-size: 12px
+        }
+
+        .task-input {
+            width: 100%;
+            max-width: 360px;
+            margin-bottom: 16px
+        }
+
+        .task-input input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 14px;
+            outline: none;
+            text-align: center
+        }
+
+        .task-input input:focus {
+            border-color: var(--red)
+        }
+
+        .task-input input::placeholder {
+            color: var(--dim)
+        }
+
+        .reward-toast {
+            position: fixed;
+            top: calc(var(--app-safe-top, 20px) + 50px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: linear-gradient(135deg, rgba(239, 68, 68, .95), rgba(245, 158, 11, .95));
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: .5px;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: all .4s cubic-bezier(.22, 1, .36, 1);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, .4)
+        }
+
+        .reward-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0)
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>🍅 Pomodoro Timer</h1>
+        <p>Focus. Rest. Repeat.</p>
+    </div>
+
+    <div class="mode-tabs">
+        <button class="mode-tab focus active" onclick="setMode('focus')">Focus</button>
+        <button class="mode-tab short" onclick="setMode('short')">Short Break</button>
+        <button class="mode-tab long" onclick="setMode('long')">Long Break</button>
+    </div>
+
+    <div class="task-input">
+        <input id="taskName" placeholder="What are you working on?" value="">
+    </div>
+
+    <div class="timer-ring">
+        <svg width="240" height="240" viewBox="0 0 240 240">
+            <circle cx="120" cy="120" r="108" fill="none" stroke="var(--surface2,#1e1e1e)" stroke-width="10" />
+            <circle id="timerArc" cx="120" cy="120" r="108" fill="none" stroke="url(#tgrad)" stroke-width="10"
+                stroke-linecap="round" stroke-dasharray="679" stroke-dashoffset="0" />
+            <defs>
+                <linearGradient id="tgrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#ef4444" />
+                    <stop offset="100%" stop-color="#f59e0b" />
+                </linearGradient>
+            </defs>
+        </svg>
+        <div class="timer-center">
+            <div class="time" id="timerDisplay">25:00</div>
+            <div class="label" id="timerLabel">Ready to focus</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="ctrl-btn secondary" onclick="resetTimer()">↺</button>
+        <button class="ctrl-btn play" id="playBtn" onclick="toggleTimer()">▶</button>
+        <button class="ctrl-btn secondary" onclick="skipTimer()">⏭</button>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="num" id="focusCount">0</div>
+            <div class="lbl">Sessions</div>
+        </div>
+        <div class="stat">
+            <div class="num" id="focusMins">0</div>
+            <div class="lbl">Minutes</div>
+        </div>
+        <div class="stat">
+            <div class="num" id="focusStreak">0</div>
+            <div class="lbl">Streak</div>
+        </div>
+    </div>
+
+    <div class="sessions-card">
+        <h3>Today's Sessions</h3>
+        <div id="sessionList">
+            <div class="empty">Complete a focus session to see it here</div>
+        </div>
+    </div>
+
+    <div class="reward-toast" id="rewardToast"></div>
+
+    <script>
+        const DURATIONS = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
+        const CIRCUMFERENCE = 679;
+        let mode = 'focus';
+        let timeLeft = DURATIONS.focus;
+        let totalTime = DURATIONS.focus;
+        let running = false;
+        let interval = null;
+        let sessionsCompleted = 0;
+
+        function todayKey() { return new Date().toISOString().split('T')[0]; }
+        function getSessions() { return JSON.parse(localStorage.getItem('pomo_' + todayKey()) || '[]'); }
+        function saveSessions(s) { localStorage.setItem('pomo_' + todayKey(), JSON.stringify(s)); }
+
+        function setMode(m) {
+            mode = m;
+            if (running) { clearInterval(interval); running = false; }
+            timeLeft = DURATIONS[m];
+            totalTime = DURATIONS[m];
+            updateDisplay();
+            updateTabs();
+            updateGradient();
+        }
+
+        function updateTabs() {
+            document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('.mode-tab.' + mode).classList.add('active');
+        }
+
+        function updateGradient() {
+            const grad = document.getElementById('tgrad');
+            const colors = { focus: ['#ef4444', '#f59e0b'], short: ['#22c55e', '#06b6d4'], long: ['#3b82f6', '#8b5cf6'] };
+            const [c1, c2] = colors[mode];
+            grad.children[0].setAttribute('stop-color', c1);
+            grad.children[1].setAttribute('stop-color', c2);
+        }
+
+        function updateDisplay() {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            document.getElementById('timerDisplay').textContent =
+                String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+
+            const pct = 1 - (timeLeft / totalTime);
+            document.getElementById('timerArc').style.strokeDashoffset = CIRCUMFERENCE * (1 - pct);
+
+            const playBtn = document.getElementById('playBtn');
+            playBtn.textContent = running ? '⏸' : '▶';
+            playBtn.classList.toggle('running', running);
+
+            const labels = { focus: running ? 'Focusing...' : 'Ready to focus', short: running ? 'Short break...' : 'Take a short break', long: running ? 'Long break...' : 'Take a long break' };
+            document.getElementById('timerLabel').textContent = labels[mode];
+
+            const sessions = getSessions();
+            const focusSessions = sessions.filter(s => s.type === 'focus');
+            document.getElementById('focusCount').textContent = focusSessions.length;
+            document.getElementById('focusMins').textContent = focusSessions.reduce((sum, s) => sum + s.duration, 0);
+
+            let streak = 0;
+            const d = new Date();
+            for (let checks = 0; checks < 365; checks++) {
+                const key = d.toISOString().split('T')[0];
+                const daySessions = JSON.parse(localStorage.getItem('pomo_' + key) || '[]');
+                if (daySessions.some(s => s.type === 'focus')) { streak++; d.setDate(d.getDate() - 1); }
+                else if (streak === 0) { d.setDate(d.getDate() - 1); }
+                else break;
+            }
+            document.getElementById('focusStreak').textContent = streak;
+
+            const list = document.getElementById('sessionList');
+            if (!sessions.length) { list.innerHTML = '<div class="empty">Complete a focus session to see it here</div>'; return; }
+            list.innerHTML = sessions.slice().reverse().map(s => {
+                const colors = { focus: '#ef4444', short: '#22c55e', long: '#3b82f6' };
+                const names = { focus: 'Focus', short: 'Short Break', long: 'Long Break' };
+                const time = new Date(s.time);
+                const label = s.task || names[s.type];
+                return `<div class="session-row"><div class="info"><div class="dot" style="background:${colors[s.type]}"></div>${label} — ${s.duration}m</div><span style="color:var(--dim)">${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}</span></div>`;
+            }).join('');
+        }
+
+        function toggleTimer() {
+            if (running) {
+                clearInterval(interval);
+                running = false;
+            } else {
+                running = true;
+                interval = setInterval(() => {
+                    timeLeft--;
+                    if (timeLeft <= 0) {
+                        clearInterval(interval);
+                        running = false;
+                        onComplete();
+                    }
+                    updateDisplay();
+                }, 1000);
+            }
+            updateDisplay();
+        }
+
+        function resetTimer() {
+            clearInterval(interval);
+            running = false;
+            timeLeft = DURATIONS[mode];
+            totalTime = DURATIONS[mode];
+            updateDisplay();
+        }
+
+        function skipTimer() {
+            clearInterval(interval);
+            running = false;
+            onComplete();
+        }
+
+        function onComplete() {
+            const duration = Math.round(DURATIONS[mode] / 60);
+            const task = document.getElementById('taskName').value.trim();
+            const sessions = getSessions();
+            sessions.push({ type: mode, duration, time: Date.now(), task });
+            saveSessions(sessions);
+
+            // Award XP only for focus sessions
+            const wasFocus = mode === 'focus';
+
+            if (mode === 'focus') {
+                sessionsCompleted++;
+                if (sessionsCompleted % 4 === 0) setMode('long');
+                else setMode('short');
+            } else {
+                setMode('focus');
+            }
+
+            try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) { }
+            updateDisplay();
+
+            if (wasFocus) {
+                showReward(15, 5, 'pomodoro_complete');
+            }
+        }
+
+        function showReward(xp, coins, type) {
+            const toast = document.getElementById('rewardToast');
+            const parts = [];
+            if (xp > 0) parts.push('+' + xp + ' XP');
+            if (coins > 0) parts.push('+' + coins + ' 🪙');
+            toast.textContent = '🎉 ' + parts.join('  •  ');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+            if (window.TopOne && TopOne.trackActivity) {
+                TopOne.trackActivity({ type: type, xp: xp, coins: coins });
+            }
+        }
+
+        updateDisplay();
+    </script>
+</body>
+
+</html>

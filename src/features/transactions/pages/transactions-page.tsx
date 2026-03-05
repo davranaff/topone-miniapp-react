@@ -20,6 +20,8 @@ import { SkeletonCard } from "@/shared/ui/skeleton";
 import { ErrorState } from "@/shared/ui/error-state";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { cn } from "@/shared/lib/cn";
+import { useInfiniteScrollTrigger } from "@/shared/hooks/use-infinite-scroll-trigger";
+import { InfiniteScrollLoader } from "@/shared/ui/infinite-scroll-loader";
 
 type TxTab = "xp" | "coins";
 type TxTypeFilter = "all" | "earned" | "spent";
@@ -232,6 +234,11 @@ export const TransactionsPage = () => {
 
   const allItems = useMemo(() => query.data?.pages.flatMap((page) => page.items) ?? [], [query.data]);
   const totalItems = query.data?.pages[0]?.total ?? allItems.length;
+  const loadMoreRef = useInfiniteScrollTrigger({
+    hasNextPage: query.hasNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+    onLoadMore: () => query.fetchNextPage(),
+  });
 
   const summary = useMemo(() => {
     return allItems.reduce(
@@ -393,17 +400,11 @@ export const TransactionsPage = () => {
               ))}
             </div>
 
-            {query.hasNextPage ? (
-              <Button
-                fullWidth
-                variant="outline"
-                size="sm"
-                loading={query.isFetchingNextPage}
-                onClick={() => query.fetchNextPage()}
-              >
-                Ko'proq yuklash
-              </Button>
-            ) : null}
+            <InfiniteScrollLoader
+              sentinelRef={loadMoreRef}
+              hasNextPage={query.hasNextPage}
+              isFetchingNextPage={query.isFetchingNextPage}
+            />
           </>
         )}
       </MobileScreenSection>

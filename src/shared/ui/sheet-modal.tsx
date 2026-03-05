@@ -45,17 +45,19 @@ export const SheetModal = ({
             "rounded-t-[1.5rem]",
             "max-h-[92dvh]",
             "pb-[env(safe-area-inset-bottom,0px)]",
+            "lg:bottom-4 lg:left-1/2 lg:right-auto lg:w-[min(92vw,34rem)] lg:-translate-x-1/2 lg:rounded-[1.5rem] lg:max-h-[86dvh] lg:pb-0",
           ],
           side === "top" && [
             "top-0 left-0 right-0",
             "rounded-b-[1.5rem]",
             "max-h-[80dvh]",
+            "lg:top-4 lg:left-1/2 lg:right-auto lg:w-[min(92vw,34rem)] lg:-translate-x-1/2 lg:rounded-[1.5rem]",
           ],
           className,
         )}
       >
-        <div className="flex shrink-0 items-center justify-between px-5 py-4">
-          <div className="mx-auto h-1 w-10 rounded-full bg-border/60 absolute top-3 left-1/2 -translate-x-1/2" />
+        <div className="flex shrink-0 items-center justify-between px-4 py-3 sm:px-5 sm:py-4">
+          <div className="absolute left-1/2 top-2.5 h-1 w-10 -translate-x-1/2 rounded-full bg-border/60 lg:hidden" />
           {title && (
             <Dialog.Title className="text-base font-semibold text-t-primary">
               {title}
@@ -72,12 +74,12 @@ export const SheetModal = ({
         </div>
 
         {description && (
-          <Dialog.Description className="shrink-0 px-5 pb-3 text-sm text-t-muted">
+          <Dialog.Description className="shrink-0 px-4 pb-2 text-sm text-t-muted sm:px-5 sm:pb-3">
             {description}
           </Dialog.Description>
         )}
 
-        <div className="flex-1 overflow-y-auto px-5 pb-5">
+        <div className="flex-1 overflow-y-auto px-4 pb-4 sm:px-5 sm:pb-5">
           {children}
         </div>
       </Dialog.Content>

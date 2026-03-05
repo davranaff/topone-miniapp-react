@@ -1,6 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useQuery,
+  type InfiniteData,
+  type UseInfiniteQueryResult,
+} from "@tanstack/react-query";
 import { leaderboardApi } from "@/features/leaderboard/api/leaderboard.api";
-import type { LeaderboardType } from "@/entities/leaderboard/types";
+import type { LeaderboardPage, LeaderboardType } from "@/entities/leaderboard/types";
 
 export const leaderboardKeys = {
   all: ["leaderboard"] as const,
@@ -8,10 +13,16 @@ export const leaderboardKeys = {
   myPosition: (type: LeaderboardType) => [...leaderboardKeys.all, "my-position", type] as const,
 };
 
-export const useLeaderboard = (type: LeaderboardType) => {
-  return useQuery({
+export const useLeaderboard = (
+  type: LeaderboardType,
+): UseInfiniteQueryResult<InfiniteData<LeaderboardPage>, Error> => {
+  return useInfiniteQuery<LeaderboardPage, Error>({
     queryKey: leaderboardKeys.list(type),
-    queryFn: () => leaderboardApi.getLeaderboard(type),
+    queryFn: ({ pageParam }) => leaderboardApi.getLeaderboardPage(type, Number(pageParam ?? 1)),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => (
+      lastPage.page < lastPage.pages ? lastPage.page + 1 : undefined
+    ),
     staleTime: 60_000,
   });
 };
