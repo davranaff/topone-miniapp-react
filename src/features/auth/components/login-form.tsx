@@ -37,7 +37,7 @@ export const LoginForm = () => {
   });
 
   return (
-    <div className="mx-auto flex w-full max-w-[30rem] flex-col justify-center py-2 sm:min-h-[40rem]">
+    <div className="mx-auto flex w-full max-w-[34rem] flex-col justify-center py-3 lg:py-6 sm:min-h-[40rem]">
       <AuthGlassPanel>
         <form className="space-y-6" onSubmit={onSubmit}>
           <AuthTitleBlock title={t("welcomeBack")} subtitle={t("loginSubtitle")} />

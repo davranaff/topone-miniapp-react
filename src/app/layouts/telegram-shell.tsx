@@ -5,7 +5,7 @@ export const TelegramShell = () => {
     <div
       className="relative min-h-[var(--tg-viewport-height,100dvh)] overflow-hidden bg-base"
       style={{
-        paddingTop: "var(--tg-safe-top, 0px)",
+        paddingTop: "calc(var(--tg-safe-top, 0px) + var(--tg-top-controls-offset, 0px))",
         paddingRight: "var(--tg-safe-right, 0px)",
         paddingBottom: "var(--tg-safe-bottom, 0px)",
         paddingLeft: "var(--tg-safe-left, 0px)",

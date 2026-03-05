@@ -59,7 +59,7 @@ export const PaymentSuccessPage = () => {
 
   if (!invoiceStatus && invoiceStatusQuery.isLoading) {
     return (
-      <MobileScreen fullHeight noPbDock>
+      <MobileScreen fullHeight noPbDock className="space-y-4 lg:space-y-5">
         <PageHeader title="To'lov muvaffaqiyatli" subtitle="Ma'lumotlar yuklanmoqda" backButton />
       </MobileScreen>
     );
@@ -68,7 +68,7 @@ export const PaymentSuccessPage = () => {
   const planName = locationState?.planName ?? invoiceStatus?.planName ?? "Premium";
 
   return (
-    <MobileScreen fullHeight noPbDock>
+    <MobileScreen fullHeight noPbDock className="space-y-4 lg:space-y-5">
       <PageHeader
         title="To'lov muvaffaqiyatli"
         subtitle="Flutter dagi success screen ga yaqin yakun sahifasi"
@@ -76,7 +76,7 @@ export const PaymentSuccessPage = () => {
         onBack={() => navigate("/home")}
       />
 
-      <div className="mt-6 space-y-4">
+      <div className="mt-6 space-y-4 xl:mx-auto xl:max-w-[54rem]">
         <GlassCard goldBorder glow className="rounded-[1.9rem] px-5 py-7 text-center">
           <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[linear-gradient(135deg,#f2d06a_0%,#d4a017_55%,#b8860b_100%)] text-white shadow-[0_20px_40px_rgba(212,160,23,0.26)]">
             <Check className="h-12 w-12" />

@@ -272,11 +272,11 @@ export const LessonsListPage = () => {
 
   if (!courseId) {
     return (
-      <MobileScreen className="space-y-4">
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <PageHeader title={t("lessonsTitle")} subtitle={t("lessonsSelectCourse")} />
 
         {coursesPicker.isLoading && (
-          <MobileScreenSection>
+          <MobileScreenSection className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
             {Array.from({ length: 3 }).map((_, index) => (
               <Skeleton key={index} className="h-[220px] rounded-[1.5rem]" />
             ))}
@@ -296,7 +296,7 @@ export const LessonsListPage = () => {
 
         {!coursesPicker.isLoading && !coursesPicker.isError && (
           coursesPicker.data?.items.length ? (
-            <MobileScreenSection>
+            <MobileScreenSection className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
               {[...coursesPicker.data.items]
                 .sort((left, right) => Number(left.isLocked) - Number(right.isLocked))
                 .map((course) => (
@@ -317,7 +317,7 @@ export const LessonsListPage = () => {
 
   if (courseContent.isLoading) {
     return (
-      <MobileScreen className="space-y-4">
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <div className="h-8 w-1/2 rounded-xl bg-elevated animate-shimmer bg-shimmer bg-[length:200%_100%]" />
         <StatCardsRow
           stats={[
@@ -328,7 +328,7 @@ export const LessonsListPage = () => {
           columns={3}
         />
         <Skeleton className="h-[116px] rounded-[1.5rem]" />
-        <MobileScreenSection>
+        <MobileScreenSection className="desktop-cards-grid">
           {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
         </MobileScreenSection>
       </MobileScreen>
@@ -361,7 +361,7 @@ export const LessonsListPage = () => {
   const courseImageUrl = normalizeMediaUrl(course.coverUrl ?? course.image);
 
   return (
-    <MobileScreen className="space-y-4">
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader title={course.title} subtitle={t("lessonsSubtitle")} backButton />
 
       <div className="relative overflow-hidden rounded-[2rem] shadow-[0_26px_70px_rgba(0,0,0,0.46)]">
@@ -444,7 +444,7 @@ export const LessonsListPage = () => {
           description={t("emptyDescription")}
         />
       ) : (
-        <MobileScreenSection>
+        <MobileScreenSection className="space-y-3.5">
           {lessons.map((lesson, index) => (
             <LessonRow
               key={lesson.id}

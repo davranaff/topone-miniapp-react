@@ -62,7 +62,7 @@ export const TelegramLoginPage = () => {
   const onSubmit = form.handleSubmit((values) => requestMutation.mutate(values));
 
   return (
-    <div className="mx-auto flex w-full max-w-[30rem] flex-col justify-center py-4 sm:min-h-[38rem]">
+    <div className="mx-auto flex w-full max-w-[34rem] flex-col justify-center py-4 lg:py-6 sm:min-h-[40rem]">
       <AuthGlassPanel>
         <form className="space-y-6" onSubmit={onSubmit}>
           <AuthTitleBlock title={t("telegram")} subtitle={t("telegramSubtitle")} />

@@ -131,9 +131,9 @@ export const TelegramInitPage = () => {
   }, [navigate, telegram]);
 
   return (
-    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-base px-4">
+    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-base px-4 lg:px-6">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_10%,rgba(245,200,66,0.2),transparent_34%),radial-gradient(circle_at_84%_84%,rgba(212,160,23,0.18),transparent_34%)]" />
-      <div className="relative w-full max-w-sm animate-fade-in-up">
+      <div className="relative w-full max-w-[34rem] animate-fade-in-up">
         <AuthGlassPanel className="text-center">
           <div className="space-y-6">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full liquid-glass-surface">

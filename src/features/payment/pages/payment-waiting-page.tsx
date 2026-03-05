@@ -179,7 +179,7 @@ export const PaymentWaitingPage = () => {
   };
 
   return (
-    <MobileScreen fullHeight noPbDock>
+    <MobileScreen fullHeight noPbDock className="space-y-4 lg:space-y-5">
       <PageHeader
         title="To'lov kutilmoqda"
         subtitle="Avval to'lov sahifasini oching, keyin holat avtomatik tekshiriladi"
@@ -187,7 +187,7 @@ export const PaymentWaitingPage = () => {
         onBack={() => navigate(-1)}
       />
 
-      <div className="mt-6 space-y-4">
+      <div className="mt-6 space-y-4 xl:mx-auto xl:max-w-[52rem]">
         <GlassCard goldBorder glow className="rounded-[1.8rem] px-5 py-6 text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-gold/25 bg-gold/10 text-gold">
             <LoaderCircle className="h-10 w-10 animate-spin" />

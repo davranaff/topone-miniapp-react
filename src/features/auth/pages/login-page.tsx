@@ -18,7 +18,7 @@ export const LoginPage = () => {
   const from = (location.state as { from?: string } | null)?.from;
 
   return (
-    <div className="mx-auto flex w-full max-w-[30rem] flex-col justify-center py-4 sm:min-h-[39rem]">
+    <div className="mx-auto flex w-full max-w-[34rem] flex-col justify-center py-4 lg:py-6 sm:min-h-[40rem]">
       <AuthGlassPanel>
         <div className="space-y-8">
           <AuthTitleBlock title={t("welcome")} subtitle={t("loginSubtitle")} />

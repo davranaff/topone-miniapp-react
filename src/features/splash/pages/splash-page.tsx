@@ -85,7 +85,7 @@ export const SplashPage = () => {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_90%_18%,rgba(212,160,23,0.25),transparent_28%),radial-gradient(circle_at_74%_88%,rgba(212,160,23,0.18),transparent_30%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-35 bg-[repeating-linear-gradient(120deg,rgba(255,215,128,0.08)_0px,rgba(255,215,128,0.08)_2px,transparent_2px,transparent_18px)]" />
 
-      <div className="relative w-full max-w-[22rem] animate-fade-in-up">
+      <div className="relative w-full max-w-[22rem] animate-fade-in-up lg:max-w-[28rem]">
         <div className="mx-auto flex flex-col items-center gap-8 text-center">
           <TopOneLogo size="xl" framed={false} className="drop-shadow-[0_0_38px_rgba(212,160,23,0.46)]" />
 

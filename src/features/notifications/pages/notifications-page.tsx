@@ -7,6 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { SkeletonCard } from "@/shared/ui/skeleton";
 import { ErrorState } from "@/shared/ui/error-state";
 import { EmptyState } from "@/shared/ui/empty-state";
+import { cn } from "@/shared/lib/cn";
 import {
   useNotifications,
   useMarkNotificationRead,
@@ -149,7 +150,7 @@ export const NotificationsPage = () => {
 
   if (notifications.isLoading) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <div className="h-8 w-1/2 animate-shimmer rounded-xl bg-elevated bg-shimmer bg-[length:200%_100%]" />
         <MobileScreenSection className="mt-4">
           {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
@@ -160,7 +161,7 @@ export const NotificationsPage = () => {
 
   if (notifications.isError) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <ErrorState variant="network" onRetry={() => notifications.refetch()} />
       </MobileScreen>
     );
@@ -172,7 +173,7 @@ export const NotificationsPage = () => {
   const hasUnread = unreadItems.length > 0;
 
   return (
-    <MobileScreen className="space-y-4">
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader
         title="Bildirishnomalar"
         subtitle="Tizim, kurs va challenge yangiliklari"
@@ -213,7 +214,12 @@ export const NotificationsPage = () => {
           />
         </div>
       ) : (
-        <MobileScreenSection className="space-y-4">
+        <MobileScreenSection
+          className={cn(
+            "space-y-4",
+            unreadItems.length > 0 && readItems.length > 0 && "xl:grid xl:grid-cols-2 xl:gap-4 xl:space-y-0",
+          )}
+        >
           {unreadItems.length > 0 ? (
             <NotificationSection title="Yangi" count={unreadItems.length}>
               {unreadItems.map((item) => (

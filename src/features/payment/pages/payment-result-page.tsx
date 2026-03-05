@@ -42,7 +42,7 @@ export const PaymentResultPage = () => {
   }, [isSuccess, queryClient]);
 
   return (
-    <MobileScreen fullHeight noPbDock>
+    <MobileScreen fullHeight noPbDock className="space-y-4 lg:space-y-5">
       <PageHeader
         title="To'lov natijasi"
         subtitle="Gateway return URL dan qaytgan holat"
@@ -50,7 +50,7 @@ export const PaymentResultPage = () => {
         onBack={() => navigate("/subscription", { replace: true })}
       />
 
-      <div className="mt-8">
+      <div className="mt-8 xl:mx-auto xl:max-w-[44rem]">
         <GlassCard goldBorder={isSuccess} glow={isSuccess} className="rounded-[1.9rem] px-5 py-7 text-center">
           <div
             className={
@@ -94,7 +94,7 @@ export const PaymentResultPage = () => {
         </GlassCard>
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:mx-auto xl:max-w-[44rem]">
         <Button
           fullWidth
           size="xl"

@@ -20,12 +20,14 @@ export const MobileScreen = ({
 }: MobileScreenProps) => (
   <div
     className={cn(
-      "relative w-full",
-      fullHeight && "min-h-screen",
-      scrollable && "overflow-y-auto",
-      padded && "px-4",
-      !noPbDock && "pb-[calc(7.25rem+env(safe-area-inset-bottom,0px))]",
-      "pt-3",
+      "relative mx-auto w-full",
+      "max-w-[80rem]",
+      fullHeight && "min-h-[var(--tg-viewport-height,100dvh)]",
+      scrollable && "overflow-y-auto overflow-x-visible",
+      padded && "px-4 sm:px-5 lg:px-7 xl:px-8",
+      !noPbDock &&
+        "pb-[calc(7.4rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(7.8rem+env(safe-area-inset-bottom,0px))]",
+      "pt-3 lg:pt-5",
       className,
     )}
     {...props}

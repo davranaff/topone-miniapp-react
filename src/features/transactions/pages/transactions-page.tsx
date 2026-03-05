@@ -193,10 +193,6 @@ export const TransactionsPage = () => {
     }
   }, [location.pathname, navigate]);
 
-  useEffect(() => {
-    setTypeFilter("all");
-  }, [tab]);
-
   const query = useInfiniteQuery({
     queryKey: ["transactions", tab, typeFilter],
     queryFn: async ({ pageParam = 1 }) => {
@@ -257,10 +253,10 @@ export const TransactionsPage = () => {
   const config = TAB_CONFIG[tab];
 
   return (
-    <MobileScreen className="space-y-4">
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader title={config.title} subtitle={config.subtitle} backButton />
 
-      <div className="flex gap-2">
+      <div className="desktop-chip-row flex gap-2 lg:pb-0">
         {(Object.keys(TAB_CONFIG) as TxTab[]).map((tabId) => (
           <button
             key={tabId}
@@ -300,7 +296,7 @@ export const TransactionsPage = () => {
 
       <MobileScreenSection className="space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex gap-2 overflow-x-auto pb-0.5">
+          <div className="desktop-chip-row flex gap-2 pb-0.5 lg:flex-wrap lg:pb-0">
             {TYPE_FILTERS.map((filter) => (
               <button
                 key={filter.id}
@@ -336,64 +332,66 @@ export const TransactionsPage = () => {
           />
         ) : (
           <>
-            {allItems.map((tx) => (
-              <GlassCard key={tx.id} className="rounded-[1.45rem]">
-                <div className="flex items-start gap-3">
-                  <div
-                    className={cn(
-                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border",
-                      tx.direction === "credit"
-                        ? "border-success/30 bg-success/10 text-success"
-                        : "border-danger/30 bg-danger/10 text-danger",
-                    )}
-                  >
-                    {tx.direction === "credit" ? (
-                      <ArrowDownLeft className="h-4 w-4" />
-                    ) : (
-                      <ArrowUpRight className="h-4 w-4" />
-                    )}
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="truncate text-sm font-semibold text-t-primary">
-                        {mapDescription(tx.description)}
-                      </p>
-                      <Badge
-                        variant={tx.direction === "credit" ? "success" : "danger"}
-                        size="sm"
-                        className="uppercase"
-                      >
-                        {tx.transactionType || (tx.direction === "credit" ? "earned" : "spent")}
-                      </Badge>
-                    </div>
-
-                    <p className="mt-1 text-xs text-t-muted">{formatDateTime(tx.createdAt)}</p>
-
-                    {tx.referenceId ? (
-                      <p className="mt-1 text-2xs text-t-muted">Ref: {shortReference(tx.referenceId)}</p>
-                    ) : null}
-                  </div>
-
-                  <div className="mt-0.5 flex shrink-0 items-center gap-1">
-                    {tx.currency === "xp" ? (
-                      <Star className="h-3.5 w-3.5 text-gold" />
-                    ) : (
-                      <CircleDollarSign className="h-3.5 w-3.5 text-info" />
-                    )}
-                    <span
+            <div className="desktop-cards-grid">
+              {allItems.map((tx) => (
+                <GlassCard key={tx.id} className="rounded-[1.45rem]">
+                  <div className="flex items-start gap-3">
+                    <div
                       className={cn(
-                        "text-sm font-bold tabular-nums",
-                        tx.direction === "credit" ? "text-success" : "text-danger",
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border",
+                        tx.direction === "credit"
+                          ? "border-success/30 bg-success/10 text-success"
+                          : "border-danger/30 bg-danger/10 text-danger",
                       )}
                     >
-                      {tx.direction === "credit" ? "+" : "-"}
-                      {tx.amount.toLocaleString()}
-                    </span>
+                      {tx.direction === "credit" ? (
+                        <ArrowDownLeft className="h-4 w-4" />
+                      ) : (
+                        <ArrowUpRight className="h-4 w-4" />
+                      )}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="truncate text-sm font-semibold text-t-primary">
+                          {mapDescription(tx.description)}
+                        </p>
+                        <Badge
+                          variant={tx.direction === "credit" ? "success" : "danger"}
+                          size="sm"
+                          className="uppercase"
+                        >
+                          {tx.transactionType || (tx.direction === "credit" ? "earned" : "spent")}
+                        </Badge>
+                      </div>
+
+                      <p className="mt-1 text-xs text-t-muted">{formatDateTime(tx.createdAt)}</p>
+
+                      {tx.referenceId ? (
+                        <p className="mt-1 text-2xs text-t-muted">Ref: {shortReference(tx.referenceId)}</p>
+                      ) : null}
+                    </div>
+
+                    <div className="mt-0.5 flex shrink-0 items-center gap-1">
+                      {tx.currency === "xp" ? (
+                        <Star className="h-3.5 w-3.5 text-gold" />
+                      ) : (
+                        <CircleDollarSign className="h-3.5 w-3.5 text-info" />
+                      )}
+                      <span
+                        className={cn(
+                          "text-sm font-bold tabular-nums",
+                          tx.direction === "credit" ? "text-success" : "text-danger",
+                        )}
+                      >
+                        {tx.direction === "credit" ? "+" : "-"}
+                        {tx.amount.toLocaleString()}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </GlassCard>
-            ))}
+                </GlassCard>
+              ))}
+            </div>
 
             {query.hasNextPage ? (
               <Button

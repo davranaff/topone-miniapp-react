@@ -383,7 +383,7 @@ export const ChallengeDetailPage = () => {
   }
 
   return (
-    <MobileScreen>
+    <MobileScreen className="lg:space-y-5">
       <PageHeader
         title={data.title}
         backButton
@@ -394,7 +394,7 @@ export const ChallengeDetailPage = () => {
         }
       />
 
-      <div className="mt-4 space-y-4">
+      <div className="mt-4 space-y-4 lg:space-y-5">
         <ChallengeDetailHero challenge={data} />
 
         <StatCardsRow
@@ -447,7 +447,7 @@ export const ChallengeDetailPage = () => {
           </DetailSurface>
         ) : null}
 
-        <DetailSurface className="grid grid-cols-2 gap-3">
+        <DetailSurface className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="liquid-glass-surface rounded-[1.2rem] px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">XP reward</p>
             <div className="mt-2 flex items-center gap-2 text-gold">
@@ -508,7 +508,7 @@ export const ChallengeDetailPage = () => {
 
         {!!data.howItWorks?.length && (
           <DetailSection title="Qanday ishlaydi">
-            <div className="space-y-3">
+            <div className="grid gap-3 xl:grid-cols-2">
               {data.howItWorks.map((item, index) => (
                 <div key={`${item}-${index}`} className="liquid-glass-surface flex items-start gap-3 rounded-[1.1rem] px-3.5 py-3">
                   <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" />
@@ -521,7 +521,7 @@ export const ChallengeDetailPage = () => {
 
         {!!data.checkmark?.length && (
           <DetailSection title="Muhim punktlar">
-            <div className="space-y-3">
+            <div className="grid gap-3 xl:grid-cols-2">
               {data.checkmark.map((item, index) => (
                 <div key={`${item}-${index}`} className="liquid-glass-surface flex items-start gap-3 rounded-[1.1rem] px-3.5 py-3">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-info" />
@@ -534,7 +534,7 @@ export const ChallengeDetailPage = () => {
 
         {!!subchallenges.data?.items.length && (
           <DetailSection title="Subchallenge'lar">
-            <div className="space-y-3">
+            <div className="grid gap-3 xl:grid-cols-2">
               {subchallenges.data.items.map((item) => (
                 <button
                   key={item.id}
@@ -559,7 +559,7 @@ export const ChallengeDetailPage = () => {
 
         {!!data.additionalResources?.length && (
           <DetailSection title="Qo'shimcha resurslar">
-            <div className="space-y-3">
+            <div className="grid gap-3 xl:grid-cols-2">
               {data.additionalResources.map((resource) => (
                 <a
                   key={resource.id}

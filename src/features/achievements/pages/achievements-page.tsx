@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trophy, Star, CircleDollarSign, Lock, Gift } from "lucide-react";
+import { Trophy, Star, CircleDollarSign, Gift } from "lucide-react";
 import { MobileScreen, MobileScreenSection } from "@/shared/ui/mobile-screen";
 import { PageHeader } from "@/shared/ui/page-header";
 import { GlassCard } from "@/shared/ui/glass-card";
@@ -93,7 +93,7 @@ export const AchievementsPage = () => {
 
   if (achievements.isLoading) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <div className="h-8 w-1/3 rounded-xl bg-elevated animate-shimmer bg-shimmer bg-[length:200%_100%]" />
         <MobileScreenSection className="mt-4">
           {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
@@ -104,7 +104,7 @@ export const AchievementsPage = () => {
 
   if (achievements.isError) {
     return (
-      <MobileScreen>
+      <MobileScreen className="space-y-4 lg:space-y-5">
         <ErrorState variant="network" onRetry={() => achievements.refetch()} />
       </MobileScreen>
     );
@@ -118,11 +118,11 @@ export const AchievementsPage = () => {
   });
 
   return (
-    <MobileScreen>
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader title="Yutuqlar" subtitle="Topshiriqlarni bajaring va mukofot oling" backButton />
 
       {/* Tabs */}
-      <div className="mt-3 flex gap-2">
+      <div className="desktop-chip-row mt-3 flex gap-2 lg:pb-0">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -148,7 +148,7 @@ export const AchievementsPage = () => {
           />
         </div>
       ) : (
-        <MobileScreenSection className="mt-4">
+        <MobileScreenSection className="mt-4 desktop-cards-grid">
           {filtered.map((item) => (
             <AchievementCard key={item.id} item={item} />
           ))}

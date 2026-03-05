@@ -205,11 +205,11 @@ export const ReferralsPage = () => {
   };
 
   return (
-    <MobileScreen>
+    <MobileScreen className="space-y-4 lg:space-y-5">
       <PageHeader title="Referallar" subtitle="Do'stlaringizni taklif qiling va bonus oling" backButton />
 
-      <MobileScreenSection className="mt-4">
-        <div className="grid grid-cols-2 gap-3">
+      <MobileScreenSection className="mt-4 space-y-4 lg:space-y-5">
+        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           <GlassCard className="text-center">
             <Users className="mx-auto h-5 w-5 text-gold mb-1" />
             <p className="text-lg font-bold text-t-primary">{data.totalReferrals}</p>
@@ -264,94 +264,96 @@ export const ReferralsPage = () => {
               </Button>
             </GlassCard>
 
-            <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-t-muted">
-                Taklif qilinganlar ({historyItems.length})
-              </p>
-              {history.isError ? (
-                <GlassCard className="rounded-[1.2rem] border-danger/20">
-                  <p className="text-sm text-t-secondary">Referral tarixini yuklab bo'lmadi.</p>
-                  <Button variant="outline" size="sm" className="mt-3" onClick={() => history.refetch()}>
-                    Qayta urinish
-                  </Button>
-                </GlassCard>
-              ) : historyItems.length === 0 ? (
-                <EmptyState
-                  icon={<Users className="h-8 w-8" />}
-                  title="Hali referal yo'q"
-                  description="Do'stlaringizni taklif qiling va bonuslar oling."
-                />
-              ) : (
-                <div className="space-y-2">
-                  {historyItems.map((item) => (
-                    <GlassCard key={item.id}>
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-elevated text-sm">
-                          <UserRound className="h-4 w-4 text-t-muted" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold text-t-primary">@{item.username}</p>
-                          <p className="text-xs text-t-muted">
-                            {item.joinedAt ? new Date(item.joinedAt).toLocaleDateString("uz") : ""}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <Badge variant={item.isActive ? "success" : "muted"} size="sm">
-                            {item.isActive ? "Faol" : "Passiv"}
-                          </Badge>
-                          {item.earnedAmount > 0 && (
-                            <span className="text-xs font-semibold text-gold">
-                              +{formatMoney(item.earnedAmount)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </GlassCard>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-t-muted">
-                Referal darajalari ({levelItems.length})
-              </p>
-              {levels.isError ? (
-                <GlassCard className="rounded-[1.2rem] border-danger/20">
-                  <p className="text-sm text-t-secondary">Darajalarni yuklab bo'lmadi.</p>
-                  <Button variant="outline" size="sm" className="mt-3" onClick={() => levels.refetch()}>
-                    Qayta urinish
-                  </Button>
-                </GlassCard>
-              ) : levelItems.length === 0 ? (
-                <EmptyState
-                  icon={<Award className="h-8 w-8" />}
-                  title="Darajalar topilmadi"
-                  description="Referral level ma'lumotlari keyinroq paydo bo'lishi mumkin."
-                />
-              ) : (
-                <div className="space-y-2">
-                  {levelItems.map((level) => {
-                    const unlocked = level.isUnlocked || data.totalReferrals >= level.minReferrals;
-
-                    return (
-                      <GlassCard key={level.id || `${level.level}-${level.minReferrals}`}>
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold text-t-primary">{level.name || `Level ${level.level}`}</p>
+            <div className="desktop-two-col">
+              <div>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-t-muted">
+                  Taklif qilinganlar ({historyItems.length})
+                </p>
+                {history.isError ? (
+                  <GlassCard className="rounded-[1.2rem] border-danger/20">
+                    <p className="text-sm text-t-secondary">Referral tarixini yuklab bo'lmadi.</p>
+                    <Button variant="outline" size="sm" className="mt-3" onClick={() => history.refetch()}>
+                      Qayta urinish
+                    </Button>
+                  </GlassCard>
+                ) : historyItems.length === 0 ? (
+                  <EmptyState
+                    icon={<Users className="h-8 w-8" />}
+                    title="Hali referal yo'q"
+                    description="Do'stlaringizni taklif qiling va bonuslar oling."
+                  />
+                ) : (
+                  <div className="space-y-2">
+                    {historyItems.map((item) => (
+                      <GlassCard key={item.id}>
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-elevated text-sm">
+                            <UserRound className="h-4 w-4 text-t-muted" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-semibold text-t-primary">@{item.username}</p>
                             <p className="text-xs text-t-muted">
-                              {level.minReferrals}+ referral • {level.rewardPercentage}% bonus
+                              {item.joinedAt ? new Date(item.joinedAt).toLocaleDateString("uz") : ""}
                             </p>
                           </div>
-                          <Badge variant={unlocked ? "success" : "muted"} size="sm">
-                            {unlocked ? "Ochilgan" : "Yopiq"}
-                          </Badge>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <Badge variant={item.isActive ? "success" : "muted"} size="sm">
+                              {item.isActive ? "Faol" : "Passiv"}
+                            </Badge>
+                            {item.earnedAmount > 0 && (
+                              <span className="text-xs font-semibold text-gold">
+                                +{formatMoney(item.earnedAmount)}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </GlassCard>
-                    );
-                  })}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-t-muted">
+                  Referal darajalari ({levelItems.length})
+                </p>
+                {levels.isError ? (
+                  <GlassCard className="rounded-[1.2rem] border-danger/20">
+                    <p className="text-sm text-t-secondary">Darajalarni yuklab bo'lmadi.</p>
+                    <Button variant="outline" size="sm" className="mt-3" onClick={() => levels.refetch()}>
+                      Qayta urinish
+                    </Button>
+                  </GlassCard>
+                ) : levelItems.length === 0 ? (
+                  <EmptyState
+                    icon={<Award className="h-8 w-8" />}
+                    title="Darajalar topilmadi"
+                    description="Referral level ma'lumotlari keyinroq paydo bo'lishi mumkin."
+                  />
+                ) : (
+                  <div className="space-y-2">
+                    {levelItems.map((level) => {
+                      const unlocked = level.isUnlocked || data.totalReferrals >= level.minReferrals;
+
+                      return (
+                        <GlassCard key={level.id || `${level.level}-${level.minReferrals}`}>
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-t-primary">{level.name || `Level ${level.level}`}</p>
+                              <p className="text-xs text-t-muted">
+                                {level.minReferrals}+ referral • {level.rewardPercentage}% bonus
+                              </p>
+                            </div>
+                            <Badge variant={unlocked ? "success" : "muted"} size="sm">
+                              {unlocked ? "Ochilgan" : "Yopiq"}
+                            </Badge>
+                          </div>
+                        </GlassCard>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </>
         ) : (
@@ -371,7 +373,7 @@ export const ReferralsPage = () => {
                 <div className="rounded-xl border border-gold/20 bg-gold/10 px-3 py-2 text-sm text-gold">
                   Mavjud balans: {formatMoney(availableBalance)} UZS
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <input
                     value={cardFirstName}
                     onChange={(event) => setCardFirstName(event.target.value)}
@@ -553,7 +555,7 @@ export const ReferralsPage = () => {
                   description="Yuborilgan yechib olish so'rovlari shu yerda chiqadi."
                 />
               ) : (
-                <div className="space-y-2">
+                <div className="desktop-cards-grid">
                   {checkoutItems.map((item) => {
                     const status = toStatus(item.status);
                     const canDelete = status === "pending";
